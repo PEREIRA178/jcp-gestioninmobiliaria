@@ -8,40 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/jcp-design.css"/>
 <style>
-:root{
-  /* Real-estate palette (realtor.com-inspired) */
-  --md-primary:#C41A2B;--md-on-primary:#fff;
-  --md-primary-container:#FCE3E5;--md-on-primary-container:#4E0511;
-  --md-primary-dark:#900F1F;--md-primary-accent:#F7931E;
-  --md-secondary:#324B6E;--md-secondary-container:#E5ECF5;
-  --md-surface:#FAFAF9;--md-surface-bright:#FFFFFF;--md-surface-container-low:#F5F5F3;
-  --md-surface-container-high:#EEEEE9;
-  --md-on-surface:#15191F;--md-on-surface-variant:#4B5462;
-  --md-outline:#8B95A3;--md-outline-variant:#D6DAE0;
-  --md-inverse-surface:#0F1419;
-  --r-sm:12px;--r-md:16px;--r-lg:24px;--r-xl:32px;--r-full:9999px;
-  --elev-2:0 2px 6px rgba(15,20,25,.08);--elev-3:0 4px 12px rgba(15,20,25,.10);--elev-4:0 8px 24px rgba(15,20,25,.12);
-  --ease-express:cubic-bezier(0.05,0.7,0.1,1.0);
-  --font-display:'DM Serif Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
-  --max-w:1200px;--nav-h:72px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:var(--font-body);background:var(--md-surface);color:var(--md-on-surface);line-height:1.6}
-
-/* NAV */
-.nav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:rgba(250,250,249,.90);backdrop-filter:blur(20px);border-bottom:1px solid var(--md-outline-variant)}
-.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nav-brand-name{font-family:var(--font-display);font-size:18px;color:var(--md-on-surface)}
-.nav-brand-sub{font-size:10px;font-weight:500;letter-spacing:.12em;color:var(--md-outline);text-transform:uppercase}
-.nav-links{display:flex;gap:4px}
-.nav-links a{font-size:13.5px;color:var(--md-on-surface-variant);text-decoration:none;padding:8px 14px;border-radius:var(--r-full);transition:background 200ms,color 200ms}
-.nav-links a:hover,.nav-links a.active{background:var(--md-primary-container);color:var(--md-on-primary-container)}
-.nav-cta{font-size:13px;font-weight:500;color:#fff;background:var(--md-primary);padding:10px 22px;border-radius:var(--r-full);text-decoration:none;box-shadow:0 2px 8px rgba(196,26,43,.25);transition:all 200ms}
-.nav-cta:hover{background:var(--md-primary-dark);transform:translateY(-1px)}
-
 /* DETAIL LAYOUT */
 .detail-wrap{max-width:var(--max-w);margin:24px auto 96px;padding:0 24px}
 .detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--md-on-surface-variant);text-decoration:none;margin-bottom:16px}
@@ -87,16 +55,8 @@ body{font-family:var(--font-body);background:var(--md-surface);color:var(--md-on
 .contact-form input,.contact-form textarea{width:100%;padding:12px 14px;border:1.5px solid var(--md-outline-variant);border-radius:var(--r-md);font-family:inherit;font-size:14px;background:var(--md-surface);color:var(--md-on-surface);outline:none;transition:border-color 200ms}
 .contact-form input:focus,.contact-form textarea:focus{border-color:var(--md-primary)}
 .contact-form textarea{min-height:88px;resize:vertical}
-.btn-primary{background:var(--md-primary);color:#fff;border:none;padding:14px 20px;border-radius:var(--r-full);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 200ms;box-shadow:0 2px 8px rgba(196,26,43,.25)}
-.btn-primary:hover{background:var(--md-primary-dark);transform:translateY(-1px)}
-.btn-whatsapp{background:#25D366;color:#fff;border:none;padding:14px 20px;border-radius:var(--r-full);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;text-align:center;margin-top:8px;display:block;transition:all 200ms}
-.btn-whatsapp:hover{background:#1DAB54}
-
-/* FOOTER */
-footer{background:var(--md-inverse-surface);color:rgba(255,255,255,0.7);padding:48px 24px 24px}
-.footer-inner{max-width:var(--max-w);margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:13px}
-footer a{color:rgba(255,255,255,0.75);text-decoration:none}
-footer a:hover{color:#fff}
+/* footer slim variant — padding override for detail page */
+footer { padding: 48px 24px 24px; }
 </style>
 </head>
 <body>
