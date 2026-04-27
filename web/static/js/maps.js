@@ -4,6 +4,7 @@
   var JCP_BLUE = '#1D4ED8';
   var listingMap = null;
   var pinLayer = null;
+  var markersBySlug = {};
 
   function makePin(color, size) {
     size = size || 28;
@@ -49,7 +50,7 @@
     var el = document.getElementById('prop-map');
     if (!el || listingMap) return;
 
-    listingMap = L.map('prop-map', { zoomControl: true }).setView([-33.45, -70.65], 10);
+    listingMap = L.map('prop-map', { zoomControl: true, scrollWheelZoom: false }).setView([-33.45, -70.65], 10);
     tileLayer().addTo(listingMap);
     pinLayer = L.layerGroup().addTo(listingMap);
     syncListingPins();
@@ -58,6 +59,7 @@
   function syncListingPins() {
     if (!listingMap || !pinLayer) return;
     pinLayer.clearLayers();
+    markersBySlug = {};
 
     var cards = document.querySelectorAll('[data-lat][data-lng]');
     var bounds = [];
@@ -74,6 +76,7 @@
       var commune = card.dataset.commune || '';
 
       var marker = L.marker([lat, lng], { icon: makePin(JCP_BLUE) });
+      markersBySlug[slug] = marker;
       marker.bindPopup(
         '<div class="map-popup">' +
         '<div class="map-popup-type">' + tipo + '</div>' +
@@ -158,6 +161,15 @@
   window.addEventListener('resize', function () {
     if (listingMap) listingMap.invalidateSize();
   }, { passive: true });
+
+  document.addEventListener('mouseover', function (e) {
+    if (!listingMap) return;
+    var card = e.target.closest('.prop-card[data-lat]');
+    if (!card) return;
+    var slug = card.dataset.slug || card.dataset.id;
+    var m = markersBySlug[slug];
+    if (m) m.openPopup();
+  });
 
   window.JCPMaps = { syncListingPins: syncListingPins };
 }());
