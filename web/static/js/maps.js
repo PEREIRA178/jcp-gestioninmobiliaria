@@ -149,8 +149,15 @@
   document.addEventListener('DOMContentLoaded', init);
 
   document.addEventListener('htmx:afterSettle', function () {
-    if (listingMap) syncListingPins();
+    if (listingMap) {
+      listingMap.invalidateSize();
+      syncListingPins();
+    }
   });
+
+  window.addEventListener('resize', function () {
+    if (listingMap) listingMap.invalidateSize();
+  }, { passive: true });
 
   window.JCPMaps = { syncListingPins: syncListingPins };
 }());

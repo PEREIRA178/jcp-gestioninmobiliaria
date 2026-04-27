@@ -166,15 +166,15 @@ templ PropiedadesPage() {
 			.sort-wrap select{padding:7px 12px;border:1.5px solid var(--outline-var);
 			  border-radius:var(--r-full);font-size:13px;font-family:inherit;
 			  background:var(--surface-bright);cursor:pointer;outline:none}
-			.listings-layout{display:flex;height:calc(100vh - var(--nav-h) - 118px);min-height:600px}
-			.listings-col{width:54%;overflow-y:auto;display:flex;flex-direction:column}
+			.listings-layout{display:flex;align-items:flex-start}
+			.listings-col{width:54%;min-width:0}
 			.listings-head{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0 12px}
 			.listings-heading{font-family:var(--font-display);font-size:22px}
 			.listings-count{font-size:13px;color:var(--outline)}
-			.map-panel{width:46%;border-left:1px solid var(--outline-var);position:relative}
-			#prop-map{height:100%;width:100%}
+			.map-panel{width:46%;border-left:1px solid var(--outline-var);position:sticky;top:calc(var(--nav-h) + 130px);height:calc(100vh - var(--nav-h) - 130px)}
+			#prop-map{height:100%;width:100%;min-height:400px}
 			.loading-state{text-align:center;padding:60px 0;color:var(--outline);font-size:14px}
-			.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding-bottom:32px}
+			.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;padding-bottom:40px}
 			.prop-card{background:var(--surface-bright);border-radius:var(--r-lg);overflow:hidden;
 			  border:1px solid var(--outline-var);
 			  transition:transform 300ms var(--ease-express),box-shadow 300ms var(--ease-express),border-color 200ms;
@@ -212,10 +212,10 @@ templ PropiedadesPage() {
 			.reveal-delay-2{transition-delay:120ms}
 			.reveal-delay-3{transition-delay:180ms}
 			@media(max-width:900px){
-			  .listings-layout{flex-direction:column;height:auto}
-			  .listings-col{width:100%;overflow-y:visible}
-			  .map-panel{width:100%;border-left:none;border-top:1px solid var(--outline-var);height:240px;order:-1}
-			  .prop-grid{grid-template-columns:1fr}
+			  .listings-layout{flex-direction:column}
+			  .listings-col{width:100%}
+			  .map-panel{width:100%;border-left:none;border-top:1px solid var(--outline-var);height:260px;order:-1;position:relative;top:auto}
+			  .prop-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 			}
 		</style>
 		<script>
