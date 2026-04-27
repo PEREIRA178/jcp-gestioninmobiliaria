@@ -100,6 +100,52 @@ templ PropiedadesPage() {
 				<div id="prop-map" data-map="listing"></div>
 			</div>
 		</div>
+		<section class="cta-section" id="contacto">
+			<div class="container">
+				<div class="cta-header">
+					<h2 class="cta-title">¿En qué podemos ayudarte?</h2>
+					<p class="cta-sub">Nuestro equipo está listo para asesorarte sin costo ni compromiso.</p>
+				</div>
+				<div class="cta-body">
+					<div class="cta-services">
+						<p class="cta-services-label">Seleccioná el servicio</p>
+						<div class="cta-service-grid">
+							<button class="cta-svc active" data-svc="Quiero comprar una propiedad">
+								<span class="ms">home_search</span>
+								Comprar
+							</button>
+							<button class="cta-svc" data-svc="Quiero vender mi propiedad">
+								<span class="ms">sell</span>
+								Vender
+							</button>
+							<button class="cta-svc" data-svc="Quiero arrendar una propiedad">
+								<span class="ms">key</span>
+								Arrendar
+							</button>
+							<button class="cta-svc" data-svc="Quiero poner mi propiedad en arriendo">
+								<span class="ms">real_estate_agent</span>
+								Poner en arriendo
+							</button>
+							<button class="cta-svc" data-svc="Quiero administración de mi propiedad o proyecto">
+								<span class="ms">manage_accounts</span>
+								Administración
+							</button>
+						</div>
+					</div>
+					<div class="cta-form-col">
+						<form class="cta-form" id="cta-form" novalidate>
+							<input class="cta-input" type="text" name="nombre" placeholder="Tu nombre completo" required/>
+							<input class="cta-input" type="tel" name="telefono" placeholder="Tu número de teléfono"/>
+							<textarea class="cta-input cta-textarea" name="mensaje" placeholder="Cuéntanos más (opcional)" rows="3"></textarea>
+							<button type="submit" class="cta-submit">
+								<span class="ms ms-sm">chat</span> Enviar por WhatsApp
+							</button>
+						</form>
+						<p class="cta-disclaimer">También podés llamarnos o escribirnos directamente.</p>
+					</div>
+				</div>
+			</div>
+		</section>
 		<style>
 			.brand-hero{
 			  background:linear-gradient(135deg,rgba(15,23,42,.82) 0%,rgba(30,58,138,.74) 100%),
@@ -220,6 +266,38 @@ templ PropiedadesPage() {
 			  .map-panel{width:100%;border-left:none;border-top:1px solid var(--outline-var);height:260px;position:relative;top:auto}
 			  .prop-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 			}
+			.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
+			.leaflet-popup-content{margin:14px 16px!important}
+			.map-popup-type{font-size:11px;text-transform:uppercase;color:#1D4ED8;font-weight:700;letter-spacing:.05em;margin-bottom:4px}
+			.map-popup-title{font-size:14px;font-weight:600;color:#111827;line-height:1.35;margin-bottom:4px}
+			.map-popup-price{font-size:17px;font-weight:700;color:#111827;margin-bottom:4px}
+			.map-popup-loc{font-size:12px;color:#64748B;display:flex;align-items:center;gap:3px}
+			.cta-section{background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 100%);padding:64px 0;color:#fff;margin-top:48px}
+			.cta-header{text-align:center;margin-bottom:40px}
+			.cta-title{font-family:var(--font-display);font-size:clamp(22px,3vw,32px);margin-bottom:8px}
+			.cta-sub{color:rgba(255,255,255,.72);font-size:15px}
+			.cta-body{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+			.cta-services-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5);margin-bottom:14px}
+			.cta-service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+			.cta-svc{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;
+			  background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);
+			  border-radius:14px;color:#fff;cursor:pointer;font-size:13px;font-weight:500;
+			  font-family:inherit;transition:all 200ms}
+			.cta-svc .ms{font-size:24px}
+			.cta-svc:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3)}
+			.cta-svc.active{background:#1D4ED8;border-color:#1D4ED8;box-shadow:0 4px 16px rgba(29,78,216,.4)}
+			.cta-form{display:flex;flex-direction:column;gap:12px}
+			.cta-input{padding:13px 16px;background:rgba(255,255,255,.09);border:1.5px solid rgba(255,255,255,.16);
+			  border-radius:10px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:border-color 200ms}
+			.cta-input::placeholder{color:rgba(255,255,255,.4)}
+			.cta-input:focus{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.13)}
+			.cta-textarea{resize:vertical;min-height:80px}
+			.cta-submit{display:flex;align-items:center;justify-content:center;gap:8px;
+			  padding:14px 28px;background:#25D366;color:#fff;border:none;border-radius:var(--r-full);
+			  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 200ms;margin-top:4px}
+			.cta-submit:hover{background:#1DAB54;transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,211,102,.35)}
+			.cta-disclaimer{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px;text-align:center}
+			@media(max-width:900px){.cta-body{grid-template-columns:1fr}}
 		</style>
 		<script>
 			(function(){
@@ -255,6 +333,30 @@ templ PropiedadesPage() {
 			  document.body.addEventListener('htmx:afterSwap',function(){
 			    document.querySelectorAll('.reveal:not(.visible)').forEach(function(el){el.classList.add('visible')});
 			  });
+			}());
+			(function(){
+			  var selectedSvc = 'Quiero comprar una propiedad';
+			  document.querySelectorAll('.cta-svc').forEach(function(btn){
+			    btn.addEventListener('click',function(){
+			      document.querySelectorAll('.cta-svc').forEach(function(b){b.classList.remove('active')});
+			      btn.classList.add('active');
+			      selectedSvc = btn.dataset.svc;
+			    });
+			  });
+			  var ctaForm = document.getElementById('cta-form');
+			  if(ctaForm){
+			    ctaForm.addEventListener('submit',function(e){
+			      e.preventDefault();
+			      var nombre = ctaForm.nombre.value.trim();
+			      var telefono = ctaForm.telefono.value.trim();
+			      var mensaje = ctaForm.mensaje.value.trim();
+			      var text = selectedSvc;
+			      if(nombre) text += '\n\nNombre: '+nombre;
+			      if(telefono) text += '\nTeléfono: '+telefono;
+			      if(mensaje) text += '\n\nMensaje: '+mensaje;
+			      window.open('https://wa.me/56912345678?text='+encodeURIComponent(text),'_blank');
+			    });
+			  }
 			}());
 		</script>
 	}

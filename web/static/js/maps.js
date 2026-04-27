@@ -83,11 +83,12 @@
         '<div class="map-popup-title">' + title + '</div>' +
         '<div class="map-popup-price">' + price + '</div>' +
         (commune ? '<div class="map-popup-loc"><span class="ms ms-sm">location_on</span>' + commune + '</div>' : '') +
-        '<a href="/propiedades/' + slug + '" class="map-popup-link">Ver detalle</a>' +
+        '<a href="/propiedades/' + slug + '" style="display:block;margin-top:10px;padding:8px 14px;background:#1D4ED8;color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;text-align:center">Ver detalle →</a>' +
         '</div>',
         { maxWidth: 220 }
       );
 
+      marker.on('mouseover', function () { this.openPopup(); });
       marker.on('popupopen', function () {
         document.querySelectorAll('.prop-card').forEach(function (c) { c.classList.remove('map-highlighted'); });
         card.classList.add('map-highlighted');
