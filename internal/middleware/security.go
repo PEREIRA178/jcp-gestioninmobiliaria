@@ -71,10 +71,10 @@ func SecurityHeaders(cfg *config.Config) fiber.Handler {
 		c.Set("Content-Security-Policy",
 			"default-src 'self'; "+
 				"script-src 'self' unpkg.com cdn.jsdelivr.net 'unsafe-inline'; "+
-				"style-src 'self' 'unsafe-inline'; "+
-				"img-src 'self' data: blob: *; "+
+				"style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com; "+
+				"img-src 'self' data: blob: https://*.tile.openstreetmap.org; "+
 				"connect-src 'self'; "+
-				"font-src 'self' data:",
+				"font-src 'self' data: fonts.googleapis.com fonts.gstatic.com;",
 		)
 		if cfg.IsProd() {
 			c.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
