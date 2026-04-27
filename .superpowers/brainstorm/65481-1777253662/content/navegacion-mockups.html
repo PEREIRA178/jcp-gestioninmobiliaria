@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JCP — Mockups de Diseño</title>
+<style>
+  :root {
+    --jcp-blue: #1D4ED8;
+    --jcp-blue-50: #EFF6FF;
+    --neutral-dark: #111827;
+    --neutral-600: #4B5563;
+    --neutral-200: #E5E7EB;
+    --neutral-100: #F3F4F6;
+    --white: #FFFFFF;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #0F172A; color: white; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; }
+
+  .hub-logo { font-size: 48px; margin-bottom: 12px; }
+  .hub-title { font-size: 28px; font-weight: 900; color: white; margin-bottom: 4px; letter-spacing: -.5px; }
+  .hub-subtitle { font-size: 15px; color: #94A3B8; margin-bottom: 40px; }
+
+  .mockup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; max-width: 700px; width: 100%; }
+
+  .mockup-card {
+    background: #1E293B; border: 1px solid #334155; border-radius: 16px; padding: 24px;
+    text-decoration: none; color: white; transition: transform .2s, border-color .2s, box-shadow .2s;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .mockup-card:hover { transform: translateY(-4px); border-color: var(--jcp-blue); box-shadow: 0 8px 32px rgba(29,78,216,.25); }
+
+  .mockup-icon { font-size: 40px; }
+  .mockup-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(29,78,216,.2); color: #93C5FD; border: 1px solid rgba(29,78,216,.3);
+    padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; width: fit-content;
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .mockup-name { font-size: 18px; font-weight: 800; }
+  .mockup-desc { font-size: 13px; color: #94A3B8; line-height: 1.5; }
+  .mockup-features { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .mockup-feature { font-size: 12px; color: #CBD5E1; display: flex; align-items: center; gap: 6px; }
+  .mockup-cta {
+    margin-top: 8px; padding: 10px 20px; background: var(--jcp-blue); color: white;
+    border-radius: 10px; font-size: 14px; font-weight: 700; text-align: center;
+    border: none; cursor: pointer;
+  }
+
+  .note { margin-top: 32px; font-size: 12px; color: #475569; text-align: center; max-width: 500px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="hub-logo">🏠</div>
+  <h1 class="hub-title">JCP Gestión Inmobiliaria</h1>
+  <p class="hub-subtitle">Mockups de diseño — Mapas + Frontend Polish</p>
+
+  <div class="mockup-grid">
+
+    <a href="/content/propiedades-listado.html" class="mockup-card">
+      <div class="mockup-icon">🗺️</div>
+      <span class="mockup-tag">Vista 1</span>
+      <div class="mockup-name">Listado de Propiedades</div>
+      <div class="mockup-desc">Vista de búsqueda con mapa interactivo Leaflet.js</div>
+      <div class="mockup-features">
+        <div class="mockup-feature">🖥 Desktop: mapa lateral 45% + cards grid</div>
+        <div class="mockup-feature">📱 Mobile: mapa compacto + cards horizontales</div>
+        <div class="mockup-feature">📍 Pines por propiedad con popup de detalle</div>
+        <div class="mockup-feature">🎨 Filtros pill + toggle mobile/desktop</div>
+      </div>
+      <div class="mockup-cta">Ver listado →</div>
+    </a>
+
+    <a href="/content/propiedad-detalle.html" class="mockup-card">
+      <div class="mockup-icon">🏡</div>
+      <span class="mockup-tag">Vista 2</span>
+      <div class="mockup-name">Detalle de Propiedad</div>
+      <div class="mockup-desc">Página completa con galería, datos y mapa de zona</div>
+      <div class="mockup-features">
+        <div class="mockup-feature">🗺 Mapa de zona con pin azul JCP</div>
+        <div class="mockup-feature">🔵 Círculo de área aproximada</div>
+        <div class="mockup-feature">📋 Stats, amenidades, descripción</div>
+        <div class="mockup-feature">💬 CTAs: WhatsApp, teléfono, formulario</div>
+      </div>
+      <div class="mockup-cta">Ver detalle →</div>
+    </a>
+
+  </div>
+
+  <p class="note">
+    Estos mockups muestran el diseño propuesto con Leaflet.js real, branding JCP azul, Material Design Expressive y layouts mobile-first. Navegá entre ellos y dejame saber qué ajustes querés.
+  </p>
+</body>
+</html>

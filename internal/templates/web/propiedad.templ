@@ -1,0 +1,244 @@
+package web
+
+import (
+	"fmt"
+	"html/template"
+	"jcp-gestioninmobiliaria/internal/templates/layouts"
+)
+
+type PropiedadData struct {
+	Titulo        string
+	Direccion     string
+	PriceHTML     template.HTML
+	PriceSub      string
+	ChipsHTML     template.HTML
+	CoverHTML     template.HTML
+	ThumbsHTML    template.HTML
+	FeatsHTML     template.HTML
+	BodyHTML      template.HTML
+	AmenitiesHTML template.HTML
+	WhatsappHTML  template.HTML
+	Lat           float64
+	Lng           float64
+	Comuna        string
+}
+
+templ PropiedadDetail(d PropiedadData) {
+	@layouts.Base(d.Titulo + " — JCP Gestión Inmobiliaria", true) {
+		<style>
+			.detail-wrap{max-width:1200px;margin:28px auto 96px;padding:0 24px}
+			.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;
+			  color:var(--on-surface-var);text-decoration:none;margin-bottom:16px;
+			  padding:7px 14px;border-radius:var(--r-full);border:1px solid var(--outline-var);transition:all 200ms}
+			.detail-back:hover{color:var(--jcp-primary);border-color:var(--jcp-primary)}
+			.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;
+			  gap:8px;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:16/9;margin-bottom:32px;
+			  background:var(--surface-container-low)}
+			.g-main{grid-column:1;grid-row:1/span 2;background:var(--jcp-primary-100);
+			  display:flex;align-items:center;justify-content:center;overflow:hidden}
+			.g-main img,.g-cell img{width:100%;height:100%;object-fit:cover}
+			.g-cell{background:var(--surface-container-high);overflow:hidden}
+			.gallery-placeholder{font-family:var(--font-display);font-size:80px;color:rgba(29,78,216,.15)}
+			.price-bar{background:var(--jcp-primary-dark);color:white;padding:16px 24px;
+			  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:0}
+			.price-main{font-family:var(--font-display);font-size:32px;line-height:1.1}
+			.price-sub{font-size:13px;opacity:.75;margin-top:3px;display:flex;align-items:center;gap:6px}
+			.pb-ctas{display:flex;gap:10px}
+			.pb-btn{padding:10px 20px;border-radius:var(--r-md);border:none;font-size:13px;font-weight:700;
+			  cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;text-decoration:none}
+			.pb-wa{background:#25D366;color:white}
+			.pb-tel{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.25)}
+			.detail-grid{display:grid;grid-template-columns:1fr 380px;gap:48px;margin-top:32px}
+			.detail-header h1{font-family:var(--font-display);font-size:clamp(26px,4vw,38px);line-height:1.15;margin-bottom:8px}
+			.detail-loc{font-size:14px;color:var(--on-surface-var);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+			.op-chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+			.op-chip{font-size:12px;font-weight:600;padding:5px 14px;border-radius:var(--r-full);letter-spacing:.02em}
+			.op-venta{background:var(--jcp-primary-100);color:var(--jcp-primary-dark)}
+			.op-arriendo{background:#EDE9FE;color:#5B21B6}
+			.op-dest{background:#FEF3C7;color:#92400E}
+			.op-deal{background:#D1FAE5;color:#065F46}
+			.feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin:24px 0 28px}
+			.feat-box{padding:16px;border:1px solid var(--outline-var);border-radius:var(--r-md);background:var(--surface-bright);text-align:center}
+			.feat-icon{color:var(--jcp-primary);margin-bottom:6px;display:flex;justify-content:center}
+			.feat-val{font-family:var(--font-display);font-size:22px;color:var(--on-surface)}
+			.feat-label{font-size:11px;color:var(--outline);text-transform:uppercase;letter-spacing:.06em}
+			.section-block{margin-bottom:32px}
+			.section-block h2{font-family:var(--font-display);font-size:22px;margin-bottom:12px;
+			  display:flex;align-items:center;gap:10px}
+			.section-icon{width:32px;height:32px;background:var(--jcp-primary-50);border-radius:8px;
+			  display:flex;align-items:center;justify-content:center;color:var(--jcp-primary);flex-shrink:0}
+			.desc{font-size:15px;line-height:1.85;color:var(--on-surface-var)}
+			.prestaciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+			.prest-pill{font-size:12.5px;padding:7px 14px;background:var(--jcp-primary-50);
+			  border:1px solid var(--jcp-primary-100);border-radius:var(--r-full);
+			  color:var(--jcp-primary);display:flex;align-items:center;gap:6px}
+			.map-box{height:300px;border-radius:var(--r-md);overflow:hidden;
+			  border:1px solid var(--outline-var);position:relative;margin-bottom:8px}
+			.map-overlay-badge{position:absolute;bottom:10px;left:10px;z-index:500;
+			  background:white;border-radius:8px;padding:7px 12px;
+			  box-shadow:var(--elev-3);font-size:12px;font-weight:600;color:var(--on-surface);
+			  border:1px solid var(--outline-var);display:flex;align-items:center;gap:5px}
+			.map-hint{font-size:11px;color:var(--outline);display:flex;align-items:center;gap:4px;margin-top:6px}
+			.zone-pill{display:inline-flex;align-items:center;gap:5px;
+			  background:var(--jcp-primary-50);color:var(--jcp-primary);
+			  padding:5px 12px;border-radius:var(--r-full);font-size:12px;font-weight:600;
+			  border:1px solid var(--jcp-primary-100);margin:0 6px 8px 0}
+			.contact-card{position:sticky;top:88px;background:var(--surface-bright);
+			  border:1px solid var(--outline-var);border-radius:var(--r-lg);padding:24px;
+			  box-shadow:var(--elev-2);height:fit-content}
+			.price-detail-row{display:flex;justify-content:space-between;align-items:center;
+			  padding:9px 0;border-bottom:1px solid var(--outline-var);font-size:14px}
+			.price-detail-row:last-of-type{border:none}
+			.pr-label{color:var(--on-surface-var)}
+			.pr-val{font-weight:700;color:var(--on-surface)}
+			.pr-val.big{color:var(--jcp-primary);font-size:20px;font-family:var(--font-display)}
+			.sb-cta{display:flex;align-items:center;justify-content:center;gap:8px;
+			  width:100%;padding:13px;border-radius:11px;border:none;font-size:14px;font-weight:700;
+			  cursor:pointer;margin-bottom:10px;text-decoration:none;font-family:inherit}
+			.sb-wa{background:#25D366;color:white}
+			.sb-tel{background:var(--jcp-primary);color:white}
+			.sb-form{background:var(--surface-container-low);color:var(--on-surface);border:1.5px solid var(--outline-var)}
+			.sidebar-map-box{height:180px;border-radius:10px;overflow:hidden;border:1px solid var(--outline-var)}
+			.btn-whatsapp{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
+			  background:#25D366;color:white;border-radius:var(--r-md);font-size:13px;font-weight:700;
+			  text-decoration:none}
+			@media(max-width:900px){
+			  .detail-grid{grid-template-columns:1fr}
+			  .gallery{aspect-ratio:4/3;grid-template-columns:1fr 1fr;grid-template-rows:2fr 1fr}
+			  .g-main{grid-column:1/span 2;grid-row:1}
+			}
+		</style>
+		<main>
+			<div class="detail-wrap">
+				<a href="/propiedades.html" class="detail-back">
+					<span class="ms ms-sm">arrow_back</span> Volver al listado
+				</a>
+				<div class="gallery">
+					<div class="g-main">@templ.Raw(string(d.CoverHTML))</div>
+					@templ.Raw(string(d.ThumbsHTML))
+				</div>
+				<div class="price-bar">
+					<div>
+						<div class="price-main">@templ.Raw(string(d.PriceHTML))</div>
+						if d.PriceSub != "" {
+							<div class="price-sub">
+								<span class="ms ms-sm" style="opacity:.7;">location_on</span>
+								{ d.PriceSub }
+							</div>
+						}
+					</div>
+					<div class="pb-ctas">
+						if d.WhatsappHTML != "" {
+							@templ.Raw(string(d.WhatsappHTML))
+						} else {
+							<a href="https://wa.me/56912345678" class="pb-btn pb-wa" target="_blank" rel="noopener">
+								<span class="ms ms-sm">chat</span> WhatsApp
+							</a>
+						}
+						<button class="pb-btn pb-tel"><span class="ms ms-sm">phone</span> Llamar</button>
+					</div>
+				</div>
+				<div class="detail-grid">
+					<div>
+						<div class="detail-header" style="margin-bottom:20px">
+							<div class="op-chips">@templ.Raw(string(d.ChipsHTML))</div>
+							<h1>{ d.Titulo }</h1>
+							<p class="detail-loc">
+								<span class="ms ms-sm" style="color:var(--jcp-primary)">location_on</span>
+								{ d.Direccion }
+							</p>
+						</div>
+						<div class="feats-grid">@templ.Raw(string(d.FeatsHTML))</div>
+						<div class="section-block">
+							<h2>
+								<div class="section-icon"><span class="ms ms-sm">description</span></div>
+								Descripción
+							</h2>
+							<div class="desc">@templ.Raw(string(d.BodyHTML))</div>
+						</div>
+						if d.Lat != 0 && d.Lng != 0 {
+							<div class="section-block">
+								<h2>
+									<div class="section-icon"><span class="ms ms-sm">map</span></div>
+									Ubicación
+								</h2>
+								if d.Comuna != "" {
+									<div style="margin-bottom:12px">
+										<span class="zone-pill"><span class="ms ms-sm">location_on</span> { d.Comuna }</span>
+									</div>
+								}
+								<div
+									class="map-box"
+									data-map="detail"
+									data-lat={ fmt.Sprintf("%.6f", d.Lat) }
+									data-lng={ fmt.Sprintf("%.6f", d.Lng) }
+									data-title={ d.Titulo }
+								>
+									if d.Comuna != "" {
+										<div class="map-overlay-badge">
+											<span class="ms ms-sm" style="color:var(--jcp-primary)">location_on</span>
+											{ d.Comuna }
+										</div>
+									}
+								</div>
+								<p class="map-hint">
+									<span class="ms ms-sm">lock</span>
+									Dirección exacta disponible al contactar al corredor
+								</p>
+							</div>
+						}
+						if d.AmenitiesHTML != "" {
+							<div class="section-block">
+								<h2>
+									<div class="section-icon"><span class="ms ms-sm">auto_awesome</span></div>
+									Prestaciones
+								</h2>
+								<div class="prestaciones">@templ.Raw(string(d.AmenitiesHTML))</div>
+							</div>
+						}
+					</div>
+					<aside class="contact-card" id="contactar">
+						<div style="font-size:15px;font-weight:800;color:var(--on-surface);margin-bottom:14px">Precio y condiciones</div>
+						<div class="price-detail-row">
+							<span class="pr-label">Precio</span>
+							<span class="pr-val big">@templ.Raw(string(d.PriceHTML))</span>
+						</div>
+						if d.PriceSub != "" {
+							<div class="price-detail-row">
+								<span class="pr-label">Referencia</span>
+								<span class="pr-val">{ d.PriceSub }</span>
+							</div>
+						}
+						<div style="margin-top:16px">
+							if d.WhatsappHTML != "" {
+								@templ.Raw(string(d.WhatsappHTML))
+							} else {
+								<a href="https://wa.me/56912345678" class="sb-cta sb-wa" target="_blank" rel="noopener">
+									<span class="ms ms-sm">chat</span> Consultar por WhatsApp
+								</a>
+							}
+							<button class="sb-cta sb-tel"><span class="ms ms-sm">phone</span> Llamar al corredor</button>
+							<button class="sb-cta sb-form"><span class="ms ms-sm">mail</span> Enviar consulta</button>
+						</div>
+						if d.Lat != 0 && d.Lng != 0 {
+							<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--outline-var)">
+								<div style="font-size:13px;font-weight:700;color:var(--on-surface);margin-bottom:8px;display:flex;align-items:center;gap:5px">
+									<span class="ms ms-sm" style="color:var(--jcp-primary)">map</span> Zona de la propiedad
+								</div>
+								<div
+									class="sidebar-map-box"
+									data-map="detail-mini"
+									data-lat={ fmt.Sprintf("%.6f", d.Lat) }
+									data-lng={ fmt.Sprintf("%.6f", d.Lng) }
+								></div>
+								<p class="map-hint" style="justify-content:center;margin-top:6px">
+									<span class="ms ms-sm">info</span> Ubicación aproximada
+								</p>
+							</div>
+						}
+					</aside>
+				</div>
+			</div>
+		</main>
+	}
+}

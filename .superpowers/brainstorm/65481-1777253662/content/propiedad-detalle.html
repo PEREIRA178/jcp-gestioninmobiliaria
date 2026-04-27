@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JCP — Detalle de Propiedad (Mockup)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --jcp-blue: #1D4ED8;
+    --jcp-blue-light: #3B82F6;
+    --jcp-blue-dark: #1E3A8A;
+    --jcp-blue-50: #EFF6FF;
+    --neutral-dark: #111827;
+    --neutral-900: #1F2937;
+    --neutral-700: #374151;
+    --neutral-600: #4B5563;
+    --neutral-400: #9CA3AF;
+    --neutral-200: #E5E7EB;
+    --neutral-100: #F3F4F6;
+    --neutral-50: #F9FAFB;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.07);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,.15);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--neutral-50); color: var(--neutral-dark); }
+
+  /* HEADER */
+  .page-header {
+    background: white; border-bottom: 1px solid var(--neutral-200);
+    padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 200; box-shadow: var(--shadow-sm);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon { width: 34px; height: 34px; background: var(--jcp-blue); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .logo-text { font-size: 17px; font-weight: 800; color: var(--jcp-blue); }
+  .logo-sub { font-size: 10px; color: var(--neutral-600); }
+
+  .back-link {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--jcp-blue); font-size: 14px; font-weight: 600; text-decoration: none;
+  }
+
+  /* BREADCRUMB */
+  .breadcrumb {
+    padding: 10px 20px; font-size: 12px; color: var(--neutral-600);
+    background: white; border-bottom: 1px solid var(--neutral-200);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .breadcrumb a { color: var(--jcp-blue); text-decoration: none; }
+
+  /* HERO GALLERY */
+  .hero-gallery {
+    height: 420px; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 60%, #60A5FA 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-gallery-placeholder {
+    font-size: 80px; opacity: .4; user-select: none;
+  }
+  .hero-badge {
+    position: absolute; top: 20px; left: 20px;
+    padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .5px;
+    background: var(--jcp-blue); color: white;
+  }
+  .hero-badge-dest {
+    position: absolute; top: 20px; right: 20px;
+    background: rgba(255,255,255,.9); backdrop-filter: blur(12px);
+    padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 700;
+    color: #F59E0B; border: 1px solid rgba(255,255,255,.5);
+    box-shadow: var(--shadow-sm);
+  }
+  .hero-gallery-count {
+    position: absolute; bottom: 16px; right: 20px;
+    background: rgba(15,23,42,.65); backdrop-filter: blur(12px);
+    color: white; padding: 6px 14px; border-radius: 99px; font-size: 13px; font-weight: 600;
+    border: 1px solid rgba(255,255,255,.15);
+  }
+
+  /* PRICE BAR */
+  .price-bar {
+    background: var(--jcp-blue-dark); color: white;
+    padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .price-main { font-size: 28px; font-weight: 900; letter-spacing: -.5px; }
+  .price-sub { font-size: 14px; opacity: .75; margin-top: 2px; }
+  .price-bar-cta { display: flex; gap: 10px; }
+  .cta-btn {
+    padding: 10px 20px; border-radius: 10px; border: none; font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .cta-wa { background: #25D366; color: white; }
+  .cta-tel { background: rgba(255,255,255,.15); backdrop-filter: blur(8px); color: white; border: 1px solid rgba(255,255,255,.25); }
+
+  /* CONTENT LAYOUT */
+  .content-grid {
+    max-width: 1100px; margin: 0 auto; padding: 24px 20px;
+    display: grid; grid-template-columns: 1fr 360px; gap: 28px; align-items: start;
+  }
+  @media (max-width: 768px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .sidebar-col { order: -1; }
+  }
+
+  /* SECTION */
+  .section-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm);
+    border: 1px solid var(--neutral-200); padding: 24px; margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 18px; font-weight: 800; color: var(--neutral-dark); margin-bottom: 16px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--jcp-blue-50);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title .icon {
+    width: 32px; height: 32px; background: var(--jcp-blue-50); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+
+  /* STATS GRID */
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .stat-item {
+    background: var(--neutral-50); border-radius: 10px; padding: 14px 12px; text-align: center;
+    border: 1px solid var(--neutral-100);
+  }
+  .stat-icon { font-size: 22px; margin-bottom: 4px; }
+  .stat-label { font-size: 11px; color: var(--neutral-600); font-weight: 500; text-transform: uppercase; letter-spacing: .3px; }
+  .stat-value { font-size: 18px; font-weight: 800; color: var(--neutral-dark); margin: 2px 0; }
+
+  /* MAP */
+  .map-container {
+    height: 320px; border-radius: 12px; overflow: hidden;
+    border: 1px solid var(--neutral-200); position: relative;
+  }
+  #map-detail { height: 100%; }
+  .map-label-overlay {
+    position: absolute; bottom: 12px; left: 12px; z-index: 500;
+    background: white; border-radius: 8px; padding: 8px 14px;
+    box-shadow: var(--shadow-md); font-size: 12px; font-weight: 600; color: var(--neutral-dark);
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--neutral-200);
+  }
+  .map-zone-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--jcp-blue-50); color: var(--jcp-blue);
+    padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: 600;
+    border: 1px solid #BFDBFE;
+  }
+  .map-hint {
+    font-size: 11px; color: var(--neutral-600); text-align: center; margin-top: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+  }
+
+  /* DESCRIPTION */
+  .description { font-size: 15px; line-height: 1.7; color: var(--neutral-700); }
+
+  /* AMENIDADES */
+  .amenidades-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .amenidad-pill {
+    padding: 6px 14px; background: var(--jcp-blue-50); color: var(--jcp-blue);
+    border-radius: 99px; font-size: 13px; font-weight: 600; border: 1px solid #BFDBFE;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* SIDEBAR */
+  .sidebar-card {
+    background: white; border-radius: var(--radius); box-shadow: var(--shadow-md);
+    border: 1px solid var(--neutral-200); padding: 24px; margin-bottom: 16px;
+    position: sticky; top: 80px;
+  }
+  .sidebar-title { font-size: 16px; font-weight: 800; color: var(--neutral-dark); margin-bottom: 16px; }
+  .sidebar-cta {
+    display: block; width: 100%; padding: 14px; border-radius: 12px; border: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; text-align: center;
+    text-decoration: none;
+  }
+  .sidebar-cta-wa { background: #25D366; color: white; }
+  .sidebar-cta-tel { background: var(--jcp-blue); color: white; }
+  .sidebar-cta-form {
+    background: var(--neutral-50); color: var(--neutral-dark);
+    border: 1.5px solid var(--neutral-200);
+  }
+  .sidebar-corredor {
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--neutral-200);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .corredor-avatar {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--jcp-blue);
+    display: flex; align-items: center; justify-content: center; font-size: 20px; color: white; flex-shrink: 0;
+  }
+  .corredor-name { font-size: 14px; font-weight: 700; color: var(--neutral-dark); }
+  .corredor-role { font-size: 12px; color: var(--neutral-600); }
+
+  /* PRICE DETAIL in sidebar */
+  .price-detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--neutral-100);
+    font-size: 14px;
+  }
+  .price-detail-row:last-child { border: none; }
+  .price-detail-label { color: var(--neutral-600); }
+  .price-detail-value { font-weight: 700; color: var(--neutral-dark); }
+  .price-detail-value.highlight { color: var(--jcp-blue); font-size: 20px; }
+
+  /* MOCKUP NOTE */
+  .mockup-note {
+    background: #1E293B; color: #94A3B8; padding: 8px 16px; font-size: 11px;
+    position: fixed; bottom: 0; left: 0; right: 0; text-align: center; z-index: 1000;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+  <a class="logo" href="#">
+    <div class="logo-icon">🏠</div>
+    <div>
+      <div class="logo-text">JCP</div>
+      <div class="logo-sub">Gestión Inmobiliaria</div>
+    </div>
+  </a>
+  <a class="back-link" href="#">← Volver al listado</a>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="#">Inicio</a> › <a href="#">Propiedades</a> › <a href="#">Venta</a> › Casa mediterránea — La Dehesa
+</div>
+
+<!-- HERO GALLERY -->
+<div class="hero-gallery">
+  <div class="hero-gallery-placeholder">🏡</div>
+  <div class="hero-badge">Venta</div>
+  <div class="hero-badge-dest">⭐ Destacada</div>
+  <div class="hero-gallery-count">📷 12 fotos</div>
+</div>
+
+<!-- PRICE BAR -->
+<div class="price-bar">
+  <div>
+    <div class="price-main">UF 18.500</div>
+    <div class="price-sub">$ 720.000.000 aprox · Casa · Lo Barnechea</div>
+  </div>
+  <div class="price-bar-cta">
+    <button class="cta-btn cta-wa">📲 WhatsApp</button>
+    <button class="cta-btn cta-tel">📞 Llamar</button>
+  </div>
+</div>
+
+<!-- CONTENT GRID -->
+<div class="content-grid">
+
+  <!-- MAIN COL -->
+  <div class="main-col">
+
+    <!-- TÍTULO + DATOS BÁSICOS -->
+    <div class="section-card">
+      <h1 style="font-size:24px;font-weight:900;color:var(--neutral-dark);margin-bottom:6px;line-height:1.2;">
+        Casa mediterránea con jardín y piscina
+      </h1>
+      <p style="font-size:15px;color:var(--neutral-600);margin-bottom:16px;display:flex;align-items:center;gap:6px;">
+        📍 Av. La Dehesa 1234, Lo Barnechea, Región Metropolitana
+      </p>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-icon">🛏</div><div class="stat-label">Dormitorios</div><div class="stat-value">4</div></div>
+        <div class="stat-item"><div class="stat-icon">🚿</div><div class="stat-label">Baños</div><div class="stat-value">3</div></div>
+        <div class="stat-item"><div class="stat-icon">🚗</div><div class="stat-label">Estacionam.</div><div class="stat-value">2</div></div>
+        <div class="stat-item"><div class="stat-icon">📐</div><div class="stat-label">Sup. Útil</div><div class="stat-value">220 m²</div></div>
+        <div class="stat-item"><div class="stat-icon">🏠</div><div class="stat-label">Sup. Total</div><div class="stat-value">450 m²</div></div>
+        <div class="stat-item"><div class="stat-icon">🏗</div><div class="stat-label">Año</div><div class="stat-value">2016</div></div>
+      </div>
+    </div>
+
+    <!-- DESCRIPCIÓN -->
+    <div class="section-card">
+      <div class="section-title"><div class="icon">📋</div>Descripción</div>
+      <p class="description">
+        Amplia casa de 3 pisos ubicada en el exclusivo sector de La Dehesa, con jardín, piscina temperada y vista a la cordillera. La propiedad cuenta con terminaciones de lujo, cocina completamente equipada y amplios espacios de estar ideales para familias. Sector residencial tranquilo con alta plusvalía y seguridad 24 horas.
+      </p>
+    </div>
+
+    <!-- UBICACIÓN + MAPA -->
+    <div class="section-card">
+      <div class="section-title"><div class="icon">🗺</div>Ubicación</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <span class="map-zone-badge">📍 Lo Barnechea</span>
+        <span class="map-zone-badge">🌆 Región Metropolitana</span>
+        <span style="font-size:12px;color:var(--neutral-600);">Ubicación aproximada</span>
+      </div>
+      <div class="map-container">
+        <div id="map-detail"></div>
+        <div class="map-label-overlay">
+          📍 Lo Barnechea, Santiago
+        </div>
+      </div>
+      <div class="map-hint">
+        🔒 La dirección exacta se entrega al contactar al corredor
+      </div>
+    </div>
+
+    <!-- AMENIDADES -->
+    <div class="section-card">
+      <div class="section-title"><div class="icon">✨</div>Amenidades</div>
+      <div class="amenidades-grid">
+        <span class="amenidad-pill">🏊 Piscina</span>
+        <span class="amenidad-pill">🌿 Jardín</span>
+        <span class="amenidad-pill">🔥 Quincho</span>
+        <span class="amenidad-pill">📦 Bodega</span>
+        <span class="amenidad-pill">🛡 Seguridad 24h</span>
+        <span class="amenidad-pill">🚗 Garage doble</span>
+        <span class="amenidad-pill">⛰ Vista cordillera</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-col">
+    <div class="sidebar-card">
+
+      <!-- Price detail -->
+      <div class="sidebar-title">Precio y condiciones</div>
+      <div class="price-detail-row">
+        <span class="price-detail-label">Precio en UF</span>
+        <span class="price-detail-value highlight">UF 18.500</span>
+      </div>
+      <div class="price-detail-row">
+        <span class="price-detail-label">Precio en pesos</span>
+        <span class="price-detail-value">$ 720.000.000</span>
+      </div>
+      <div class="price-detail-row">
+        <span class="price-detail-label">Tipo</span>
+        <span class="price-detail-value">Casa • Venta</span>
+      </div>
+      <div class="price-detail-row">
+        <span class="price-detail-label">Estado</span>
+        <span class="price-detail-value">Usada • Excelente</span>
+      </div>
+
+      <!-- CTAs -->
+      <div style="margin-top:20px;">
+        <a href="#" class="sidebar-cta sidebar-cta-wa">📲 Consultar por WhatsApp</a>
+        <a href="#" class="sidebar-cta sidebar-cta-tel">📞 Llamar al corredor</a>
+        <a href="#" class="sidebar-cta sidebar-cta-form">✉️ Enviar consulta</a>
+      </div>
+
+      <!-- Corredor -->
+      <div class="sidebar-corredor">
+        <div class="corredor-avatar">👤</div>
+        <div>
+          <div class="corredor-name">Carlos Rodríguez</div>
+          <div class="corredor-role">Corredor JCP · Lo Barnechea</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick map in sidebar (mobile only visible via grid reorder) -->
+    <div class="sidebar-card" style="padding:16px;">
+      <div style="font-size:14px;font-weight:700;color:var(--neutral-dark);margin-bottom:10px;">Zona de la propiedad</div>
+      <div style="height:200px;border-radius:10px;overflow:hidden;border:1px solid var(--neutral-200);">
+        <div id="map-sidebar" style="height:100%;"></div>
+      </div>
+      <div class="map-hint" style="margin-top:8px;">Ubicación aproximada</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOCKUP NOTE -->
+<div class="mockup-note">
+  🎨 Mockup Visual — JCP Gestión Inmobiliaria · Página de detalle con mapa Leaflet.js interactivo
+</div>
+
+<script>
+window.addEventListener('load', function() {
+  const lat = -33.364, lng = -70.541;
+
+  function bluePin() {
+    return L.divIcon({
+      className: '',
+      html: `<div style="
+        width:40px;height:40px;border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);background:#1D4ED8;
+        border:3px solid white;box-shadow:0 4px 14px rgba(29,78,216,.4);
+      "><div style="transform:rotate(45deg);width:12px;height:12px;background:white;border-radius:50%;margin:auto;margin-top:10px;"></div></div>`,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -44],
+    });
+  }
+
+  // Detail map
+  const mapD = L.map('map-detail', { zoomControl: true, scrollWheelZoom: false }).setView([lat, lng], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap', maxZoom: 19
+  }).addTo(mapD);
+  L.marker([lat, lng], { icon: bluePin() })
+    .addTo(mapD)
+    .bindPopup('<b>Casa mediterránea — La Dehesa</b><br>Lo Barnechea', { maxWidth: 200 })
+    .openPopup();
+
+  // Sidebar map
+  const mapS = L.map('map-sidebar', { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false }).setView([lat, lng], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapS);
+  L.circle([lat, lng], { color: '#1D4ED8', fillColor: '#3B82F6', fillOpacity: 0.2, radius: 800 }).addTo(mapS);
+  L.marker([lat, lng], { icon: bluePin() }).addTo(mapS);
+});
+</script>
+</body>
+</html>

@@ -1,12 +1,14 @@
 package fragments
 
 import (
+	"bytes"
+	"context"
 	"fmt"
-	"html/template"
 	"net/url"
 	"strings"
 
 	"jcp-gestioninmobiliaria/internal/config"
+	proptempl "jcp-gestioninmobiliaria/internal/templates/fragments"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pocketbase/pocketbase"
@@ -41,6 +43,7 @@ type propiedad struct {
 	Lat, Lng       float64
 	FechaPublicado string
 	Whatsapp       string
+	PriceLabel     string
 }
 
 // formatCLP renders a price in CLP with thousands separators (Chilean: 1.234.567).
@@ -100,7 +103,7 @@ func fetchPropiedades(pb *pocketbase.PocketBase, filter, sort string, limit, off
 		if dt := r.GetDateTime("publicado_en"); !dt.IsZero() {
 			date = dt.Time().Format("2 Jan 2006")
 		}
-		out = append(out, propiedad{
+		item := propiedad{
 			ID:             r.Id,
 			Titulo:         r.GetString("titulo"),
 			Slug:           r.GetString("slug"),
@@ -129,7 +132,9 @@ func fetchPropiedades(pb *pocketbase.PocketBase, filter, sort string, limit, off
 			Lng:            r.GetFloat("lng"),
 			FechaPublicado: date,
 			Whatsapp:       r.GetString("contacto_whatsapp"),
-		})
+		}
+		item.PriceLabel = priceLabel(item)
+		out = append(out, item)
 	}
 	return out
 }
@@ -168,7 +173,7 @@ func PropiedadesDestacadas(cfg *config.Config, pb *pocketbase.PocketBase) fiber.
 		sb.WriteString(`<div class="prop-grid">`)
 
 		for i, p := range items {
-			sb.WriteString(renderPropCard(p, i))
+			sb.WriteString(renderCard(p, i))
 		}
 
 		sb.WriteString(`</div></div></section>`)
@@ -252,7 +257,7 @@ func PropiedadesPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
          </div>`, msg))
 		} else {
 			for i, p := range items {
-				sb.WriteString(renderPropCard(p, i))
+				sb.WriteString(renderCard(p, i))
 			}
 		}
 
@@ -320,105 +325,35 @@ func escapeFilter(s string) string {
 	return strings.ReplaceAll(strings.ReplaceAll(s, "'", ""), "\\", "")
 }
 
-// renderPropCard emits a single realtor-style card.
-func renderPropCard(p propiedad, i int) string {
-	imgHTML := ""
-	if p.CoverImage != "" {
-		imgHTML = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy"/>`,
-			template.HTMLEscapeString(p.CoverImage),
-			template.HTMLEscapeString(p.Titulo))
-	} else {
-		imgHTML = `<div class="prop-img-placeholder">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M3 12L12 3l9 9v9a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1v-9z"/>
-      </svg>
-    </div>`
+func toPropItem(p propiedad) proptempl.PropItem {
+	return proptempl.PropItem{
+		ID:          p.ID,
+		Titulo:      p.Titulo,
+		Slug:        p.Slug,
+		Operacion:   p.Operacion,
+		Tipo:        p.Tipo,
+		Comuna:      p.Comuna,
+		Region:      p.Region,
+		PrecioUF:    p.PrecioUF,
+		PrecioCLP:   p.PrecioCLP,
+		Dormitorios: p.Dormitorios,
+		Banos:       p.Banos,
+		Estac:       p.Estac,
+		SupUtil:     p.SupUtil,
+		SupTotal:    p.SupTotal,
+		Destacada:   p.Destacada,
+		Oportunidad: p.Oportunidad,
+		CoverImage:  p.CoverImage,
+		Lat:         p.Lat,
+		Lng:         p.Lng,
+		PriceLabel:  p.PriceLabel,
 	}
-
-	badges := ""
-	if p.Destacada {
-		badges += `<span class="prop-badge prop-badge-featured">Destacada</span>`
-	}
-	if p.Oportunidad {
-		badges += `<span class="prop-badge prop-badge-deal">Oportunidad</span>`
-	}
-	opBadge := ""
-	switch p.Operacion {
-	case "VENTA":
-		opBadge = `<span class="prop-badge prop-badge-venta">En Venta</span>`
-	case "ARRIENDO":
-		opBadge = `<span class="prop-badge prop-badge-arriendo">En Arriendo</span>`
-	}
-
-	// Feature icons: dormitorios, banos, superficie
-	feats := `<div class="prop-feats">`
-	if p.Dormitorios > 0 {
-		feats += fmt.Sprintf(`<span class="prop-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4v16M22 4v16M2 12h20M5 8h4M15 8h4"/></svg>%d dorm</span>`, p.Dormitorios)
-	}
-	if p.Banos > 0 {
-		feats += fmt.Sprintf(`<span class="prop-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12V5a2 2 0 0 1 2-2h2v3M4 12h16v4a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM8 20l-1 2M16 20l1 2"/></svg>%d baño%s</span>`,
-			p.Banos, plural(p.Banos))
-	}
-	if p.SupUtil > 0 {
-		feats += fmt.Sprintf(`<span class="prop-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>%g m² útiles</span>`, p.SupUtil)
-	} else if p.SupTotal > 0 {
-		feats += fmt.Sprintf(`<span class="prop-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>%g m² terreno</span>`, p.SupTotal)
-	}
-	if p.Estac > 0 {
-		feats += fmt.Sprintf(`<span class="prop-feat"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M10 8h3a2 2 0 0 1 0 4h-3v4"/></svg>%d estac.</span>`, p.Estac)
-	}
-	feats += `</div>`
-
-	location := template.HTMLEscapeString(strings.TrimSpace(strings.Trim(
-		fmt.Sprintf("%s · %s", p.Comuna, p.Region), " ·")))
-	if p.Comuna == "" && p.Region == "" {
-		location = template.HTMLEscapeString(p.Direccion)
-	}
-
-	delay := ""
-	if i > 0 {
-		delay = fmt.Sprintf(" reveal-delay-%d", i%4)
-	}
-
-	return fmt.Sprintf(`
-<article class="prop-card reveal visible%s" data-id="%s">
-  <a href="/propiedades/%s" class="prop-card-link" aria-label="Ver %s">
-    <div class="prop-media">
-      %s
-      <div class="prop-badges">%s%s</div>
-      <button class="prop-fav" type="button" aria-label="Guardar propiedad" onclick="event.preventDefault();event.stopPropagation();this.classList.toggle('is-active')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      </button>
-    </div>
-    <div class="prop-body">
-      <div class="prop-price">%s</div>
-      %s
-      <h3 class="prop-title">%s</h3>
-      <p class="prop-loc"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>%s</p>
-    </div>
-  </a>
-</article>`,
-		delay,
-		template.HTMLEscapeString(p.ID),
-		template.HTMLEscapeString(func() string {
-			if p.Slug != "" {
-				return p.Slug
-			}
-			return p.ID
-		}()),
-		template.HTMLEscapeString(p.Titulo),
-		imgHTML,
-		badges, opBadge,
-		priceLabel(p),
-		feats,
-		template.HTMLEscapeString(p.Titulo),
-		location,
-	)
 }
 
-func plural(n int) string {
-	if n == 1 {
+func renderCard(p propiedad, i int) string {
+	var buf bytes.Buffer
+	if err := proptempl.PropCard(toPropItem(p), i).Render(context.Background(), &buf); err != nil {
 		return ""
 	}
-	return "s"
+	return buf.String()
 }

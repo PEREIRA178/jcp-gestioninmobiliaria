@@ -1,22 +1,25 @@
 package config
 
 import (
+	"fmt"
+	"log"
 	"os"
+	"strings"
 	"time"
 )
 
 // Config holds all application configuration
 type Config struct {
 	// Server
-	Port               string
-	Env                string
-	CORSOrigins        string
+	Port                string
+	Env                 string
+	CORSOrigins         string
 	StaticCacheDuration time.Duration
 
 	// PocketBase
-	PBUrl    string
-	PBAdmin  string
-	PBPass   string
+	PBUrl   string
+	PBAdmin string
+	PBPass  string
 
 	// Admin credentials
 	AdminEmail    string
@@ -27,12 +30,12 @@ type Config struct {
 	JWTExpiration time.Duration
 
 	// Cloudflare R2
-	R2AccountID   string
-	R2AccessKey   string
-	R2SecretKey   string
-	R2BucketName  string
-	R2Region      string
-	R2PublicURL   string
+	R2AccountID  string
+	R2AccessKey  string
+	R2SecretKey  string
+	R2BucketName string
+	R2Region     string
+	R2PublicURL  string
 
 	// WhatsApp (Twilio)
 	TwilioAccountSID string
@@ -44,16 +47,16 @@ type Config struct {
 	OllamaModel string
 
 	// Web
-	BaseURL     string
-	SiteName    string
+	BaseURL  string
+	SiteName string
 }
 
 func Load() *Config {
-	return &Config{
+	cfg := &Config{
 		// Server
-		Port:               getEnv("PORT", "3000"),
-		Env:                getEnv("ENV", "development"),
-		CORSOrigins:        getEnv("CORS_ORIGINS", "*"),
+		Port:                getEnv("PORT", "3000"),
+		Env:                 getEnv("ENV", "development"),
+		CORSOrigins:         getEnv("CORS_ORIGINS", "*"),
 		StaticCacheDuration: 24 * time.Hour,
 
 		// PocketBase
@@ -61,12 +64,12 @@ func Load() *Config {
 		PBAdmin: getEnv("PB_ADMIN_EMAIL", "admin@jcp.cl"),
 		PBPass:  getEnv("PB_ADMIN_PASSWORD", ""),
 
-		// Admin credentials
+		// Admin credentials — no hardcoded defaults for secrets
 		AdminEmail:    getEnv("ADMIN_EMAIL", "admin@jcp-gestioninmobiliaria.cl"),
-		AdminPassword: getEnv("ADMIN_PASSWORD", "jcp2026admin!"),
+		AdminPassword: getEnv("ADMIN_PASSWORD", ""),
 
-		// JWT
-		JWTSecret:     getEnv("JWT_SECRET", "jcp-secret-change-me-in-production"),
+		// JWT — no hardcoded default
+		JWTSecret:     getEnv("JWT_SECRET", ""),
 		JWTExpiration: 72 * time.Hour,
 
 		// Cloudflare R2
@@ -89,6 +92,48 @@ func Load() *Config {
 		// Web
 		BaseURL:  getEnv("BASE_URL", "http://localhost:3000"),
 		SiteName: "JCP Gestión Inmobiliaria",
+	}
+
+	// In development only, provide safe placeholder defaults so the app
+	// starts without any env file. These values must never reach production.
+	if !cfg.IsProd() {
+		if cfg.AdminPassword == "" {
+			cfg.AdminPassword = "dev-only-change-me"
+		}
+		if cfg.JWTSecret == "" {
+			cfg.JWTSecret = "dev-jwt-secret-change-me"
+		}
+	}
+
+	return cfg
+}
+
+// IsProd returns true when running in the production environment.
+func (c *Config) IsProd() bool {
+	return c.Env == "production"
+}
+
+// ValidateRequired aborts startup if critical secrets are missing in production.
+func ValidateRequired(cfg *Config) {
+	if !cfg.IsProd() {
+		return
+	}
+	var missing []string
+	if cfg.JWTSecret == "" {
+		missing = append(missing, "JWT_SECRET")
+	}
+	if cfg.AdminPassword == "" {
+		missing = append(missing, "ADMIN_PASSWORD")
+	}
+	if len(missing) > 0 {
+		log.Fatalf("FATAL: variables requeridas en producción no configuradas: %s\n"+
+			"Configuralas con: fly secrets set %s=<valor>",
+			strings.Join(missing, ", "),
+			strings.Join(missing, "=<valor> "),
+		)
+	}
+	if cfg.CORSOrigins == "*" {
+		fmt.Println("ADVERTENCIA: CORS_ORIGINS es '*' en producción. Considerá restringirlo.")
 	}
 }
 

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JCP — Listado de Propiedades (Mockup)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --jcp-blue: #1D4ED8;
+    --jcp-blue-light: #3B82F6;
+    --jcp-blue-dark: #1E3A8A;
+    --jcp-blue-50: #EFF6FF;
+    --neutral-dark: #111827;
+    --neutral-900: #1F2937;
+    --neutral-600: #4B5563;
+    --neutral-400: #9CA3AF;
+    --neutral-200: #E5E7EB;
+    --neutral-100: #F3F4F6;
+    --neutral-50: #F9FAFB;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.10), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 2px 8px rgba(0,0,0,.07);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--neutral-50); color: var(--neutral-dark); }
+
+  /* ── TABS ── */
+  .tabs-bar {
+    display: flex; gap: 8px; padding: 16px 16px 0;
+    border-bottom: 1px solid var(--neutral-200);
+    background: white; position: sticky; top: 0; z-index: 10;
+    box-shadow: var(--shadow-sm);
+  }
+  .tab-btn {
+    padding: 10px 20px; border-radius: 99px; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; transition: all .2s;
+  }
+  .tab-btn.active { background: var(--jcp-blue); color: white; }
+  .tab-btn:not(.active) { background: var(--neutral-100); color: var(--neutral-600); }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--neutral-200);
+    padding: 16px;
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--jcp-blue);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .logo-text { font-size: 18px; font-weight: 800; color: var(--jcp-blue); letter-spacing: -.5px; }
+  .logo-sub { font-size: 11px; color: var(--neutral-600); font-weight: 400; margin-top: -2px; }
+
+  /* ── FILTERS BAR ── */
+  .filters-bar {
+    background: white;
+    border-bottom: 1px solid var(--neutral-200);
+    padding: 12px 16px;
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  .filter-pill {
+    padding: 7px 14px; border: 1.5px solid var(--neutral-200); border-radius: 99px;
+    font-size: 13px; font-weight: 500; background: white; cursor: pointer;
+    color: var(--neutral-600); display: flex; align-items: center; gap: 5px;
+  }
+  .filter-pill.active { border-color: var(--jcp-blue); background: var(--jcp-blue-50); color: var(--jcp-blue); }
+  .filter-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .search-pill {
+    flex: 1; min-width: 200px; padding: 8px 14px;
+    border: 1.5px solid var(--neutral-200); border-radius: 99px;
+    font-size: 13px; outline: none; color: var(--neutral-dark);
+  }
+  .search-pill:focus { border-color: var(--jcp-blue); }
+
+  /* ── SECTION TOGGLE ── */
+  .section-toggle {
+    display: flex; gap: 0; border: 1.5px solid var(--neutral-200); border-radius: 10px;
+    overflow: hidden; margin-left: auto;
+  }
+  .toggle-btn {
+    padding: 7px 14px; border: none; cursor: pointer; font-size: 12px; font-weight: 600;
+    transition: all .15s; background: white; color: var(--neutral-600);
+  }
+  .toggle-btn.active { background: var(--jcp-blue); color: white; }
+
+  /* ── LAYOUT ── */
+  .view-content { display: none; }
+  .view-content.active { display: flex; }
+
+  /* DESKTOP */
+  .desktop-layout {
+    flex-direction: row; height: calc(100vh - 145px);
+  }
+  .desktop-cards {
+    width: 55%; overflow-y: auto; padding: 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-content: start;
+  }
+  .desktop-map-panel {
+    width: 45%; position: sticky; top: 0;
+    border-left: 1px solid var(--neutral-200);
+  }
+
+  /* MOBILE */
+  .mobile-layout {
+    flex-direction: column;
+  }
+  .mobile-map-strip {
+    height: 240px; position: relative;
+    border-bottom: 1px solid var(--neutral-200);
+  }
+  .mobile-cards { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── PROPERTY CARD ── */
+  .prop-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow-md); overflow: hidden;
+    transition: transform .2s, box-shadow .2s; cursor: pointer;
+  }
+  .prop-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .prop-card.highlighted { outline: 2.5px solid var(--jcp-blue); outline-offset: 2px; }
+
+  .card-img {
+    height: 160px; background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+    position: relative; display: flex; align-items: flex-end; padding: 12px;
+  }
+  .card-img-mobile { height: 120px; }
+  .card-badge {
+    position: absolute; top: 10px; left: 10px;
+    padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .badge-venta { background: var(--jcp-blue); color: white; }
+  .badge-arriendo { background: #7C3AED; color: white; }
+  .badge-destacada {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,.9); backdrop-filter: blur(8px);
+    padding: 4px 8px; border-radius: 99px; font-size: 10px; font-weight: 700;
+    color: #F59E0B; border: 1px solid rgba(255,255,255,.5);
+  }
+  .card-price-overlay {
+    background: rgba(15,23,42,.75); backdrop-filter: blur(12px);
+    border-radius: 10px; padding: 6px 12px;
+  }
+  .card-price-overlay .price-uf { color: white; font-size: 16px; font-weight: 800; }
+  .card-price-overlay .price-clp { color: rgba(255,255,255,.7); font-size: 11px; }
+
+  .card-body { padding: 14px; }
+  .card-type { font-size: 11px; font-weight: 700; color: var(--jcp-blue); text-transform: uppercase; letter-spacing: .5px; }
+  .card-title { font-size: 14px; font-weight: 700; color: var(--neutral-dark); margin: 3px 0 6px; line-height: 1.3; }
+  .card-location { font-size: 12px; color: var(--neutral-600); display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
+  .card-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat { font-size: 12px; color: var(--neutral-600); display: flex; align-items: center; gap: 3px; }
+  .stat strong { color: var(--neutral-dark); font-weight: 700; }
+
+  /* Mobile card horizontal */
+  .prop-card-horiz {
+    background: var(--white); border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md); overflow: hidden; display: flex;
+  }
+  .horiz-img {
+    width: 110px; flex-shrink: 0;
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: white; position: relative;
+  }
+  .horiz-badge {
+    position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+    padding: 3px 8px; border-radius: 99px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; white-space: nowrap;
+  }
+  .horiz-body { padding: 12px; flex: 1; }
+  .horiz-price { font-size: 16px; font-weight: 800; color: var(--jcp-blue); margin-bottom: 2px; }
+  .horiz-title { font-size: 13px; font-weight: 700; color: var(--neutral-dark); margin-bottom: 4px; line-height: 1.3; }
+  .horiz-loc { font-size: 11px; color: var(--neutral-600); margin-bottom: 6px; display: flex; align-items: center; gap: 3px; }
+  .horiz-stats { display: flex; gap: 8px; }
+  .horiz-stat { font-size: 11px; color: var(--neutral-600); }
+
+  /* ── MAP ── */
+  #map-desktop, #map-mobile { width: 100%; height: 100%; }
+
+  /* Leaflet popup JCP style */
+  .leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.15) !important;
+  }
+  .map-popup { padding: 4px; min-width: 180px; }
+  .map-popup-type { font-size: 10px; font-weight: 700; color: var(--jcp-blue); text-transform: uppercase; }
+  .map-popup-title { font-size: 13px; font-weight: 700; color: var(--neutral-dark); margin: 2px 0; }
+  .map-popup-price { font-size: 14px; font-weight: 800; color: var(--jcp-blue); }
+  .map-popup-loc { font-size: 11px; color: var(--neutral-600); }
+  .map-popup-link {
+    display: block; margin-top: 8px; padding: 6px 12px;
+    background: var(--jcp-blue); color: white; border-radius: 8px;
+    text-align: center; text-decoration: none; font-size: 12px; font-weight: 600;
+  }
+
+  /* ── LABEL OVERLAY ── */
+  .mockup-label {
+    background: #1E293B; color: white; padding: 6px 14px; font-size: 12px; font-weight: 600;
+    letter-spacing: .3px; border-radius: 0 0 8px 0; position: absolute; top: 0; left: 0; z-index: 1000;
+  }
+
+  /* Pin count badge */
+  .pin-count {
+    position: absolute; bottom: 12px; right: 12px; z-index: 500;
+    background: white; border-radius: 99px; padding: 6px 14px;
+    box-shadow: var(--shadow-md); font-size: 12px; font-weight: 600; color: var(--neutral-dark);
+  }
+
+  /* ── EMPTY STATE ── */
+  .tabs-info {
+    padding: 16px; background: var(--jcp-blue-50);
+    border-bottom: 1px solid #BFDBFE;
+    font-size: 13px; color: var(--jcp-blue); font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header" style="padding: 10px 20px;">
+  <a class="logo" href="#">
+    <div class="logo-icon">🏠</div>
+    <div>
+      <div class="logo-text">JCP</div>
+      <div class="logo-sub">Gestión Inmobiliaria</div>
+    </div>
+  </a>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <button style="background:var(--jcp-blue);color:white;border:none;border-radius:99px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;">WhatsApp</button>
+  </div>
+</header>
+
+<!-- FILTERS -->
+<div class="filters-bar">
+  <input class="search-pill" placeholder="🔍  Buscar por ciudad, comuna...">
+  <button class="filter-pill active"><span class="dot"></span>Todos</button>
+  <button class="filter-pill">Venta</button>
+  <button class="filter-pill">Arriendo</button>
+  <button class="filter-pill">🏠 Casa</button>
+  <button class="filter-pill">🏢 Depto</button>
+  <div class="section-toggle" style="margin-left:auto;">
+    <button class="toggle-btn active" onclick="switchView('desktop')">🖥 Desktop</button>
+    <button class="toggle-btn" onclick="switchView('mobile')">📱 Mobile</button>
+  </div>
+</div>
+
+<!-- INFO BAR -->
+<div class="tabs-info">
+  ℹ️ &nbsp;Mockup interactivo — switcheá entre Desktop y Mobile arriba a la derecha. El mapa muestra ubicaciones reales con Leaflet.js.
+</div>
+
+<!-- ═══════════════════════════════════ DESKTOP VIEW ═══════════════════════════════════ -->
+<div id="view-desktop" class="view-content active desktop-layout" style="position:relative;">
+  <div class="mockup-label">Vista Desktop — Mapa lateral</div>
+
+  <!-- Cards column -->
+  <div class="desktop-cards">
+
+    <!-- Card 1 -->
+    <div class="prop-card highlighted" onmouseenter="highlightPin(0)" onmouseleave="unhighlightPin(0)">
+      <div class="card-img">
+        <span class="card-badge badge-venta">Venta</span>
+        <span class="card-badge badge-destacada">⭐ Destacada</span>
+        <div class="card-price-overlay">
+          <div class="price-uf">UF 18.500</div>
+          <div class="price-clp">$ 720.000.000</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">Casa</div>
+        <div class="card-title">Casa mediterránea con jardín — La Dehesa</div>
+        <div class="card-location">📍 Lo Barnechea, Metropolitana</div>
+        <div class="card-stats">
+          <span class="stat">🛏 <strong>4</strong> dorm</span>
+          <span class="stat">🚿 <strong>3</strong> baños</span>
+          <span class="stat">🚗 <strong>2</strong> est</span>
+          <span class="stat">📐 <strong>220</strong> m²</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="prop-card" onmouseenter="highlightPin(1)" onmouseleave="unhighlightPin(1)">
+      <div class="card-img" style="background:linear-gradient(135deg,#1E40AF,#6366F1)">
+        <span class="card-badge badge-venta">Venta</span>
+        <span class="card-badge badge-destacada">⭐ Destacada</span>
+        <div class="card-price-overlay">
+          <div class="price-uf">UF 6.400</div>
+          <div class="price-clp">$ 250.000.000</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">Departamento</div>
+        <div class="card-title">Departamento moderno vista al parque — Ñuñoa</div>
+        <div class="card-location">📍 Ñuñoa, Metropolitana</div>
+        <div class="card-stats">
+          <span class="stat">🛏 <strong>2</strong> dorm</span>
+          <span class="stat">🚿 <strong>2</strong> baños</span>
+          <span class="stat">🚗 <strong>1</strong> est</span>
+          <span class="stat">📐 <strong>72</strong> m²</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="prop-card" onmouseenter="highlightPin(2)" onmouseleave="unhighlightPin(2)">
+      <div class="card-img" style="background:linear-gradient(135deg,#065F46,#10B981)">
+        <span class="card-badge" style="background:#059669;color:white;">Venta</span>
+        <div class="card-price-overlay">
+          <div class="price-uf">UF 3.200</div>
+          <div class="price-clp">$ 124.000.000</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">Parcela</div>
+        <div class="card-title">Parcela 5.000 m² vista al valle — Olmué</div>
+        <div class="card-location">📍 Olmué, Valparaíso</div>
+        <div class="card-stats">
+          <span class="stat">📐 <strong>5.000</strong> m²</span>
+          <span class="stat">💧 Agua pozo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="prop-card" onmouseenter="highlightPin(3)" onmouseleave="unhighlightPin(3)">
+      <div class="card-img" style="background:linear-gradient(135deg,#4C1D95,#7C3AED)">
+        <span class="card-badge badge-arriendo">Arriendo</span>
+        <div class="card-price-overlay">
+          <div class="price-uf">UF 21/mes</div>
+          <div class="price-clp">$ 820.000</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">Departamento</div>
+        <div class="card-title">Departamento amoblado — Providencia</div>
+        <div class="card-location">📍 Providencia, Metropolitana</div>
+        <div class="card-stats">
+          <span class="stat">🛏 <strong>1</strong> dorm</span>
+          <span class="stat">🚿 <strong>1</strong> baño</span>
+          <span class="stat">📐 <strong>48</strong> m²</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="prop-card" onmouseenter="highlightPin(4)" onmouseleave="unhighlightPin(4)">
+      <div class="card-img" style="background:linear-gradient(135deg,#0C4A6E,#0EA5E9)">
+        <span class="card-badge badge-arriendo">Arriendo</span>
+        <span class="card-badge badge-destacada">⭐ Destacada</span>
+        <div class="card-price-overlay">
+          <div class="price-uf">UF 75/mes</div>
+          <div class="price-clp">$ 2.900.000</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">Oficina Class A</div>
+        <div class="card-title">Oficina Class A — Las Condes</div>
+        <div class="card-location">📍 Las Condes, Metropolitana</div>
+        <div class="card-stats">
+          <span class="stat">🚿 <strong>2</strong> baños</span>
+          <span class="stat">🚗 <strong>4</strong> est</span>
+          <span class="stat">📐 <strong>180</strong> m²</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="prop-card" onmouseenter="highlightPin(5)" onmouseleave="unhighlightPin(5)">
+      <div class="card-img" style="background:linear-gradient(135deg,#831843,#EC4899)">
+        <span class="card-badge badge-arriendo">Arriendo</span>
+        <div class="card-price-overlay">
+          <div class="price-uf">UF 38/mes</div>
+          <div class="price-clp">$ 1.480.000</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-type">Local Comercial</div>
+        <div class="card-title">Local comercial esquina — Centro Viña</div>
+        <div class="card-location">📍 Viña del Mar, Valparaíso</div>
+        <div class="card-stats">
+          <span class="stat">📐 <strong>120</strong> m²</span>
+          <span class="stat">🏪 Vitrina esquina</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Map panel -->
+  <div class="desktop-map-panel">
+    <div id="map-desktop" style="height:100%;"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ MOBILE VIEW ═══════════════════════════════════ -->
+<div id="view-mobile" class="view-content mobile-layout" style="position:relative; display:none;">
+  <div class="mockup-label">Vista Mobile — Mapa compacto arriba</div>
+
+  <!-- Compact map strip -->
+  <div class="mobile-map-strip">
+    <div id="map-mobile" style="height:100%;"></div>
+    <div class="pin-count">6 propiedades</div>
+  </div>
+
+  <!-- Horizontal scroll filter pills -->
+  <div style="padding:10px 16px 0; overflow-x:auto; white-space:nowrap; display:flex; gap:8px;">
+    <button class="filter-pill active" style="flex-shrink:0;"><span class="dot"></span>Todos</button>
+    <button class="filter-pill" style="flex-shrink:0;">Venta</button>
+    <button class="filter-pill" style="flex-shrink:0;">Arriendo</button>
+    <button class="filter-pill" style="flex-shrink:0;">🏠 Casa</button>
+    <button class="filter-pill" style="flex-shrink:0;">🏢 Depto</button>
+    <button class="filter-pill" style="flex-shrink:0;">🌿 Parcela</button>
+  </div>
+
+  <!-- Mobile cards (horizontal layout) -->
+  <div class="mobile-cards">
+
+    <div class="prop-card-horiz">
+      <div class="horiz-img">🏡<div class="horiz-badge badge-venta" style="background:var(--jcp-blue);color:white;">VENTA</div></div>
+      <div class="horiz-body">
+        <div class="horiz-price">UF 18.500</div>
+        <div class="horiz-title">Casa mediterránea — La Dehesa</div>
+        <div class="horiz-loc">📍 Lo Barnechea</div>
+        <div class="horiz-stats">
+          <span class="horiz-stat">🛏 4</span>
+          <span class="horiz-stat">🚿 3</span>
+          <span class="horiz-stat">📐 220m²</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prop-card-horiz">
+      <div class="horiz-img" style="background:linear-gradient(135deg,#1E40AF,#6366F1)">🏢<div class="horiz-badge badge-venta" style="background:var(--jcp-blue);color:white;">VENTA</div></div>
+      <div class="horiz-body">
+        <div class="horiz-price">UF 6.400</div>
+        <div class="horiz-title">Depto moderno — Ñuñoa</div>
+        <div class="horiz-loc">📍 Ñuñoa</div>
+        <div class="horiz-stats">
+          <span class="horiz-stat">🛏 2</span>
+          <span class="horiz-stat">🚿 2</span>
+          <span class="horiz-stat">📐 72m²</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prop-card-horiz">
+      <div class="horiz-img" style="background:linear-gradient(135deg,#4C1D95,#7C3AED)">🏠<div class="horiz-badge badge-arriendo" style="background:#7C3AED;color:white;">ARRIENDO</div></div>
+      <div class="horiz-body">
+        <div class="horiz-price">UF 21/mes</div>
+        <div class="horiz-title">Depto amoblado — Providencia</div>
+        <div class="horiz-loc">📍 Providencia</div>
+        <div class="horiz-stats">
+          <span class="horiz-stat">🛏 1</span>
+          <span class="horiz-stat">🚿 1</span>
+          <span class="horiz-stat">📐 48m²</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prop-card-horiz">
+      <div class="horiz-img" style="background:linear-gradient(135deg,#0C4A6E,#0EA5E9)">🏢<div class="horiz-badge badge-arriendo" style="background:#7C3AED;color:white;">ARRIENDO</div></div>
+      <div class="horiz-body">
+        <div class="horiz-price">UF 75/mes</div>
+        <div class="horiz-title">Oficina Class A — Las Condes</div>
+        <div class="horiz-loc">📍 Las Condes</div>
+        <div class="horiz-stats">
+          <span class="horiz-stat">🚗 4</span>
+          <span class="horiz-stat">📐 180m²</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prop-card-horiz">
+      <div class="horiz-img" style="background:linear-gradient(135deg,#065F46,#10B981)">🌿<div class="horiz-badge" style="background:#059669;color:white;">VENTA</div></div>
+      <div class="horiz-body">
+        <div class="horiz-price">UF 3.200</div>
+        <div class="horiz-title">Parcela 5.000m² — Olmué</div>
+        <div class="horiz-loc">📍 Olmué, Valparaíso</div>
+        <div class="horiz-stats">
+          <span class="horiz-stat">📐 5.000m²</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Property data with approx coords for Santiago ──
+const props = [
+  { lat: -33.364, lng: -70.541, title: "Casa mediterránea — La Dehesa", price: "UF 18.500", type: "Casa • Venta", commune: "Lo Barnechea", color: "#1D4ED8" },
+  { lat: -33.457, lng: -70.604, title: "Depto moderno — Ñuñoa", price: "UF 6.400", type: "Depto • Venta", commune: "Ñuñoa", color: "#4F46E5" },
+  { lat: -32.996, lng: -71.197, title: "Parcela — Olmué", price: "UF 3.200", type: "Parcela • Venta", commune: "Olmué, Valparaíso", color: "#059669" },
+  { lat: -33.432, lng: -70.621, title: "Depto amoblado — Providencia", price: "UF 21/mes", type: "Depto • Arriendo", commune: "Providencia", color: "#7C3AED" },
+  { lat: -33.414, lng: -70.579, title: "Oficina Class A — Las Condes", price: "UF 75/mes", type: "Oficina • Arriendo", commune: "Las Condes", color: "#0369A1" },
+  { lat: -33.024, lng: -71.551, title: "Local comercial — Viña Centro", price: "UF 38/mes", type: "Local • Arriendo", commune: "Viña del Mar", color: "#BE185D" },
+];
+
+function makeIcon(color, size = 32) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg);background:${color};
+      border:3px solid white;box-shadow:0 3px 10px rgba(0,0,0,.3);
+      display:flex;align-items:center;justify-content:center;
+    "><div style="transform:rotate(45deg);width:10px;height:10px;background:white;border-radius:50%;margin:auto;margin-top:8px;"></div></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size],
+    popupAnchor: [0, -size],
+  });
+}
+
+let markersDesktop = [];
+let markersMobile = [];
+
+function initMaps() {
+  // Desktop map
+  const mapD = L.map('map-desktop', { zoomControl: true }).setView([-33.43, -70.60], 10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OSM', maxZoom: 19
+  }).addTo(mapD);
+
+  props.forEach((p, i) => {
+    const m = L.marker([p.lat, p.lng], { icon: makeIcon(p.color) })
+      .addTo(mapD)
+      .bindPopup(`<div class="map-popup">
+        <div class="map-popup-type">${p.type}</div>
+        <div class="map-popup-title">${p.title}</div>
+        <div class="map-popup-price">${p.price}</div>
+        <div class="map-popup-loc">📍 ${p.commune}</div>
+        <a href="#" class="map-popup-link">Ver detalle →</a>
+      </div>`, { maxWidth: 220 });
+    markersDesktop.push(m);
+  });
+
+  // Mobile map
+  const mapM = L.map('map-mobile', { zoomControl: false, attributionControl: false }).setView([-33.43, -70.60], 9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(mapM);
+  props.forEach((p, i) => {
+    L.marker([p.lat, p.lng], { icon: makeIcon(p.color, 24) })
+      .addTo(mapM)
+      .bindPopup(`<div class="map-popup" style="min-width:150px;">
+        <div class="map-popup-type">${p.type}</div>
+        <div class="map-popup-title">${p.title}</div>
+        <div class="map-popup-price">${p.price}</div>
+      </div>`, { maxWidth: 180 });
+    markersMobile.push(m);
+  });
+}
+
+function highlightPin(idx) {
+  if (markersDesktop[idx]) {
+    markersDesktop[idx].openPopup();
+  }
+}
+function unhighlightPin(idx) {
+  if (markersDesktop[idx]) {
+    markersDesktop[idx].closePopup();
+  }
+}
+
+function switchView(v) {
+  document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (v === 'desktop') {
+    document.getElementById('view-desktop').style.display = 'flex';
+    document.getElementById('view-mobile').style.display = 'none';
+  } else {
+    document.getElementById('view-desktop').style.display = 'none';
+    document.getElementById('view-mobile').style.display = 'flex';
+    // Invalidate map size after display change
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  }
+}
+
+window.addEventListener('load', initMaps);
+</script>
+</body>
+</html>
