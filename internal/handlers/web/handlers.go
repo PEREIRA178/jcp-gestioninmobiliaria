@@ -44,10 +44,36 @@ func renderTempl(c *fiber.Ctx, component interface{ Render(context.Context, io.W
 	return component.Render(c.Context(), c.Response().BodyWriter())
 }
 
+// LandingHandler renders the marketing landing page.
+func LandingHandler(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return renderTempl(c, webtmpl.LandingPage())
+	}
+}
+
+// LoginPageHandler serves the Google OAuth login page.
+func LoginPageHandler(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		errMsg := ""
+		switch c.Query("error") {
+		case "state":
+			errMsg = "Error de seguridad. Intentá de nuevo."
+		case "exchange":
+			errMsg = "No se pudo completar el inicio de sesión. Intentá de nuevo."
+		}
+		return renderTempl(c, webtmpl.LoginPage(errMsg))
+	}
+}
+
 // PropiedadesHandler renders the Templ-based propiedades listing page.
 func PropiedadesHandler(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return renderTempl(c, webtmpl.PropiedadesPage())
+		name, _ := c.Locals("visitor_name").(string)
+		email, _ := c.Locals("visitor_email").(string)
+		if name == "" {
+			name = "Visitante"
+		}
+		return renderTempl(c, webtmpl.PropiedadesPage(name, email))
 	}
 }
 
@@ -171,6 +197,11 @@ func NoticiaHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 // Matches either slug or id.
 func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		visitorName, _ := c.Locals("visitor_name").(string)
+		visitorEmail, _ := c.Locals("visitor_email").(string)
+		if visitorName == "" {
+			visitorName = "Visitante"
+		}
 		key := c.Params("key")
 		var r *core.Record
 		// try by slug first
@@ -336,9 +367,12 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 			BodyHTML:      bodyHTML,
 			AmenitiesHTML: template.HTML(amenitiesHTML),
 			WhatsappHTML:  template.HTML(whatsappHTML),
+			WhatsappPhone: onlyDigits(whatsapp),
 			Lat:           r.GetFloat("lat"),
 			Lng:           r.GetFloat("lng"),
 			Comuna:        comuna,
+			UserName:      visitorName,
+			UserEmail:     visitorEmail,
 		}
 		return renderTempl(c, webtmpl.PropiedadDetail(data))
 	}
