@@ -3,6 +3,7 @@ module jcp-gestioninmobiliaria
 go 1.23.0
 
 require (
+	github.com/a-h/templ v0.3.1001
 	github.com/aws/aws-sdk-go-v2/config v1.29.3
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.56
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.75.1
@@ -10,10 +11,11 @@ require (
 	github.com/gofiber/websocket/v2 v2.2.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/pocketbase/pocketbase v0.25.0
+	golang.org/x/oauth2 v0.25.0
 )
 
 require (
-	github.com/a-h/templ v0.3.1001 // indirect
+	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.35.0 // indirect
@@ -66,7 +68,6 @@ require (
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/image v0.23.0 // indirect
 	golang.org/x/net v0.42.0 // indirect
-	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect
