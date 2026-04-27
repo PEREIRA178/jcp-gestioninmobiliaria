@@ -100,12 +100,12 @@ templ Base(title string, includeMaps bool) {
 					</div>
 				</a>
 				<nav class="nav-links">
-					<a href="/propiedades.html?operacion=VENTA">Comprar</a>
-					<a href="/propiedades.html?operacion=ARRIENDO">Arrendar</a>
-					<a href="/propiedades.html">Todas las propiedades</a>
+					<a href="/propiedades?operacion=VENTA">Comprar</a>
+					<a href="/propiedades?operacion=ARRIENDO">Arrendar</a>
+					<a href="/propiedades">Todas las propiedades</a>
 				</nav>
-				<a href="https://wa.me/56912345678" class="nav-cta" target="_blank" rel="noopener">
-					<span class="ms ms-sm">chat</span> WhatsApp
+				<a href="/propiedades" class="nav-cta">
+					<span class="ms ms-sm">search</span> Ver propiedades
 				</a>
 			</div>
 		</nav>
@@ -118,15 +118,15 @@ templ Base(title string, includeMaps bool) {
 				</div>
 				<div class="footer-col">
 					<h4>Operaciones</h4>
-					<a href="/propiedades.html?operacion=VENTA">Comprar</a>
-					<a href="/propiedades.html?operacion=ARRIENDO">Arrendar</a>
+					<a href="/propiedades?operacion=VENTA">Comprar</a>
+					<a href="/propiedades?operacion=ARRIENDO">Arrendar</a>
 				</div>
 				<div class="footer-col">
 					<h4>Tipos</h4>
-					<a href="/propiedades.html?tipo=CASA">Casas</a>
-					<a href="/propiedades.html?tipo=DEPARTAMENTO">Departamentos</a>
-					<a href="/propiedades.html?tipo=PARCELA">Parcelas</a>
-					<a href="/propiedades.html?tipo=OFICINA">Oficinas</a>
+					<a href="/propiedades?tipo=CASA">Casas</a>
+					<a href="/propiedades?tipo=DEPARTAMENTO">Departamentos</a>
+					<a href="/propiedades?tipo=PARCELA">Parcelas</a>
+					<a href="/propiedades?tipo=OFICINA">Oficinas</a>
 				</div>
 				<div class="footer-col">
 					<h4>Contacto</h4>
@@ -137,7 +137,7 @@ templ Base(title string, includeMaps bool) {
 			</div>
 			<div class="footer-bottom">
 				<span>© 2026 JCP Gestión Inmobiliaria · Todos los derechos reservados</span>
-				<span>Go · PocketBase · Fiber · HTMX</span>
+				<span>Desarrollado por <a href="https://diwe.cl" target="_blank" rel="noopener" style="color:rgba(255,255,255,.55);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">Digital Wellness</a></span>
 			</div>
 		</footer>
 		<script>
