@@ -300,6 +300,21 @@ func PropiedadesPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
 
 		if page == 1 {
 			sb.WriteString(`</div>`)
+			// OOB count update
+			countShown := len(items)
+			var countLabel string
+			if len(items) == 0 {
+				countLabel = "Sin resultados"
+			} else if hasMore {
+				countLabel = fmt.Sprintf("%d+ propiedades", countShown)
+			} else {
+				if countShown == 1 {
+					countLabel = "1 propiedad"
+				} else {
+					countLabel = fmt.Sprintf("%d propiedades", countShown)
+				}
+			}
+			sb.WriteString(fmt.Sprintf(`<span id="tb-count" hx-swap-oob="true">%s</span>`, countLabel))
 			if hasMore {
 				sb.WriteString(fmt.Sprintf(`<div id="prop-load-more" style="text-align:center;padding:32px 0 8px">
   <button class="prop-chip" style="padding:12px 28px;font-size:13px"

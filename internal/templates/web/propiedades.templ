@@ -52,7 +52,7 @@ templ PropiedadesPage(userName string, userEmail string) {
 			.prop-img-placeholder{display:flex;align-items:center;justify-content:center;
 			  height:100%;color:#94A3B8;font-size:40px}
 			.prop-badges{position:absolute;top:10px;left:10px;display:flex;gap:5px}
-			.prop-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;backdrop-filter:blur(8px)}
+			.prop-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;backdrop-filter:blur(8px);display:inline-flex;align-items:center;gap:4px}
 			.prop-badge-venta{background:rgba(29,78,216,.9);color:#fff}
 			.prop-badge-arriendo{background:rgba(124,58,237,.9);color:#fff}
 			.prop-badge-featured{background:rgba(217,119,6,.92);color:#fff}
@@ -74,9 +74,9 @@ templ PropiedadesPage(userName string, userEmail string) {
 			@media(max-width:900px){
 			  .topbar{padding:0 12px}
 			  .tb-chips{display:none}
-			  .content-split{flex-direction:column}
+			  .content-split{flex-direction:column;overflow-y:auto}
 			  .listings-panel{width:100%;overflow-y:visible}
-			  .map-panel{height:260px;border-left:none;border-top:1px solid #E2E8F0;flex:none}
+			  .map-panel{display:none}
 			}
 		</style>
 		<header class="topbar">
