@@ -72,7 +72,7 @@ func SecurityHeaders(cfg *config.Config) fiber.Handler {
 			"default-src 'self'; "+
 				"script-src 'self' unpkg.com cdn.jsdelivr.net 'unsafe-inline'; "+
 				"style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com; "+
-				"img-src 'self' data: blob: https://*.tile.openstreetmap.org; "+
+				"img-src 'self' data: blob: https:; "+
 				"connect-src 'self'; "+
 				"font-src 'self' data: fonts.googleapis.com fonts.gstatic.com;",
 		)
