@@ -23,22 +23,6 @@ type noticiaData struct {
 	BodyHTML template.HTML
 }
 
-type propiedadData struct {
-	Titulo        string
-	Direccion     string
-	PriceHTML     template.HTML
-	PriceSub      string
-	ChipsHTML     template.HTML
-	CoverHTML     template.HTML
-	ThumbsHTML    template.HTML
-	FeatsHTML     template.HTML
-	BodyHTML      template.HTML
-	AmenitiesHTML template.HTML
-	WhatsappHTML  template.HTML
-	Lat           float64
-	Lng           float64
-	Comuna        string
-}
 
 // IndexHandler serves the main index.html (with HTMX fragment placeholders)
 func IndexHandler(cfg *config.Config) fiber.Handler {
@@ -305,18 +289,16 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 			feats += featBox(fmt.Sprintf("%d", ano), "Año")
 		}
 
-		// Amenities section
+		// Amenities — just pill items; heading is rendered by Templ
 		amenitiesHTML := ""
 		if len(amenities) > 0 {
 			var ab strings.Builder
-			ab.WriteString(`<h2 style="font-family:var(--font-display);font-size:24px;margin:16px 0 8px">Comodidades</h2><div class="amenities">`)
 			for _, a := range amenities {
 				a = strings.ReplaceAll(a, "_", " ")
-				ab.WriteString(`<span class="amenity">`)
+				ab.WriteString(`<span class="prest-pill">`)
 				ab.WriteString(template.HTMLEscapeString(a))
 				ab.WriteString(`</span>`)
 			}
-			ab.WriteString(`</div>`)
 			amenitiesHTML = ab.String()
 		}
 
@@ -337,16 +319,12 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 		whatsappHTML := ""
 		if whatsapp != "" {
 			msg := "Hola! Me interesa la propiedad: " + titulo
-			whatsappHTML = fmt.Sprintf(`<a href="https://wa.me/%s?text=%s" target="_blank" rel="noopener" class="btn-whatsapp">💬 WhatsApp directo</a>`,
+			whatsappHTML = fmt.Sprintf(
+				`<a href="https://wa.me/%s?text=%s" target="_blank" rel="noopener" class="pb-btn pb-wa sb-cta sb-wa"><span class="ms ms-sm">chat</span> WhatsApp</a>`,
 				onlyDigits(whatsapp), urlEscape(msg))
 		}
 
-		tmpl, err2 := template.ParseFiles("./internal/templates/web/propiedad.html")
-		if err2 != nil {
-			return c.Status(500).SendString("Template error")
-		}
-		c.Set("Content-Type", "text/html; charset=utf-8")
-		return tmpl.ExecuteTemplate(c, "propiedad.html", propiedadData{
+		data := webtmpl.PropiedadData{
 			Titulo:        titulo,
 			Direccion:     locLine,
 			PriceHTML:     template.HTML(priceMain),
@@ -358,7 +336,11 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 			BodyHTML:      bodyHTML,
 			AmenitiesHTML: template.HTML(amenitiesHTML),
 			WhatsappHTML:  template.HTML(whatsappHTML),
-		})
+			Lat:           r.GetFloat("lat"),
+			Lng:           r.GetFloat("lng"),
+			Comuna:        comuna,
+		}
+		return renderTempl(c, webtmpl.PropiedadDetail(data))
 	}
 }
 
@@ -379,9 +361,25 @@ func splitAndTrim(s string) []string {
 	return out
 }
 
+var featIcons = map[string]string{
+	"Dormitorios":      "bed",
+	"Baños":            "shower",
+	"Estacionamientos": "directions_car",
+	"Sup. útil":        "square_foot",
+	"Sup. total":       "square_foot",
+	"Año":              "calendar_today",
+}
+
 func featBox(value, label string) string {
-	return fmt.Sprintf(`<div class="feat-box"><strong>%s</strong><span>%s</span></div>`,
-		template.HTMLEscapeString(value), template.HTMLEscapeString(label))
+	icon := featIcons[label]
+	iconHTML := ""
+	if icon != "" {
+		iconHTML = fmt.Sprintf(`<div class="feat-icon"><span class="ms ms-sm">%s</span></div>`, icon)
+	}
+	return fmt.Sprintf(`<div class="feat-box">%s<div class="feat-val">%s</div><div class="feat-label">%s</div></div>`,
+		iconHTML,
+		template.HTMLEscapeString(value),
+		template.HTMLEscapeString(label))
 }
 
 func formatCLPString(v float64) string {
