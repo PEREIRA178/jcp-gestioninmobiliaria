@@ -1,0 +1,117 @@
+package fragments
+
+import "fmt"
+
+type PropItem struct {
+	ID          string
+	Titulo      string
+	Slug        string
+	Operacion   string
+	Tipo        string
+	Comuna      string
+	Region      string
+	PrecioUF    float64
+	PrecioCLP   float64
+	Dormitorios int
+	Banos       int
+	Estac       int
+	SupUtil     float64
+	SupTotal    float64
+	Destacada   bool
+	Oportunidad bool
+	CoverImage  string
+	Lat         float64
+	Lng         float64
+	PriceLabel  string
+}
+
+func fmtCoord(f float64) string {
+	if f == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%.6f", f)
+}
+
+func propSlug(p PropItem) string {
+	if p.Slug != "" {
+		return p.Slug
+	}
+	return p.ID
+}
+
+func banosLabel(n int) string {
+	if n == 1 {
+		return "1 baño"
+	}
+	return fmt.Sprintf("%d baños", n)
+}
+
+templ PropCard(p PropItem, i int) {
+	<article
+		class={ "prop-card", templ.KV("reveal-delay-1", i%4==1), templ.KV("reveal-delay-2", i%4==2), templ.KV("reveal-delay-3", i%4==3) }
+		data-id={ p.ID }
+		data-lat={ fmtCoord(p.Lat) }
+		data-lng={ fmtCoord(p.Lng) }
+		data-title={ p.Titulo }
+		data-price={ p.PriceLabel }
+		data-tipo={ p.Tipo + " · " + p.Operacion }
+		data-slug={ propSlug(p) }
+		data-commune={ p.Comuna }
+	>
+		<a href={ templ.SafeURL("/propiedades/" + propSlug(p)) } class="prop-card-link" aria-label={ "Ver " + p.Titulo }>
+			<div class="prop-media">
+				if p.CoverImage != "" {
+					<img src={ p.CoverImage } alt={ p.Titulo } loading="lazy"/>
+				} else {
+					<div class="prop-img-placeholder">
+						<span class="ms ms-xl ms-outline" style="color:var(--outline);">home</span>
+					</div>
+				}
+				<div class="prop-badges">
+					if p.Destacada {
+						<span class="prop-badge prop-badge-featured"><span class="ms ms-sm">star</span> Destacada</span>
+					}
+					if p.Oportunidad {
+						<span class="prop-badge prop-badge-deal">Oportunidad</span>
+					}
+					if p.Operacion == "VENTA" {
+						<span class="prop-badge prop-badge-venta">En Venta</span>
+					} else if p.Operacion == "ARRIENDO" {
+						<span class="prop-badge prop-badge-arriendo">En Arriendo</span>
+					}
+				</div>
+				<button class="prop-fav" type="button" aria-label="Guardar propiedad" onclick="event.preventDefault();event.stopPropagation();this.classList.toggle('is-active')">
+					<span class="ms ms-sm ms-outline">favorite</span>
+				</button>
+			</div>
+			<div class="prop-body">
+				<div class="prop-price">@templ.Raw(p.PriceLabel)</div>
+				<div class="prop-feats">
+					if p.Dormitorios > 0 {
+						<span class="prop-feat"><span class="ms ms-sm">bed</span> { fmt.Sprintf("%d dorm", p.Dormitorios) }</span>
+					}
+					if p.Banos > 0 {
+						<span class="prop-feat"><span class="ms ms-sm">shower</span> { banosLabel(p.Banos) }</span>
+					}
+					if p.SupUtil > 0 {
+						<span class="prop-feat"><span class="ms ms-sm">square_foot</span> { fmt.Sprintf("%g m²", p.SupUtil) }</span>
+					} else if p.SupTotal > 0 {
+						<span class="prop-feat"><span class="ms ms-sm">square_foot</span> { fmt.Sprintf("%g m²", p.SupTotal) }</span>
+					}
+					if p.Estac > 0 {
+						<span class="prop-feat"><span class="ms ms-sm">directions_car</span> { fmt.Sprintf("%d", p.Estac) }</span>
+					}
+				</div>
+				<h3 class="prop-title">{ p.Titulo }</h3>
+				<p class="prop-loc">
+					<span class="ms ms-sm">location_on</span>
+					if p.Region != "" && p.Comuna != "" {
+						{ p.Comuna + " · " + p.Region }
+					} else {
+						{ p.Comuna }
+					}
+				</p>
+			</div>
+		</a>
+	</article>
+}
