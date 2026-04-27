@@ -1256,7 +1256,7 @@ func PropiedadesList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
 
 func PropiedadForm(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		html := propiedadFormHTML("", "", "", "VENTA", "CASA", "", "", "", "", "", 0, 0, 0, 0, 0, 0, "usada", "publicado", false, false, "", "", "")
+		html := propiedadFormHTML("", "", "", "VENTA", "CASA", "", "", "", "", "", 0, 0, 0, 0, 0, 0, "usada", "publicado", false, false, "", "", "", 0, 0)
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(html)
 	}
@@ -1322,6 +1322,8 @@ func PropiedadEdit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler 
 			r.GetString("amenidades"),
 			r.GetString("contacto_whatsapp"),
 			r.GetString("gallery"),
+			r.GetFloat("lat"),
+			r.GetFloat("lng"),
 		)
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(html)
@@ -1439,12 +1441,30 @@ func setPropiedadFields(r *core.Record, c *fiber.Ctx) {
 		fmt.Sscanf(v, "%f", &f)
 		r.Set("superficie_total", f)
 	}
+	if v := c.FormValue("lat"); v != "" {
+		var f float64
+		fmt.Sscanf(v, "%f", &f)
+		r.Set("lat", f)
+	}
+	if v := c.FormValue("lng"); v != "" {
+		var f float64
+		fmt.Sscanf(v, "%f", &f)
+		r.Set("lng", f)
+	}
 }
 
 // propiedadFormHTML builds the create/edit modal for propiedades.
+func fmtFloatOrEmpty(f float64) string {
+	if f == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%.6f", f)
+}
+
 func propiedadFormHTML(id, titulo, slug, operacion, tipo, descripcion, direccion, comuna, region, coverImage string,
 	precioUF, precioCLP, dormitorios, banos, estacionamientos, superficieUtil float64,
 	estadoPropiedad, status string, destacada, oportunidad bool, amenidades, whatsapp, gallery string,
+	lat, lng float64,
 ) string {
 	method := `hx-post="/admin/propiedades"`
 	if id != "" {
@@ -1562,6 +1582,10 @@ func propiedadFormHTML(id, titulo, slug, operacion, tipo, descripcion, direccion
           <input type="checkbox" name="oportunidad"%s style="width:16px;height:16px;accent-color:var(--md-primary)"/> Oportunidad
         </label>
       </div>
+      <div class="form-row">
+        <div class="form-field"><label>Latitud (zona, no dirección exacta)</label><input type="number" name="lat" step="0.000001" value="%s" class="form-input" placeholder="-33.4513"/></div>
+        <div class="form-field"><label>Longitud (zona, no dirección exacta)</label><input type="number" name="lng" step="0.000001" value="%s" class="form-input" placeholder="-70.6653"/></div>
+      </div>
       <div class="modal-actions">
         <button type="button" onclick="document.getElementById('modal-container').innerHTML=''" class="topbar-btn topbar-btn-outline">Cancelar</button>
         <button type="submit" class="topbar-btn topbar-btn-primary">Guardar</button>
@@ -1585,6 +1609,7 @@ func propiedadFormHTML(id, titulo, slug, operacion, tipo, descripcion, direccion
 		template.HTMLEscapeString(descripcion),
 		estOpts.String(), statusOpts.String(),
 		chk(destacada), chk(oportunidad),
+		fmtFloatOrEmpty(lat), fmtFloatOrEmpty(lng),
 	)
 }
 
