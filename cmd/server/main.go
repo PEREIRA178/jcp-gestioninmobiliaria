@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"jcp-gestioninmobiliaria/internal/auth"
 	"jcp-gestioninmobiliaria/internal/config"
@@ -24,6 +28,7 @@ import (
 
 func main() {
 	cfg := config.Load()
+	config.ValidateRequired(cfg)
 
 	pb := pocketbase.New()
 	auth.RegisterPBHooks(pb)
@@ -50,15 +55,35 @@ func main() {
 		BodyLimit: 50 * 1024 * 1024,
 	})
 
-	app.Use(logger.New(logger.Config{
-		Format:     "[${time}] ${status} ${method} ${path} (${latency})\n",
-		TimeFormat: "15:04:05",
-	}))
+	// ── GLOBAL MIDDLEWARE ──
 	app.Use(recover.New())
+	app.Use(middleware.SecurityHeaders(cfg))
+	app.Use(middleware.GlobalRateLimiter())
+
+	if cfg.IsProd() {
+		app.Use(logger.New(logger.Config{
+			Format:     `{"time":"${time}","status":${status},"method":"${method}","path":"${path}","latency":"${latency}","ip":"${ip}"}` + "\n",
+			TimeFormat: time.RFC3339,
+		}))
+	} else {
+		app.Use(logger.New(logger.Config{
+			Format:     "[${time}] ${status} ${method} ${path} (${latency})\n",
+			TimeFormat: "15:04:05",
+		}))
+	}
+
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: cfg.CORSOrigins,
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, HX-Request, HX-Trigger",
 	}))
+
+	// ── HEALTH CHECK (público, sin auth) ──
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"status": "ok",
+			"env":    cfg.Env,
+		})
+	})
 
 	app.Static("/static", "./web/static", fiber.Static{
 		Compress:      true,
@@ -75,14 +100,13 @@ func main() {
 	app.Get("/noticias.html", web.PageHandler(cfg, "noticias"))
 
 	// ── HTMX FRAGMENTS ──
-	frag := app.Group("/fragments")
+	frag := app.Group("/fragments", middleware.FragmentsRateLimiter())
 	frag.Get("/hero", fragments.HeroCarousel(cfg, pb))
 	frag.Get("/eventos", fragments.Eventos(cfg, pb))
 	frag.Get("/noticias", fragments.Noticias(cfg, pb))
 	frag.Get("/comunicados", fragments.Comunicados(cfg, pb))
 	frag.Get("/blog", fragments.Blog(cfg, pb))
 	frag.Get("/noticias-page", fragments.NoticiasPage(cfg, pb))
-	// Real-estate fragments (JCP Gestión Inmobiliaria)
 	frag.Get("/propiedades-destacadas", fragments.PropiedadesDestacadas(cfg, pb))
 	frag.Get("/propiedades-page", fragments.PropiedadesPage(cfg, pb))
 
@@ -109,7 +133,7 @@ func main() {
 
 	// ── ADMIN ──
 	app.Get("/admin/login", admin.LoginPage(cfg))
-	app.Post("/admin/login", admin.LoginSubmit(cfg))
+	app.Post("/admin/login", middleware.LoginRateLimiter(), admin.LoginSubmit(cfg))
 	app.Post("/admin/logout", admin.Logout())
 
 	adm := app.Group("/admin", middleware.AuthRequired(cfg))
@@ -126,7 +150,7 @@ func main() {
 	adm.Put("/multimedia/:id", admin.MultimediaUpdate(cfg, pb))
 	adm.Delete("/multimedia/:id", admin.MultimediaDelete(cfg, pb))
 
-	// Events (content_blocks excl. NOTICIA)
+	// Events
 	adm.Get("/events", admin.EventsList(cfg, pb))
 	adm.Get("/events/new", admin.EventForm(cfg))
 	adm.Post("/events", admin.EventCreate(cfg, pb))
@@ -135,7 +159,7 @@ func main() {
 	adm.Delete("/events/:id", admin.EventDelete(cfg, pb))
 	adm.Post("/events/:id/publish", admin.EventPublish(cfg, pb))
 
-	// News (content_blocks category=NOTICIA)
+	// News
 	adm.Get("/news", admin.NewsList(cfg, pb))
 	adm.Get("/news/new", admin.NewsForm(cfg))
 	adm.Post("/news", admin.NewsCreate(cfg, pb))
@@ -181,16 +205,25 @@ func main() {
 	app.Post("/webhook/whatsapp", web.WhatsAppWebhook(cfg))
 
 	port := cfg.Port
-	if port == "" {
-		port = "3000"
-	}
-	if envPort := os.Getenv("PORT"); envPort != "" {
-		port = envPort
-	}
 
 	log.Printf("🏢 JCP Gestión Inmobiliaria en http://localhost:%s", port)
 	log.Printf("📊 Dashboard: http://localhost:%s/admin", port)
 	log.Printf("🔧 PocketBase Admin: http://localhost:8090/_/")
 
-	log.Fatal(app.Listen(":" + port))
+	// ── GRACEFUL SHUTDOWN ──
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	go func() {
+		if err := app.Listen(":" + port); err != nil {
+			log.Printf("Servidor detenido: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("Apagando servidor...")
+	if err := app.ShutdownWithTimeout(10 * time.Second); err != nil {
+		log.Printf("Error en shutdown: %v", err)
+	}
+	log.Println("Servidor detenido correctamente.")
 }
