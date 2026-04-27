@@ -105,10 +105,10 @@ templ PropiedadDetail(d PropiedadData) {
 			.sidebar-map-box{height:180px;border-radius:10px;overflow:hidden;border:1px solid #E2E8F0}
 			.pb-loc{font-size:13px;opacity:.65;display:flex;align-items:center;gap:6px}
 			/* Schedule section */
-			.schedule-section{background:#fff;border-radius:16px;border:1px solid #E2E8F0;padding:28px;margin-top:24px}
+			.schedule-section{padding-top:20px;margin-top:10px;border-top:1px solid #F1F5F9}
 			.schedule-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:4px}
 			.schedule-sub{font-size:13px;color:#64748B;margin-bottom:22px}
-			.sched-layout{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
+			.sched-layout{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
 			.sched-cal-col{}
 			.sched-right{display:flex;flex-direction:column;gap:14px}
 			.sched-slots-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#64748B;margin-bottom:8px}
@@ -157,14 +157,10 @@ templ PropiedadDetail(d PropiedadData) {
 						<div class="price-main">@templ.Raw(string(d.PriceHTML))</div>
 						if d.PriceSub != "" {
 							<div class="price-sub">
-								<span class="ms ms-sm" style="opacity:.7">location_on</span>
+								<span class="ms ms-sm" style="opacity:.7">info</span>
 								{ d.PriceSub }
 							</div>
 						}
-					</div>
-					<div class="pb-loc">
-						<span class="ms ms-sm" style="opacity:.65">location_on</span>
-						{ d.Direccion }
 					</div>
 				</div>
 				<div class="detail-grid">
@@ -184,44 +180,6 @@ templ PropiedadDetail(d PropiedadData) {
 								Descripción
 							</h2>
 							<div class="desc">@templ.Raw(string(d.BodyHTML))</div>
-						</div>
-						<div class="schedule-section" data-prop-title={ d.Titulo }>
-							<h3 class="schedule-title">Agendar una visita</h3>
-							<p class="schedule-sub">Elegí fecha, horario y te confirmamos por WhatsApp.</p>
-							<form id="schedule-form" data-wa-phone={ d.WhatsappPhone }>
-								<div class="sched-layout">
-									<div class="sched-cal-col">
-										<input id="sched-date-fp" type="hidden" name="fecha"/>
-										<div id="sched-cal"></div>
-									</div>
-									<div class="sched-right">
-										<div>
-											<div class="sched-slots-label">Horario disponible</div>
-											<div class="sched-slots">
-												<button type="button" class="sched-slot active" data-time="09:00">09:00</button>
-												<button type="button" class="sched-slot" data-time="10:00">10:00</button>
-												<button type="button" class="sched-slot" data-time="11:00">11:00</button>
-												<button type="button" class="sched-slot" data-time="12:00">12:00</button>
-												<button type="button" class="sched-slot" data-time="14:00">14:00</button>
-												<button type="button" class="sched-slot" data-time="15:00">15:00</button>
-												<button type="button" class="sched-slot" data-time="16:00">16:00</button>
-												<button type="button" class="sched-slot" data-time="17:00">17:00</button>
-											</div>
-										</div>
-										<div class="sched-field">
-											<label>Tu nombre</label>
-											<input class="sched-input" type="text" name="nombre" placeholder="Juan Carlos" required/>
-										</div>
-										<div class="sched-field">
-											<label>Tu teléfono</label>
-											<input class="sched-input" type="tel" name="telefono" placeholder="+56 9 1234 5678"/>
-										</div>
-										<button type="submit" class="sched-btn">
-											<span class="ms ms-sm ms-fill">calendar_month</span> Confirmar visita por WhatsApp
-										</button>
-									</div>
-								</div>
-							</form>
 						</div>
 						if d.Lat != 0 && d.Lng != 0 {
 							<div class="section-block" style="margin-top:24px">
@@ -256,10 +214,7 @@ templ PropiedadDetail(d PropiedadData) {
 						}
 						if d.AmenitiesHTML != "" {
 							<div class="section-block">
-								<h2>
-									<div class="section-icon"><span class="ms ms-sm">auto_awesome</span></div>
-									Prestaciones
-								</h2>
+								<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin-bottom:10px">Prestaciones</div>
 								<div class="prestaciones">@templ.Raw(string(d.AmenitiesHTML))</div>
 							</div>
 						}
@@ -287,22 +242,46 @@ templ PropiedadDetail(d PropiedadData) {
 							<button class="sb-cta sb-tel"><span class="ms ms-sm">phone</span> Llamar al corredor</button>
 							<button class="sb-cta sb-form"><span class="ms ms-sm">mail</span> Enviar consulta</button>
 						</div>
-						if d.Lat != 0 && d.Lng != 0 {
-							<div style="margin-top:20px;padding-top:20px;border-top:1px solid #F1F5F9">
-								<div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:8px;display:flex;align-items:center;gap:5px">
-									<span class="ms ms-sm" style="color:#1D4ED8">map</span> Zona de la propiedad
-								</div>
-								<div
-									class="sidebar-map-box"
-									data-map="detail-mini"
-									data-lat={ fmt.Sprintf("%.6f", d.Lat) }
-									data-lng={ fmt.Sprintf("%.6f", d.Lng) }
-								></div>
-								<p class="map-hint" style="justify-content:center;margin-top:6px">
-									<span class="ms ms-sm">info</span> Ubicación aproximada
-								</p>
+						<div class="schedule-section" data-prop-title={ d.Titulo }>
+							<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;display:flex;align-items:center;gap:6px">
+								<span class="ms ms-sm" style="color:#1D4ED8">calendar_month</span> Agendar visita
 							</div>
-						}
+							<p class="schedule-sub">Elegí fecha y horario, te confirmamos por WhatsApp.</p>
+							<form id="schedule-form" data-wa-phone={ d.WhatsappPhone }>
+								<div class="sched-layout">
+									<div class="sched-cal-col">
+										<input id="sched-date-fp" type="hidden" name="fecha"/>
+										<div id="sched-cal"></div>
+									</div>
+									<div class="sched-right">
+										<div>
+											<div class="sched-slots-label">Horario</div>
+											<div class="sched-slots">
+												<button type="button" class="sched-slot active" data-time="09:00">09:00</button>
+												<button type="button" class="sched-slot" data-time="10:00">10:00</button>
+												<button type="button" class="sched-slot" data-time="11:00">11:00</button>
+												<button type="button" class="sched-slot" data-time="12:00">12:00</button>
+												<button type="button" class="sched-slot" data-time="14:00">14:00</button>
+												<button type="button" class="sched-slot" data-time="15:00">15:00</button>
+												<button type="button" class="sched-slot" data-time="16:00">16:00</button>
+												<button type="button" class="sched-slot" data-time="17:00">17:00</button>
+											</div>
+										</div>
+										<div class="sched-field">
+											<label>Tu nombre</label>
+											<input class="sched-input" type="text" name="nombre" placeholder="Juan Carlos" required/>
+										</div>
+										<div class="sched-field">
+											<label>Tu teléfono</label>
+											<input class="sched-input" type="tel" name="telefono" placeholder="+56 9 1234 5678"/>
+										</div>
+										<button type="submit" class="sched-btn">
+											<span class="ms ms-sm ms-fill">calendar_month</span> Confirmar por WhatsApp
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
 					</aside>
 				</div>
 			</div>

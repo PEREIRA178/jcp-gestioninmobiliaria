@@ -108,19 +108,7 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 					<span class="ms">search</span>
 					Explorar
 				</a>
-				<a href="#" class="sb-item">
-					<span class="ms">favorite</span>
-					Guardadas
-				</a>
-				<a href="#" class="sb-item">
-					<span class="ms">notifications</span>
-					Alertas de precio
-				</a>
 				<div class="sb-label">Cuenta</div>
-				<a href="#" class="sb-item">
-					<span class="ms">person</span>
-					Mi perfil
-				</a>
 				<a href="https://wa.me/56912345678" class="sb-item" target="_blank" rel="noopener">
 					<span class="ms">chat</span>
 					Contactar a JCP
@@ -141,12 +129,17 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			{ children... }
 		</div>
 		<script>
-			document.querySelectorAll('.sb-item').forEach(function(item){
-			  if(item.href && item.href !== '#' && window.location.pathname.startsWith(new URL(item.href, location.origin).pathname)){
-			    document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
-			    item.classList.add('active');
-			  }
-			});
+			(function(){
+			  var path=window.location.pathname;
+			  document.querySelectorAll('.sb-item').forEach(function(item){
+			    var href=item.getAttribute('href');
+			    if(!href||href==='#'||href.indexOf('wa.me')!==-1)return;
+			    if(path===href||path.startsWith(href+'/')){
+			      document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
+			      item.classList.add('active');
+			    }
+			  });
+			}());
 		</script>
 	</body>
 	</html>
