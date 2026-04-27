@@ -71,7 +71,7 @@ func SecurityHeaders(cfg *config.Config) fiber.Handler {
 		c.Set("Content-Security-Policy",
 			"default-src 'self'; "+
 				"script-src 'self' unpkg.com cdn.jsdelivr.net 'unsafe-inline'; "+
-				"style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com; "+
+				"style-src 'self' 'unsafe-inline' fonts.googleapis.com unpkg.com cdn.jsdelivr.net; "+
 				"img-src 'self' data: blob: https:; "+
 				"connect-src 'self' accounts.google.com; "+
 				"font-src 'self' data: fonts.googleapis.com fonts.gstatic.com;",

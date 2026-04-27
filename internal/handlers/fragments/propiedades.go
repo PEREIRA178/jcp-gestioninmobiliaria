@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"jcp-gestioninmobiliaria/internal/config"
+	"jcp-gestioninmobiliaria/internal/services"
 	proptempl "jcp-gestioninmobiliaria/internal/templates/fragments"
 
 	"github.com/gofiber/fiber/v2"
@@ -77,6 +78,12 @@ func formatUF(v float64) string {
 func priceLabel(p propiedad) string {
 	uf := formatUF(p.PrecioUF)
 	clp := formatCLP(p.PrecioCLP)
+	// Calculate CLP from current UF value when only UF price is set
+	if p.PrecioUF > 0 && p.PrecioCLP <= 0 {
+		if ufVal := services.GetUF(); ufVal > 0 {
+			clp = "≈ " + formatCLP(p.PrecioUF*ufVal)
+		}
+	}
 	switch {
 	case uf != "" && clp != "":
 		return uf + `<span class="prop-price-clp"> · ` + clp + `</span>`

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"jcp-gestioninmobiliaria/internal/config"
+	"jcp-gestioninmobiliaria/internal/services"
 	webtmpl "jcp-gestioninmobiliaria/internal/templates/web"
 
 	"github.com/gofiber/fiber/v2"
@@ -294,7 +295,12 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 		}
 		priceSub := ""
 		if precioUF > 0 && precioCLP > 0 {
-			priceSub = "Referencia: " + formatCLPString(precioCLP)
+			priceSub = "≈ " + formatCLPString(precioCLP)
+		} else if precioUF > 0 {
+			// Calculate from live UF value
+			if ufVal := services.GetUF(); ufVal > 0 {
+				priceSub = "≈ " + formatCLPString(precioUF*ufVal) + " (UF hoy)"
+			}
 		} else if operacion == "ARRIENDO" && precioCLP > 0 {
 			priceSub = "Mensual"
 		}
