@@ -29,6 +29,11 @@ type Config struct {
 	JWTSecret     string
 	JWTExpiration time.Duration
 
+	// Google OAuth2
+	GoogleClientID     string
+	GoogleClientSecret string
+	GoogleRedirectURL  string
+
 	// Cloudflare R2
 	R2AccountID  string
 	R2AccessKey  string
@@ -71,6 +76,11 @@ func Load() *Config {
 		// JWT — no hardcoded default
 		JWTSecret:     getEnv("JWT_SECRET", ""),
 		JWTExpiration: 72 * time.Hour,
+
+		// Google OAuth2
+		GoogleClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
+		GoogleClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
+		GoogleRedirectURL:  getEnv("GOOGLE_REDIRECT_URL", "http://localhost:3000/auth/google/callback"),
 
 		// Cloudflare R2
 		R2AccountID:  getEnv("R2_ACCOUNT_ID", ""),

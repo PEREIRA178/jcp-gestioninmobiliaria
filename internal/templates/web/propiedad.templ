@@ -18,99 +18,117 @@ type PropiedadData struct {
 	BodyHTML      template.HTML
 	AmenitiesHTML template.HTML
 	WhatsappHTML  template.HTML
+	WhatsappPhone string
 	Lat           float64
 	Lng           float64
 	Comuna        string
+	UserName      string
+	UserEmail     string
 }
 
 templ PropiedadDetail(d PropiedadData) {
-	@layouts.Base(d.Titulo + " — JCP Gestión Inmobiliaria", true) {
+	@layouts.AppShell(d.Titulo+" — JCP Gestión Inmobiliaria", true, layouts.AppUser{Name: d.UserName, Email: d.UserEmail}) {
 		<style>
-			.detail-wrap{max-width:1200px;margin:28px auto 96px;padding:0 24px}
+			.detail-scroll{flex:1;overflow-y:auto}
+			.detail-wrap{max-width:1100px;margin:28px auto 96px;padding:0 24px}
 			.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;
-			  color:var(--on-surface-var);text-decoration:none;margin-bottom:16px;
-			  padding:7px 14px;border-radius:var(--r-full);border:1px solid var(--outline-var);transition:all 200ms}
-			.detail-back:hover{color:var(--jcp-primary);border-color:var(--jcp-primary)}
+			  color:#64748B;text-decoration:none;margin-bottom:18px;
+			  padding:7px 14px;border-radius:9999px;border:1px solid #E2E8F0;transition:all .2s}
+			.detail-back:hover{color:#1D4ED8;border-color:#1D4ED8}
 			.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;
-			  gap:8px;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:16/9;margin-bottom:32px;
-			  background:var(--surface-container-low)}
-			.g-main{grid-column:1;grid-row:1/span 2;background:var(--jcp-primary-100);
+			  gap:8px;border-radius:16px;overflow:hidden;aspect-ratio:16/9;margin-bottom:28px;
+			  background:#F1F5F9}
+			.g-main{grid-column:1;grid-row:1/span 2;background:#DBEAFE;
 			  display:flex;align-items:center;justify-content:center;overflow:hidden}
 			.g-main img,.g-cell img{width:100%;height:100%;object-fit:cover}
-			.g-cell{background:var(--surface-container-high);overflow:hidden}
-			.gallery-placeholder{font-family:var(--font-display);font-size:80px;color:rgba(29,78,216,.15)}
-			.price-bar{background:var(--jcp-primary-dark);color:white;padding:16px 24px;
-			  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:0}
-			.price-main{font-family:var(--font-display);font-size:32px;line-height:1.1}
-			.price-sub{font-size:13px;opacity:.75;margin-top:3px;display:flex;align-items:center;gap:6px}
+			.g-cell{background:#E2E8F0;overflow:hidden}
+			.gallery-placeholder{font-family:'Cormorant Garamond',Georgia,serif;font-size:80px;color:rgba(29,78,216,.15)}
+			.price-bar{background:#1E3A8A;color:white;padding:18px 24px;border-radius:14px;
+			  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px}
+			.price-main{font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.1;font-weight:700}
+			.price-sub{font-size:13px;opacity:.72;margin-top:3px;display:flex;align-items:center;gap:6px}
 			.pb-ctas{display:flex;gap:10px}
-			.pb-btn{padding:10px 20px;border-radius:var(--r-md);border:none;font-size:13px;font-weight:700;
+			.pb-btn{padding:10px 20px;border-radius:10px;border:none;font-size:13px;font-weight:700;
 			  cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;text-decoration:none}
 			.pb-wa{background:#25D366;color:white}
-			.pb-tel{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.25)}
-			.detail-grid{display:grid;grid-template-columns:1fr 380px;gap:48px;margin-top:32px}
-			.detail-header h1{font-family:var(--font-display);font-size:clamp(26px,4vw,38px);line-height:1.15;margin-bottom:8px}
-			.detail-loc{font-size:14px;color:var(--on-surface-var);margin-bottom:12px;display:flex;align-items:center;gap:6px}
-			.op-chips{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-			.op-chip{font-size:12px;font-weight:600;padding:5px 14px;border-radius:var(--r-full);letter-spacing:.02em}
-			.op-venta{background:var(--jcp-primary-100);color:var(--jcp-primary-dark)}
+			.pb-tel{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.22)}
+			.detail-grid{display:grid;grid-template-columns:1fr 360px;gap:40px}
+			.detail-header h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(24px,4vw,36px);line-height:1.15;margin-bottom:8px;font-weight:700}
+			.detail-loc{font-size:14px;color:#64748B;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+			.op-chips{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+			.op-chip{font-size:12px;font-weight:600;padding:5px 14px;border-radius:9999px;letter-spacing:.02em}
+			.op-venta{background:#DBEAFE;color:#1E3A8A}
 			.op-arriendo{background:#EDE9FE;color:#5B21B6}
 			.op-dest{background:#FEF3C7;color:#92400E}
 			.op-deal{background:#D1FAE5;color:#065F46}
-			.feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin:24px 0 28px}
-			.feat-box{padding:16px;border:1px solid var(--outline-var);border-radius:var(--r-md);background:var(--surface-bright);text-align:center}
-			.feat-icon{color:var(--jcp-primary);margin-bottom:6px;display:flex;justify-content:center}
-			.feat-val{font-family:var(--font-display);font-size:22px;color:var(--on-surface)}
-			.feat-label{font-size:11px;color:var(--outline);text-transform:uppercase;letter-spacing:.06em}
-			.section-block{margin-bottom:32px}
-			.section-block h2{font-family:var(--font-display);font-size:22px;margin-bottom:12px;
+			.feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin:22px 0 26px}
+			.feat-box{padding:16px;border:1px solid #E2E8F0;border-radius:12px;background:#fff;text-align:center}
+			.feat-icon{color:#1D4ED8;margin-bottom:6px;display:flex;justify-content:center}
+			.feat-val{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;color:#111827;font-weight:700}
+			.feat-label{font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em}
+			.section-block{margin-bottom:30px}
+			.section-block h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:12px;
 			  display:flex;align-items:center;gap:10px}
-			.section-icon{width:32px;height:32px;background:var(--jcp-primary-50);border-radius:8px;
-			  display:flex;align-items:center;justify-content:center;color:var(--jcp-primary);flex-shrink:0}
-			.desc{font-size:15px;line-height:1.85;color:var(--on-surface-var)}
+			.section-icon{width:30px;height:30px;background:#EFF6FF;border-radius:8px;
+			  display:flex;align-items:center;justify-content:center;color:#1D4ED8;flex-shrink:0}
+			.desc{font-size:15px;line-height:1.85;color:#4B5563}
 			.prestaciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
-			.prest-pill{font-size:12.5px;padding:7px 14px;background:var(--jcp-primary-50);
-			  border:1px solid var(--jcp-primary-100);border-radius:var(--r-full);
-			  color:var(--jcp-primary);display:flex;align-items:center;gap:6px}
-			.map-box{height:300px;border-radius:var(--r-md);overflow:hidden;
-			  border:1px solid var(--outline-var);position:relative;margin-bottom:8px}
+			.prest-pill{font-size:12.5px;padding:7px 14px;background:#EFF6FF;
+			  border:1px solid #DBEAFE;border-radius:9999px;color:#1D4ED8;display:flex;align-items:center;gap:6px}
+			.map-box{height:280px;border-radius:12px;overflow:hidden;
+			  border:1px solid #E2E8F0;position:relative;margin-bottom:8px}
 			.map-overlay-badge{position:absolute;bottom:10px;left:10px;z-index:500;
 			  background:white;border-radius:8px;padding:7px 12px;
-			  box-shadow:var(--elev-3);font-size:12px;font-weight:600;color:var(--on-surface);
-			  border:1px solid var(--outline-var);display:flex;align-items:center;gap:5px}
-			.map-hint{font-size:11px;color:var(--outline);display:flex;align-items:center;gap:4px;margin-top:6px}
+			  box-shadow:0 4px 12px rgba(0,0,0,.12);font-size:12px;font-weight:600;color:#111827;
+			  border:1px solid #E2E8F0;display:flex;align-items:center;gap:5px}
+			.map-hint{font-size:11px;color:#94A3B8;display:flex;align-items:center;gap:4px;margin-top:6px}
 			.zone-pill{display:inline-flex;align-items:center;gap:5px;
-			  background:var(--jcp-primary-50);color:var(--jcp-primary);
-			  padding:5px 12px;border-radius:var(--r-full);font-size:12px;font-weight:600;
-			  border:1px solid var(--jcp-primary-100);margin:0 6px 8px 0}
-			.contact-card{position:sticky;top:88px;background:var(--surface-bright);
-			  border:1px solid var(--outline-var);border-radius:var(--r-lg);padding:24px;
-			  box-shadow:var(--elev-2);height:fit-content}
+			  background:#EFF6FF;color:#1D4ED8;
+			  padding:5px 12px;border-radius:9999px;font-size:12px;font-weight:600;
+			  border:1px solid #DBEAFE;margin:0 6px 8px 0}
+			/* Contact sidebar */
+			.contact-card{position:sticky;top:24px;background:#fff;
+			  border:1px solid #E2E8F0;border-radius:16px;padding:24px;
+			  box-shadow:0 4px 20px rgba(15,23,42,.07);height:fit-content}
 			.price-detail-row{display:flex;justify-content:space-between;align-items:center;
-			  padding:9px 0;border-bottom:1px solid var(--outline-var);font-size:14px}
+			  padding:9px 0;border-bottom:1px solid #F1F5F9;font-size:14px}
 			.price-detail-row:last-of-type{border:none}
-			.pr-label{color:var(--on-surface-var)}
-			.pr-val{font-weight:700;color:var(--on-surface)}
-			.pr-val.big{color:var(--jcp-primary);font-size:20px;font-family:var(--font-display)}
+			.pr-label{color:#64748B}
+			.pr-val{font-weight:700;color:#111827}
+			.pr-val.big{color:#1D4ED8;font-size:20px;font-family:'Cormorant Garamond',Georgia,serif}
 			.sb-cta{display:flex;align-items:center;justify-content:center;gap:8px;
 			  width:100%;padding:13px;border-radius:11px;border:none;font-size:14px;font-weight:700;
 			  cursor:pointer;margin-bottom:10px;text-decoration:none;font-family:inherit}
 			.sb-wa{background:#25D366;color:white}
-			.sb-tel{background:var(--jcp-primary);color:white}
-			.sb-form{background:var(--surface-container-low);color:var(--on-surface);border:1.5px solid var(--outline-var)}
-			.sidebar-map-box{height:180px;border-radius:10px;overflow:hidden;border:1px solid var(--outline-var)}
-			.btn-whatsapp{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
-			  background:#25D366;color:white;border-radius:var(--r-md);font-size:13px;font-weight:700;
-			  text-decoration:none}
+			.sb-tel{background:#1D4ED8;color:white}
+			.sb-form{background:#F8FAFC;color:#111827;border:1.5px solid #E2E8F0}
+			.sidebar-map-box{height:180px;border-radius:10px;overflow:hidden;border:1px solid #E2E8F0}
+			/* Schedule section */
+			.schedule-section{background:#fff;border-radius:16px;border:1px solid #E2E8F0;padding:28px;margin-top:24px}
+			.schedule-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:6px}
+			.schedule-sub{font-size:13px;color:#64748B;margin-bottom:22px}
+			.schedule-form{display:flex;flex-direction:column;gap:14px}
+			.sched-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+			.sched-field{display:flex;flex-direction:column;gap:5px}
+			.sched-field label{font-size:12px;font-weight:600;color:#374151;letter-spacing:.02em}
+			.sched-input{padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;
+			  font-size:14px;font-family:inherit;outline:none;color:#111827;transition:border-color .2s}
+			.sched-input:focus{border-color:#1D4ED8}
+			.sched-btn{display:flex;align-items:center;justify-content:center;gap:8px;
+			  padding:14px 24px;background:#25D366;color:#fff;border:none;
+			  border-radius:9999px;font-size:14px;font-weight:700;cursor:pointer;
+			  font-family:inherit;transition:all .22s;margin-top:4px}
+			.sched-btn:hover{background:#1DAB54;transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,211,102,.35)}
 			@media(max-width:900px){
 			  .detail-grid{grid-template-columns:1fr}
 			  .gallery{aspect-ratio:4/3;grid-template-columns:1fr 1fr;grid-template-rows:2fr 1fr}
 			  .g-main{grid-column:1/span 2;grid-row:1}
+			  .contact-card{position:static}
 			}
 		</style>
-		<main>
+		<div class="detail-scroll">
 			<div class="detail-wrap">
-				<a href="/propiedades.html" class="detail-back">
+				<a href="/propiedades" class="detail-back">
 					<span class="ms ms-sm">arrow_back</span> Volver al listado
 				</a>
 				<div class="gallery">
@@ -122,7 +140,7 @@ templ PropiedadDetail(d PropiedadData) {
 						<div class="price-main">@templ.Raw(string(d.PriceHTML))</div>
 						if d.PriceSub != "" {
 							<div class="price-sub">
-								<span class="ms ms-sm" style="opacity:.7;">location_on</span>
+								<span class="ms ms-sm" style="opacity:.7">location_on</span>
 								{ d.PriceSub }
 							</div>
 						}
@@ -144,7 +162,7 @@ templ PropiedadDetail(d PropiedadData) {
 							<div class="op-chips">@templ.Raw(string(d.ChipsHTML))</div>
 							<h1>{ d.Titulo }</h1>
 							<p class="detail-loc">
-								<span class="ms ms-sm" style="color:var(--jcp-primary)">location_on</span>
+								<span class="ms ms-sm" style="color:#1D4ED8">location_on</span>
 								{ d.Direccion }
 							</p>
 						</div>
@@ -156,8 +174,44 @@ templ PropiedadDetail(d PropiedadData) {
 							</h2>
 							<div class="desc">@templ.Raw(string(d.BodyHTML))</div>
 						</div>
+						<div class="schedule-section" data-prop-title={ d.Titulo }>
+							<h3 class="schedule-title">Agendar una visita</h3>
+							<p class="schedule-sub">Elegí fecha y horario y te confirmamos por WhatsApp.</p>
+							<form class="schedule-form" id="schedule-form" data-wa-phone={ d.WhatsappPhone }>
+								<div class="sched-row">
+									<div class="sched-field">
+										<label>Fecha</label>
+										<input class="sched-input" type="date" name="fecha" id="sched-date" required/>
+									</div>
+									<div class="sched-field">
+										<label>Hora</label>
+										<select class="sched-input" name="hora" id="sched-time">
+											<option value="09:00">09:00 AM</option>
+											<option value="10:00">10:00 AM</option>
+											<option value="11:00">11:00 AM</option>
+											<option value="12:00">12:00 PM</option>
+											<option value="14:00">02:00 PM</option>
+											<option value="15:00">03:00 PM</option>
+											<option value="16:00">04:00 PM</option>
+											<option value="17:00">05:00 PM</option>
+										</select>
+									</div>
+								</div>
+								<div class="sched-field">
+									<label>Tu nombre</label>
+									<input class="sched-input" type="text" name="nombre" placeholder="Juan Carlos" required/>
+								</div>
+								<div class="sched-field">
+									<label>Tu teléfono</label>
+									<input class="sched-input" type="tel" name="telefono" placeholder="+56 9 1234 5678"/>
+								</div>
+								<button type="submit" class="sched-btn">
+									<span class="ms ms-sm ms-fill">calendar_month</span> Confirmar visita por WhatsApp
+								</button>
+							</form>
+						</div>
 						if d.Lat != 0 && d.Lng != 0 {
-							<div class="section-block">
+							<div class="section-block" style="margin-top:24px">
 								<h2>
 									<div class="section-icon"><span class="ms ms-sm">map</span></div>
 									Ubicación
@@ -176,7 +230,7 @@ templ PropiedadDetail(d PropiedadData) {
 								>
 									if d.Comuna != "" {
 										<div class="map-overlay-badge">
-											<span class="ms ms-sm" style="color:var(--jcp-primary)">location_on</span>
+											<span class="ms ms-sm" style="color:#1D4ED8">location_on</span>
 											{ d.Comuna }
 										</div>
 									}
@@ -198,7 +252,7 @@ templ PropiedadDetail(d PropiedadData) {
 						}
 					</div>
 					<aside class="contact-card" id="contactar">
-						<div style="font-size:15px;font-weight:800;color:var(--on-surface);margin-bottom:14px">Precio y condiciones</div>
+						<div style="font-size:15px;font-weight:700;color:#111827;margin-bottom:14px">Precio y condiciones</div>
 						<div class="price-detail-row">
 							<span class="pr-label">Precio</span>
 							<span class="pr-val big">@templ.Raw(string(d.PriceHTML))</span>
@@ -221,9 +275,9 @@ templ PropiedadDetail(d PropiedadData) {
 							<button class="sb-cta sb-form"><span class="ms ms-sm">mail</span> Enviar consulta</button>
 						</div>
 						if d.Lat != 0 && d.Lng != 0 {
-							<div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--outline-var)">
-								<div style="font-size:13px;font-weight:700;color:var(--on-surface);margin-bottom:8px;display:flex;align-items:center;gap:5px">
-									<span class="ms ms-sm" style="color:var(--jcp-primary)">map</span> Zona de la propiedad
+							<div style="margin-top:20px;padding-top:20px;border-top:1px solid #F1F5F9">
+								<div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:8px;display:flex;align-items:center;gap:5px">
+									<span class="ms ms-sm" style="color:#1D4ED8">map</span> Zona de la propiedad
 								</div>
 								<div
 									class="sidebar-map-box"
@@ -239,6 +293,26 @@ templ PropiedadDetail(d PropiedadData) {
 					</aside>
 				</div>
 			</div>
-		</main>
+		</div>
+		<script>
+			(function(){
+			  var df=document.getElementById('sched-date');
+			  if(df){df.min=new Date().toISOString().slice(0,10);}
+			  var sf=document.getElementById('schedule-form');
+			  if(sf){
+			    sf.addEventListener('submit',function(e){
+			      e.preventDefault();
+			      var fecha=sf.fecha.value,hora=sf.hora.value;
+			      var nombre=sf.nombre.value.trim(),tel=sf.telefono.value.trim();
+			      var propTitle=sf.closest('[data-prop-title]')?sf.closest('[data-prop-title]').dataset.propTitle:document.title;
+			      var waPhone=sf.dataset.waPhone||'56912345678';
+			      var text='Hola! Quiero agendar una visita para: '+propTitle+'\nFecha: '+fecha+'\nHora: '+hora;
+			      if(nombre)text+='\nNombre: '+nombre;
+			      if(tel)text+='\nTeléfono: '+tel;
+			      window.open('https://wa.me/'+waPhone+'?text='+encodeURIComponent(text),'_blank');
+			    });
+			  }
+			}());
+		</script>
 	}
 }
