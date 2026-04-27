@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JCP — Mockups v2</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+  /* Material Symbols base */
+  .ms {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal; font-style: normal;
+    font-size: 20px; line-height: 1;
+    letter-spacing: normal; text-transform: none;
+    display: inline-block; white-space: nowrap;
+    word-wrap: normal; direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .ms-sm { font-size: 16px; }
+  .ms-lg { font-size: 28px; }
+  .ms-xl { font-size: 40px; }
+  .ms-outline { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+
+  :root {
+    --jcp-blue: #1D4ED8;
+    --jcp-blue-light: #3B82F6;
+    --jcp-blue-dark: #1E3A8A;
+    --jcp-blue-50: #EFF6FF;
+    --jcp-blue-100: #DBEAFE;
+    --neutral-dark: #111827;
+    --neutral-700: #374151;
+    --neutral-600: #4B5563;
+    --neutral-400: #9CA3AF;
+    --neutral-200: #E5E7EB;
+    --neutral-100: #F3F4F6;
+    --neutral-50: #F9FAFB;
+    --white: #FFFFFF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.09), 0 1px 2px rgba(0,0,0,.05);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.06);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,.14);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--neutral-50); color:var(--neutral-dark); }
+
+  /* ── TOP SWITCHER ── */
+  .top-switcher {
+    background:#0F172A; padding:10px 20px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .top-brand { color:white; font-size:14px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .top-brand span { color:#60A5FA; }
+  .switcher-tabs { display:flex; gap:6px; margin-left:auto; }
+  .sw-tab {
+    padding:7px 16px; border-radius:99px; border:1px solid #334155;
+    background:transparent; color:#94A3B8; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s;
+    display:flex; align-items:center; gap:6px;
+  }
+  .sw-tab.active { background:var(--jcp-blue); border-color:var(--jcp-blue); color:white; }
+
+  /* ── VIEWS ── */
+  .view { display:none; }
+  .view.active { display:block; }
+
+  /* ── COMMON HEADER ── */
+  .page-header {
+    background:white; border-bottom:1px solid var(--neutral-200);
+    padding:12px 20px; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:var(--shadow-sm);
+  }
+  .logo { display:flex; align-items:center; gap:10px; cursor:pointer; }
+  .logo-icon {
+    width:38px; height:38px; background:var(--jcp-blue); border-radius:10px;
+    display:flex; align-items:center; justify-content:center; color:white;
+  }
+  .logo-text { font-size:18px; font-weight:800; color:var(--jcp-blue); letter-spacing:-.5px; }
+  .logo-sub { font-size:11px; color:var(--neutral-600); }
+
+  /* ── FILTERS BAR ── */
+  .filters-bar {
+    background:white; border-bottom:1px solid var(--neutral-200);
+    padding:12px 16px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  }
+  .search-pill {
+    flex:1; min-width:180px; padding:8px 14px 8px 38px;
+    border:1.5px solid var(--neutral-200); border-radius:99px;
+    font-size:13px; outline:none; color:var(--neutral-dark);
+    background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='18' viewBox='0 -960 960 960' width='18' fill='%239CA3AF'%3E%3Cpath d='M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z'/%3E%3C/svg%3E") no-repeat 12px center;
+  }
+  .search-pill:focus { border-color:var(--jcp-blue); }
+  .filter-pill {
+    padding:7px 14px; border:1.5px solid var(--neutral-200); border-radius:99px;
+    font-size:13px; font-weight:500; background:white; cursor:pointer;
+    color:var(--neutral-600); display:flex; align-items:center; gap:5px;
+  }
+  .filter-pill.active { border-color:var(--jcp-blue); background:var(--jcp-blue-50); color:var(--jcp-blue); }
+  .filter-pill .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .section-toggle {
+    display:flex; border:1.5px solid var(--neutral-200); border-radius:10px; overflow:hidden; margin-left:auto;
+  }
+  .toggle-btn {
+    padding:7px 14px; border:none; cursor:pointer; font-size:12px; font-weight:600;
+    transition:all .15s; background:white; color:var(--neutral-600);
+    display:flex; align-items:center; gap:5px;
+  }
+  .toggle-btn.active { background:var(--jcp-blue); color:white; }
+
+  /* ── LISTING SUBVIEWS ── */
+  .listing-subview { display:none; }
+  .listing-subview.active { display:flex; }
+
+  .desktop-layout { flex-direction:row; height:calc(100vh - 150px); }
+  .desktop-cards {
+    width:54%; overflow-y:auto; padding:18px;
+    display:grid; grid-template-columns:1fr 1fr; gap:14px; align-content:start;
+  }
+  .desktop-map-panel { width:46%; border-left:1px solid var(--neutral-200); }
+  #map-desktop { height:100%; }
+
+  .mobile-layout { flex-direction:column; }
+  .mobile-map-strip { height:230px; position:relative; border-bottom:1px solid var(--neutral-200); }
+  #map-mobile { height:100%; }
+  .pin-count {
+    position:absolute; bottom:10px; right:10px; z-index:500;
+    background:white; border-radius:99px; padding:5px 12px;
+    box-shadow:var(--shadow-md); font-size:12px; font-weight:600; color:var(--neutral-dark);
+    display:flex; align-items:center; gap:4px;
+  }
+  .mobile-cards { padding:14px; display:flex; flex-direction:column; gap:10px; }
+
+  /* ── PROPERTY CARD (grid) ── */
+  .prop-card {
+    background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow-md);
+    overflow:hidden; transition:transform .2s, box-shadow .2s; cursor:pointer;
+    border:1px solid var(--neutral-100);
+  }
+  .prop-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); }
+  .card-img {
+    height:150px; background:linear-gradient(135deg,#1E3A8A,#3B82F6);
+    position:relative; display:flex; align-items:flex-end; padding:12px;
+  }
+  .card-badge {
+    position:absolute; top:10px; left:10px;
+    padding:4px 10px; border-radius:99px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+  }
+  .badge-venta { background:var(--jcp-blue); color:white; }
+  .badge-arriendo { background:#7C3AED; color:white; }
+  .badge-dest {
+    position:absolute; top:10px; right:10px;
+    background:rgba(255,255,255,.9); backdrop-filter:blur(8px);
+    padding:4px 10px; border-radius:99px; font-size:11px; font-weight:700; color:#D97706;
+    display:flex; align-items:center; gap:3px;
+  }
+  .price-overlay {
+    background:rgba(15,23,42,.72); backdrop-filter:blur(12px);
+    border-radius:10px; padding:5px 11px;
+  }
+  .price-overlay .uf { color:white; font-size:15px; font-weight:800; }
+  .price-overlay .clp { color:rgba(255,255,255,.7); font-size:11px; }
+  .card-body { padding:13px; }
+  .card-tipo { font-size:11px; font-weight:700; color:var(--jcp-blue); text-transform:uppercase; letter-spacing:.4px; }
+  .card-title { font-size:13px; font-weight:700; color:var(--neutral-dark); margin:3px 0 5px; line-height:1.3; }
+  .card-loc { font-size:12px; color:var(--neutral-600); margin-bottom:8px; display:flex; align-items:center; gap:3px; }
+  .card-stats { display:flex; gap:10px; flex-wrap:wrap; }
+  .cstat { font-size:12px; color:var(--neutral-600); display:flex; align-items:center; gap:3px; }
+  .cstat strong { color:var(--neutral-dark); }
+
+  /* ── PROPERTY CARD (mobile horizontal) ── */
+  .prop-card-h {
+    background:white; border-radius:var(--radius-sm); box-shadow:var(--shadow-md);
+    overflow:hidden; display:flex; border:1px solid var(--neutral-100);
+  }
+  .h-img {
+    width:100px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    position:relative; background:linear-gradient(135deg,#1E3A8A,#3B82F6); color:white;
+  }
+  .h-badge {
+    position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+    padding:2px 8px; border-radius:99px; font-size:9px; font-weight:700; white-space:nowrap; color:white;
+  }
+  .h-body { padding:11px; flex:1; }
+  .h-price { font-size:15px; font-weight:800; color:var(--jcp-blue); margin-bottom:1px; }
+  .h-title { font-size:12px; font-weight:700; color:var(--neutral-dark); margin-bottom:3px; line-height:1.3; }
+  .h-loc { font-size:11px; color:var(--neutral-600); margin-bottom:5px; display:flex; align-items:center; gap:3px; }
+  .h-stats { display:flex; gap:8px; }
+  .h-stat { font-size:11px; color:var(--neutral-600); display:flex; align-items:center; gap:2px; }
+
+  /* ── DETAIL PAGE ── */
+  .breadcrumb {
+    padding:9px 20px; font-size:12px; color:var(--neutral-600);
+    background:white; border-bottom:1px solid var(--neutral-200); display:flex; align-items:center; gap:4px;
+  }
+  .breadcrumb a { color:var(--jcp-blue); text-decoration:none; cursor:pointer; }
+  .hero-gallery {
+    height:380px; position:relative; overflow:hidden;
+    background:linear-gradient(135deg,#1E3A8A 0%,#3B82F6 60%,#60A5FA 100%);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-icon-big { color:rgba(255,255,255,.25); font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48; font-size:140px; }
+  .hero-badge-op { position:absolute; top:20px; left:20px; padding:6px 16px; border-radius:99px; font-size:13px; font-weight:700; text-transform:uppercase; background:var(--jcp-blue); color:white; }
+  .hero-badge-dest { position:absolute; top:20px; right:20px; background:rgba(255,255,255,.9); backdrop-filter:blur(12px); padding:6px 14px; border-radius:99px; font-size:12px; font-weight:700; color:#D97706; display:flex; align-items:center; gap:5px; }
+  .hero-count { position:absolute; bottom:16px; right:20px; background:rgba(15,23,42,.65); backdrop-filter:blur(12px); color:white; padding:6px 14px; border-radius:99px; font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,.12); display:flex; align-items:center; gap:5px; }
+  .price-bar {
+    background:var(--jcp-blue-dark); color:white; padding:14px 24px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+  .price-main { font-size:26px; font-weight:900; letter-spacing:-.5px; }
+  .price-sub { font-size:13px; opacity:.75; margin-top:2px; display:flex; align-items:center; gap:5px; }
+  .pb-ctas { display:flex; gap:10px; }
+  .pb-btn {
+    padding:9px 18px; border-radius:10px; border:none; font-size:13px; font-weight:700; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+  }
+  .pb-wa { background:#25D366; color:white; }
+  .pb-tel { background:rgba(255,255,255,.15); backdrop-filter:blur(8px); color:white; border:1px solid rgba(255,255,255,.25); }
+
+  .content-grid {
+    max-width:1100px; margin:0 auto; padding:22px 20px;
+    display:grid; grid-template-columns:1fr 340px; gap:24px; align-items:start;
+  }
+  .section-card {
+    background:white; border-radius:var(--radius); box-shadow:var(--shadow-sm);
+    border:1px solid var(--neutral-200); padding:22px; margin-bottom:18px;
+  }
+  .section-title {
+    font-size:17px; font-weight:800; color:var(--neutral-dark); margin-bottom:14px;
+    padding-bottom:12px; border-bottom:2px solid var(--jcp-blue-100);
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-icon {
+    width:32px; height:32px; background:var(--jcp-blue-50); border-radius:8px;
+    display:flex; align-items:center; justify-content:center; color:var(--jcp-blue); flex-shrink:0;
+  }
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .stat-item {
+    background:var(--neutral-50); border-radius:10px; padding:12px 10px; text-align:center;
+    border:1px solid var(--neutral-100);
+  }
+  .stat-icon-area { color:var(--jcp-blue); margin-bottom:4px; display:flex; justify-content:center; }
+  .stat-label { font-size:10px; color:var(--neutral-600); text-transform:uppercase; letter-spacing:.3px; }
+  .stat-val { font-size:16px; font-weight:800; color:var(--neutral-dark); margin:2px 0; }
+  .stat-unit { font-size:11px; color:var(--neutral-400); font-weight:400; }
+
+  .map-box { height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--neutral-200); position:relative; }
+  #map-detail { height:100%; }
+  .map-overlay-badge {
+    position:absolute; bottom:10px; left:10px; z-index:500;
+    background:white; border-radius:8px; padding:7px 12px;
+    box-shadow:var(--shadow-md); font-size:12px; font-weight:600; color:var(--neutral-dark);
+    border:1px solid var(--neutral-200); display:flex; align-items:center; gap:5px;
+  }
+  .map-hint { font-size:11px; color:var(--neutral-400); text-align:center; margin-top:7px; display:flex; align-items:center; justify-content:center; gap:4px; }
+  .zone-pill {
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--jcp-blue-50); color:var(--jcp-blue);
+    padding:5px 12px; border-radius:99px; font-size:12px; font-weight:600; border:1px solid var(--jcp-blue-100);
+    margin:0 4px 8px 0;
+  }
+  .prest-grid { display:flex; flex-wrap:wrap; gap:8px; }
+  .prest-pill {
+    padding:6px 14px; background:var(--jcp-blue-50); color:var(--jcp-blue);
+    border-radius:99px; font-size:12px; font-weight:600; border:1px solid var(--jcp-blue-100);
+    display:flex; align-items:center; gap:6px;
+  }
+  .description { font-size:14px; line-height:1.7; color:var(--neutral-700); }
+
+  /* Sidebar */
+  .sidebar-card { background:white; border-radius:var(--radius); box-shadow:var(--shadow-md); border:1px solid var(--neutral-200); padding:22px; margin-bottom:14px; }
+  .sb-title { font-size:15px; font-weight:800; color:var(--neutral-dark); margin-bottom:14px; }
+  .price-row { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid var(--neutral-100); font-size:14px; }
+  .price-row:last-of-type { border:none; }
+  .pr-label { color:var(--neutral-600); }
+  .pr-val { font-weight:700; color:var(--neutral-dark); }
+  .pr-val.big { color:var(--jcp-blue); font-size:20px; }
+  .sb-cta {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; padding:13px; border-radius:11px; border:none; font-size:14px; font-weight:700;
+    cursor:pointer; margin-bottom:9px; text-decoration:none;
+  }
+  .sb-wa { background:#25D366; color:white; }
+  .sb-tel { background:var(--jcp-blue); color:white; }
+  .sb-form { background:var(--neutral-50); color:var(--neutral-dark); border:1.5px solid var(--neutral-200); }
+  .corredor { margin-top:18px; padding-top:18px; border-top:1px solid var(--neutral-200); display:flex; align-items:center; gap:12px; }
+  .corredor-av { width:42px; height:42px; border-radius:50%; background:var(--jcp-blue); display:flex; align-items:center; justify-content:center; color:white; flex-shrink:0; }
+  .corredor-name { font-size:14px; font-weight:700; color:var(--neutral-dark); }
+  .corredor-role { font-size:11px; color:var(--neutral-600); }
+  #map-sidebar { height:100%; }
+
+  /* Popup */
+  .leaflet-popup-content-wrapper { border-radius:12px !important; box-shadow:0 8px 30px rgba(0,0,0,.14) !important; }
+  .map-popup { padding:4px; min-width:170px; }
+  .map-popup-type { font-size:10px; font-weight:700; color:var(--jcp-blue); text-transform:uppercase; letter-spacing:.3px; }
+  .map-popup-title { font-size:13px; font-weight:700; color:var(--neutral-dark); margin:2px 0; }
+  .map-popup-price { font-size:14px; font-weight:800; color:var(--jcp-blue); }
+  .map-popup-loc { font-size:11px; color:var(--neutral-600); display:flex; align-items:center; gap:4px; margin-top:2px; }
+  .map-popup-link { display:flex; align-items:center; justify-content:center; gap:5px; margin-top:8px; padding:6px 12px; background:var(--jcp-blue); color:white; border-radius:8px; text-align:center; text-decoration:none; font-size:12px; font-weight:600; cursor:pointer; border:none; width:100%; }
+</style>
+</head>
+<body>
+
+<!-- TOP SWITCHER -->
+<div class="top-switcher">
+  <div class="top-brand">
+    <span class="ms" style="color:#60A5FA;">home</span>
+    <span>JCP <span>Gestión Inmobiliaria</span> — Mockups v2</span>
+  </div>
+  <div class="switcher-tabs">
+    <button class="sw-tab active" onclick="showView('listing')">
+      <span class="ms ms-sm ms-outline">map</span> 1. Listado + Mapa
+    </button>
+    <button class="sw-tab" onclick="showView('detail')">
+      <span class="ms ms-sm">home</span> 2. Detalle de Propiedad
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VIEW 1 — LISTADO
+══════════════════════════════════════════════ -->
+<div id="view-listing" class="view active">
+
+  <header class="page-header">
+    <div class="logo">
+      <div class="logo-icon"><span class="ms" style="font-size:22px;">home</span></div>
+      <div><div class="logo-text">JCP</div><div class="logo-sub">Gestión Inmobiliaria</div></div>
+    </div>
+    <button style="background:var(--jcp-blue);color:white;border:none;border-radius:99px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;">
+      <span class="ms ms-sm">chat</span> WhatsApp
+    </button>
+  </header>
+
+  <div class="filters-bar">
+    <input class="search-pill" placeholder="Buscar por ciudad, comuna, tipo...">
+    <button class="filter-pill active"><span class="dot"></span>Todos</button>
+    <button class="filter-pill">Venta</button>
+    <button class="filter-pill">Arriendo</button>
+    <button class="filter-pill"><span class="ms ms-sm">home</span> Casa</button>
+    <button class="filter-pill"><span class="ms ms-sm">apartment</span> Depto</button>
+    <div class="section-toggle">
+      <button class="toggle-btn active" id="btn-desktop" onclick="listingView('desktop')">
+        <span class="ms ms-sm">desktop_windows</span> Desktop
+      </button>
+      <button class="toggle-btn" id="btn-mobile" onclick="listingView('mobile')">
+        <span class="ms ms-sm">smartphone</span> Mobile
+      </button>
+    </div>
+  </div>
+
+  <!-- Desktop subview -->
+  <div id="listing-desktop" class="listing-subview active desktop-layout">
+    <div class="desktop-cards">
+
+      <div class="prop-card" onmouseenter="openPin(0)" onmouseleave="closePin(0)">
+        <div class="card-img">
+          <span class="card-badge badge-venta">Venta</span>
+          <span class="badge-dest"><span class="ms ms-sm" style="color:#D97706;">star</span> Destacada</span>
+          <div class="price-overlay"><div class="uf">UF 18.500</div><div class="clp">$ 720.000.000</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tipo">Casa</div>
+          <div class="card-title">Casa mediterránea con jardín — La Dehesa</div>
+          <div class="card-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Lo Barnechea, Metropolitana</div>
+          <div class="card-stats">
+            <span class="cstat"><span class="ms ms-sm">bed</span><strong>4</strong></span>
+            <span class="cstat"><span class="ms ms-sm">shower</span><strong>3</strong></span>
+            <span class="cstat"><span class="ms ms-sm">directions_car</span><strong>2</strong></span>
+            <span class="cstat"><span class="ms ms-sm">square_foot</span><strong>220 m²</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card" onmouseenter="openPin(1)" onmouseleave="closePin(1)">
+        <div class="card-img" style="background:linear-gradient(135deg,#1E40AF,#6366F1)">
+          <span class="card-badge badge-venta">Venta</span>
+          <span class="badge-dest"><span class="ms ms-sm" style="color:#D97706;">star</span> Dest.</span>
+          <div class="price-overlay"><div class="uf">UF 6.400</div><div class="clp">$ 250.000.000</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tipo">Departamento</div>
+          <div class="card-title">Depto moderno vista al parque — Ñuñoa</div>
+          <div class="card-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Ñuñoa, Metropolitana</div>
+          <div class="card-stats">
+            <span class="cstat"><span class="ms ms-sm">bed</span><strong>2</strong></span>
+            <span class="cstat"><span class="ms ms-sm">shower</span><strong>2</strong></span>
+            <span class="cstat"><span class="ms ms-sm">square_foot</span><strong>72 m²</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card" onmouseenter="openPin(2)" onmouseleave="closePin(2)">
+        <div class="card-img" style="background:linear-gradient(135deg,#065F46,#10B981)">
+          <span class="card-badge" style="background:#059669;color:white;">Venta</span>
+          <div class="price-overlay"><div class="uf">UF 3.200</div><div class="clp">$ 124.000.000</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tipo">Parcela</div>
+          <div class="card-title">Parcela 5.000 m² vista al valle — Olmué</div>
+          <div class="card-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Olmué, Valparaíso</div>
+          <div class="card-stats">
+            <span class="cstat"><span class="ms ms-sm">square_foot</span><strong>5.000 m²</strong></span>
+            <span class="cstat"><span class="ms ms-sm">water_drop</span>Agua pozo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card" onmouseenter="openPin(3)" onmouseleave="closePin(3)">
+        <div class="card-img" style="background:linear-gradient(135deg,#4C1D95,#7C3AED)">
+          <span class="card-badge badge-arriendo">Arriendo</span>
+          <div class="price-overlay"><div class="uf">UF 21/mes</div><div class="clp">$ 820.000</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tipo">Departamento</div>
+          <div class="card-title">Depto amoblado — Providencia</div>
+          <div class="card-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Providencia, Metropolitana</div>
+          <div class="card-stats">
+            <span class="cstat"><span class="ms ms-sm">bed</span><strong>1</strong></span>
+            <span class="cstat"><span class="ms ms-sm">shower</span><strong>1</strong></span>
+            <span class="cstat"><span class="ms ms-sm">square_foot</span><strong>48 m²</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card" onmouseenter="openPin(4)" onmouseleave="closePin(4)">
+        <div class="card-img" style="background:linear-gradient(135deg,#0C4A6E,#0EA5E9)">
+          <span class="card-badge badge-arriendo">Arriendo</span>
+          <span class="badge-dest"><span class="ms ms-sm" style="color:#D97706;">star</span> Dest.</span>
+          <div class="price-overlay"><div class="uf">UF 75/mes</div><div class="clp">$ 2.900.000</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tipo">Oficina Class A</div>
+          <div class="card-title">Oficina Class A — Las Condes</div>
+          <div class="card-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Las Condes, Metropolitana</div>
+          <div class="card-stats">
+            <span class="cstat"><span class="ms ms-sm">shower</span><strong>2</strong></span>
+            <span class="cstat"><span class="ms ms-sm">directions_car</span><strong>4</strong></span>
+            <span class="cstat"><span class="ms ms-sm">square_foot</span><strong>180 m²</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="prop-card" onmouseenter="openPin(5)" onmouseleave="closePin(5)">
+        <div class="card-img" style="background:linear-gradient(135deg,#831843,#EC4899)">
+          <span class="card-badge badge-arriendo">Arriendo</span>
+          <div class="price-overlay"><div class="uf">UF 38/mes</div><div class="clp">$ 1.480.000</div></div>
+        </div>
+        <div class="card-body">
+          <div class="card-tipo">Local Comercial</div>
+          <div class="card-title">Local comercial esquina — Centro Viña</div>
+          <div class="card-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Viña del Mar, Valparaíso</div>
+          <div class="card-stats">
+            <span class="cstat"><span class="ms ms-sm">square_foot</span><strong>120 m²</strong></span>
+            <span class="cstat"><span class="ms ms-sm">storefront</span>Vitrina esq.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="desktop-map-panel"><div id="map-desktop"></div></div>
+  </div>
+
+  <!-- Mobile subview -->
+  <div id="listing-mobile" class="listing-subview mobile-layout">
+    <div class="mobile-map-strip">
+      <div id="map-mobile"></div>
+      <div class="pin-count"><span class="ms ms-sm">location_on</span>6 propiedades</div>
+    </div>
+    <div style="padding:10px 12px 0;overflow-x:auto;white-space:nowrap;display:flex;gap:7px;">
+      <button class="filter-pill active" style="flex-shrink:0;font-size:12px;"><span class="dot"></span>Todos</button>
+      <button class="filter-pill" style="flex-shrink:0;font-size:12px;">Venta</button>
+      <button class="filter-pill" style="flex-shrink:0;font-size:12px;">Arriendo</button>
+      <button class="filter-pill" style="flex-shrink:0;font-size:12px;"><span class="ms ms-sm">home</span>Casa</button>
+      <button class="filter-pill" style="flex-shrink:0;font-size:12px;"><span class="ms ms-sm">apartment</span>Depto</button>
+    </div>
+    <div class="mobile-cards">
+      <div class="prop-card-h"><div class="h-img"><span class="ms ms-lg">cottage</span><div class="h-badge" style="background:var(--jcp-blue);">VENTA</div></div><div class="h-body"><div class="h-price">UF 18.500</div><div class="h-title">Casa mediterránea — La Dehesa</div><div class="h-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Lo Barnechea</div><div class="h-stats"><span class="h-stat"><span class="ms ms-sm">bed</span>4</span><span class="h-stat"><span class="ms ms-sm">shower</span>3</span><span class="h-stat"><span class="ms ms-sm">square_foot</span>220m²</span></div></div></div>
+      <div class="prop-card-h"><div class="h-img" style="background:linear-gradient(135deg,#1E40AF,#6366F1)"><span class="ms ms-lg">apartment</span><div class="h-badge" style="background:var(--jcp-blue);">VENTA</div></div><div class="h-body"><div class="h-price">UF 6.400</div><div class="h-title">Depto moderno — Ñuñoa</div><div class="h-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Ñuñoa</div><div class="h-stats"><span class="h-stat"><span class="ms ms-sm">bed</span>2</span><span class="h-stat"><span class="ms ms-sm">shower</span>2</span><span class="h-stat"><span class="ms ms-sm">square_foot</span>72m²</span></div></div></div>
+      <div class="prop-card-h"><div class="h-img" style="background:linear-gradient(135deg,#4C1D95,#7C3AED)"><span class="ms ms-lg">apartment</span><div class="h-badge" style="background:#7C3AED;">ARRIENDO</div></div><div class="h-body"><div class="h-price">UF 21/mes</div><div class="h-title">Depto amoblado — Providencia</div><div class="h-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Providencia</div><div class="h-stats"><span class="h-stat"><span class="ms ms-sm">bed</span>1</span><span class="h-stat"><span class="ms ms-sm">shower</span>1</span><span class="h-stat"><span class="ms ms-sm">square_foot</span>48m²</span></div></div></div>
+      <div class="prop-card-h"><div class="h-img" style="background:linear-gradient(135deg,#0C4A6E,#0EA5E9)"><span class="ms ms-lg">corporate_fare</span><div class="h-badge" style="background:#7C3AED;">ARRIENDO</div></div><div class="h-body"><div class="h-price">UF 75/mes</div><div class="h-title">Oficina Class A — Las Condes</div><div class="h-loc"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>Las Condes</div><div class="h-stats"><span class="h-stat"><span class="ms ms-sm">directions_car</span>4</span><span class="h-stat"><span class="ms ms-sm">square_foot</span>180m²</span></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     VIEW 2 — DETALLE
+══════════════════════════════════════════════ -->
+<div id="view-detail" class="view">
+
+  <header class="page-header">
+    <div class="logo">
+      <div class="logo-icon"><span class="ms" style="font-size:22px;">home</span></div>
+      <div><div class="logo-text">JCP</div><div class="logo-sub">Gestión Inmobiliaria</div></div>
+    </div>
+    <button onclick="showView('listing')" style="background:none;border:1.5px solid var(--neutral-200);border-radius:99px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;color:var(--jcp-blue);display:flex;align-items:center;gap:5px;">
+      <span class="ms ms-sm">arrow_back</span> Volver al listado
+    </button>
+  </header>
+
+  <div class="breadcrumb">
+    <a onclick="showView('listing')">Inicio</a>
+    <span class="ms ms-sm" style="font-size:14px;color:var(--neutral-400);">chevron_right</span>
+    <a onclick="showView('listing')">Propiedades</a>
+    <span class="ms ms-sm" style="font-size:14px;color:var(--neutral-400);">chevron_right</span>
+    Casa mediterránea — La Dehesa
+  </div>
+
+  <div class="hero-gallery">
+    <span class="ms hero-icon-big">cottage</span>
+    <div class="hero-badge-op">Venta</div>
+    <div class="hero-badge-dest"><span class="ms ms-sm">star</span> Destacada</div>
+    <div class="hero-count"><span class="ms ms-sm">photo_camera</span> 12 fotos</div>
+  </div>
+
+  <div class="price-bar">
+    <div>
+      <div class="price-main">UF 18.500</div>
+      <div class="price-sub">
+        <span class="ms ms-sm" style="opacity:.7;">payments</span>
+        $ 720.000.000 aprox &nbsp;·&nbsp;
+        <span class="ms ms-sm" style="opacity:.7;">home</span>
+        Casa &nbsp;·&nbsp;
+        <span class="ms ms-sm" style="opacity:.7;">location_on</span>
+        Lo Barnechea
+      </div>
+    </div>
+    <div class="pb-ctas">
+      <button class="pb-btn pb-wa"><span class="ms ms-sm">chat</span> WhatsApp</button>
+      <button class="pb-btn pb-tel"><span class="ms ms-sm">phone</span> Llamar</button>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div>
+
+      <!-- Título + stats -->
+      <div class="section-card">
+        <h1 style="font-size:22px;font-weight:900;color:var(--neutral-dark);margin-bottom:6px;line-height:1.2;">
+          Casa mediterránea con jardín y piscina
+        </h1>
+        <p style="font-size:14px;color:var(--neutral-600);margin-bottom:16px;display:flex;align-items:center;gap:6px;">
+          <span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span>
+          Av. La Dehesa 1234, Lo Barnechea, Región Metropolitana
+        </p>
+        <div class="stats-grid">
+          <div class="stat-item"><div class="stat-icon-area"><span class="ms" style="font-size:26px;">bed</span></div><div class="stat-label">Dormitorios</div><div class="stat-val">4</div></div>
+          <div class="stat-item"><div class="stat-icon-area"><span class="ms" style="font-size:26px;">shower</span></div><div class="stat-label">Baños</div><div class="stat-val">3</div></div>
+          <div class="stat-item"><div class="stat-icon-area"><span class="ms" style="font-size:26px;">directions_car</span></div><div class="stat-label">Estacionam.</div><div class="stat-val">2</div></div>
+          <div class="stat-item"><div class="stat-icon-area"><span class="ms" style="font-size:26px;">square_foot</span></div><div class="stat-label">Sup. Útil</div><div class="stat-val">220 <span class="stat-unit">m²</span></div></div>
+          <div class="stat-item"><div class="stat-icon-area"><span class="ms" style="font-size:26px;">home</span></div><div class="stat-label">Sup. Total</div><div class="stat-val">450 <span class="stat-unit">m²</span></div></div>
+          <div class="stat-item"><div class="stat-icon-area"><span class="ms" style="font-size:26px;">construction</span></div><div class="stat-label">Año Constr.</div><div class="stat-val">2016</div></div>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="section-card">
+        <div class="section-title">
+          <div class="section-icon"><span class="ms ms-sm">description</span></div>
+          Descripción
+        </div>
+        <p class="description">Amplia casa de 3 pisos en el exclusivo sector de La Dehesa, con jardín, piscina temperada y vista a la cordillera. Terminaciones de lujo, cocina completamente equipada y amplios espacios de estar ideales para familias. Sector residencial tranquilo con alta plusvalía y seguridad 24 horas.</p>
+      </div>
+
+      <!-- Ubicación + mapa -->
+      <div class="section-card">
+        <div class="section-title">
+          <div class="section-icon"><span class="ms ms-sm">map</span></div>
+          Ubicación
+        </div>
+        <div style="margin-bottom:12px;">
+          <span class="zone-pill"><span class="ms ms-sm">location_on</span> Lo Barnechea</span>
+          <span class="zone-pill"><span class="ms ms-sm">location_city</span> Región Metropolitana</span>
+        </div>
+        <div class="map-box">
+          <div id="map-detail"></div>
+          <div class="map-overlay-badge"><span class="ms ms-sm" style="color:var(--jcp-blue);">location_on</span> Lo Barnechea, Santiago</div>
+        </div>
+        <div class="map-hint">
+          <span class="ms ms-sm">lock</span> Dirección exacta disponible al contactar al corredor
+        </div>
+      </div>
+
+      <!-- Prestaciones -->
+      <div class="section-card">
+        <div class="section-title">
+          <div class="section-icon"><span class="ms ms-sm">auto_awesome</span></div>
+          Prestaciones
+        </div>
+        <div class="prest-grid">
+          <span class="prest-pill"><span class="ms ms-sm">pool</span> Piscina</span>
+          <span class="prest-pill"><span class="ms ms-sm">yard</span> Jardín</span>
+          <span class="prest-pill"><span class="ms ms-sm">outdoor_grill</span> Quincho</span>
+          <span class="prest-pill"><span class="ms ms-sm">inventory_2</span> Bodega</span>
+          <span class="prest-pill"><span class="ms ms-sm">security</span> Seguridad 24h</span>
+          <span class="prest-pill"><span class="ms ms-sm">landscape</span> Vista cordillera</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div>
+      <div class="sidebar-card">
+        <div class="sb-title">Precio y condiciones</div>
+        <div class="price-row"><span class="pr-label">Precio en UF</span><span class="pr-val big">UF 18.500</span></div>
+        <div class="price-row"><span class="pr-label">En pesos aprox.</span><span class="pr-val">$ 720.000.000</span></div>
+        <div class="price-row"><span class="pr-label">Tipo</span><span class="pr-val">Casa · Venta</span></div>
+        <div class="price-row"><span class="pr-label">Estado</span><span class="pr-val">Usada · Excelente</span></div>
+        <div style="margin-top:18px;">
+          <button class="sb-cta sb-wa"><span class="ms ms-sm">chat</span> Consultar por WhatsApp</button>
+          <button class="sb-cta sb-tel"><span class="ms ms-sm">phone</span> Llamar al corredor</button>
+          <button class="sb-cta sb-form"><span class="ms ms-sm">mail</span> Enviar consulta</button>
+        </div>
+        <div class="corredor">
+          <div class="corredor-av"><span class="ms">person</span></div>
+          <div>
+            <div class="corredor-name">Carlos Rodríguez</div>
+            <div class="corredor-role">Corredor JCP · Lo Barnechea</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card" style="padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--neutral-dark);margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+          <span class="ms ms-sm" style="color:var(--jcp-blue);">map</span> Zona de la propiedad
+        </div>
+        <div style="height:180px;border-radius:10px;overflow:hidden;border:1px solid var(--neutral-200);">
+          <div id="map-sidebar"></div>
+        </div>
+        <div class="map-hint" style="margin-top:7px;"><span class="ms ms-sm">info</span> Ubicación aproximada</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const props = [
+  { lat:-33.364, lng:-70.541, title:"Casa mediterránea — La Dehesa",  price:"UF 18.500", type:"Casa · Venta",       commune:"Lo Barnechea",      color:"#1D4ED8" },
+  { lat:-33.457, lng:-70.604, title:"Depto moderno — Ñuñoa",          price:"UF 6.400",  type:"Depto · Venta",      commune:"Ñuñoa",             color:"#4F46E5" },
+  { lat:-32.996, lng:-71.197, title:"Parcela — Olmué",                price:"UF 3.200",  type:"Parcela · Venta",    commune:"Olmué, Valparaíso", color:"#059669" },
+  { lat:-33.432, lng:-70.621, title:"Depto amoblado — Providencia",   price:"UF 21/mes", type:"Depto · Arriendo",   commune:"Providencia",       color:"#7C3AED" },
+  { lat:-33.414, lng:-70.579, title:"Oficina Class A — Las Condes",   price:"UF 75/mes", type:"Oficina · Arriendo", commune:"Las Condes",        color:"#0369A1" },
+  { lat:-33.024, lng:-71.551, title:"Local comercial — Viña Centro",  price:"UF 38/mes", type:"Local · Arriendo",   commune:"Viña del Mar",      color:"#BE185D" },
+];
+
+function makePin(color, size=28) {
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:2.5px solid white;box-shadow:0 3px 10px rgba(0,0,0,.3);"></div>`,
+    iconSize:[size,size],iconAnchor:[size/2,size],popupAnchor:[0,-size],
+  });
+}
+function makeBigPin(color) {
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:40px;height:40px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:3px solid white;box-shadow:0 4px 14px rgba(29,78,216,.4);"><div style="transform:rotate(45deg);width:12px;height:12px;background:white;border-radius:50%;margin:auto;margin-top:10px;"></div></div>`,
+    iconSize:[40,40],iconAnchor:[20,40],popupAnchor:[0,-44],
+  });
+}
+
+let inited={}, markersD=[];
+
+function initDesktopMap(){
+  if(inited.d)return; inited.d=true;
+  const map=L.map('map-desktop').setView([-33.43,-70.60],10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:19}).addTo(map);
+  props.forEach((p,i)=>{
+    const m=L.marker([p.lat,p.lng],{icon:makePin(p.color)}).addTo(map)
+      .bindPopup(`<div class="map-popup"><div class="map-popup-type">${p.type}</div><div class="map-popup-title">${p.title}</div><div class="map-popup-price">${p.price}</div><div class="map-popup-loc">${p.commune}</div><button class="map-popup-link" onclick="showView('detail')">Ver detalle</button></div>`,{maxWidth:220});
+    markersD.push(m);
+  });
+}
+function initMobileMap(){
+  if(inited.m)return; inited.m=true;
+  const map=L.map('map-mobile',{zoomControl:false,attributionControl:false}).setView([-33.43,-70.60],9);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+  props.forEach(p=>L.marker([p.lat,p.lng],{icon:makePin(p.color,22)}).addTo(map)
+    .bindPopup(`<div class="map-popup" style="min-width:140px;"><div class="map-popup-type">${p.type}</div><div class="map-popup-title">${p.title}</div><div class="map-popup-price">${p.price}</div></div>`,{maxWidth:180}));
+}
+function initDetailMaps(){
+  if(inited.det)return; inited.det=true;
+  const lat=-33.364,lng=-70.541;
+  const md=L.map('map-detail',{scrollWheelZoom:false}).setView([lat,lng],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:19}).addTo(md);
+  L.marker([lat,lng],{icon:makeBigPin('#1D4ED8')}).addTo(md).bindPopup('<b>Casa mediterránea — La Dehesa</b><br>Lo Barnechea').openPopup();
+  const ms=L.map('map-sidebar',{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false}).setView([lat,lng],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(ms);
+  L.circle([lat,lng],{color:'#1D4ED8',fillColor:'#3B82F6',fillOpacity:0.15,radius:800,weight:2}).addTo(ms);
+  L.marker([lat,lng],{icon:makeBigPin('#1D4ED8')}).addTo(ms);
+}
+
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.sw-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.sw-tab')[v==='listing'?0:1].classList.add('active');
+  if(v==='listing') setTimeout(initDesktopMap,50);
+  else setTimeout(initDetailMaps,50);
+}
+function listingView(mode){
+  document.getElementById('btn-desktop').classList.toggle('active',mode==='desktop');
+  document.getElementById('btn-mobile').classList.toggle('active',mode==='mobile');
+  const ds=document.getElementById('listing-desktop');
+  const ms=document.getElementById('listing-mobile');
+  if(mode==='desktop'){ds.style.display='flex';ms.style.display='none';setTimeout(initDesktopMap,50);}
+  else{ds.style.display='none';ms.style.display='flex';setTimeout(initMobileMap,50);}
+}
+function openPin(i){if(markersD[i])markersD[i].openPopup();}
+function closePin(i){if(markersD[i])markersD[i].closePopup();}
+
+window.addEventListener('load',()=>initDesktopMap());
+</script>
+</body>
+</html>
