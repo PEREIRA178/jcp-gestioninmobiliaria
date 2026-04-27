@@ -35,6 +35,9 @@ type propiedadData struct {
 	BodyHTML      template.HTML
 	AmenitiesHTML template.HTML
 	WhatsappHTML  template.HTML
+	Lat           float64
+	Lng           float64
+	Comuna        string
 }
 
 // IndexHandler serves the main index.html (with HTMX fragment placeholders)
