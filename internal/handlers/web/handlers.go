@@ -1,12 +1,15 @@
 package web
 
 import (
+	"context"
 	"fmt"
 	"html/template"
+	"io"
 	"strings"
 	"time"
 
 	"jcp-gestioninmobiliaria/internal/config"
+	webtmpl "jcp-gestioninmobiliaria/internal/templates/web"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pocketbase/pocketbase"
@@ -45,6 +48,19 @@ func IndexHandler(cfg *config.Config) fiber.Handler {
 func PageHandler(cfg *config.Config, page string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		return c.SendFile(fmt.Sprintf("./web/%s.html", page))
+	}
+}
+
+// renderTempl renders a Templ component into the Fiber response writer.
+func renderTempl(c *fiber.Ctx, component interface{ Render(context.Context, io.Writer) error }) error {
+	c.Set("Content-Type", "text/html; charset=utf-8")
+	return component.Render(c.Context(), c.Response().BodyWriter())
+}
+
+// PropiedadesHandler renders the Templ-based propiedades listing page.
+func PropiedadesHandler(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return renderTempl(c, webtmpl.PropiedadesPage())
 	}
 }
 

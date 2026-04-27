@@ -13,8 +13,8 @@ import (
 
 // RegisterPublic monta las rutas públicas del sitio y el WebSocket de realtime.
 func RegisterPublic(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBase, hub *realtime.Hub) {
-	app.Get("/", web.PageHandler(cfg, "propiedades"))
-	app.Get("/propiedades.html", web.PageHandler(cfg, "propiedades"))
+	app.Get("/", web.PropiedadesHandler(cfg))
+	app.Get("/propiedades.html", web.PropiedadesHandler(cfg))
 	app.Get("/noticias.html", web.PageHandler(cfg, "noticias"))
 	app.Get("/noticias/:id", web.NoticiaHandler(cfg, pb))
 	app.Get("/propiedades/:key", web.PropiedadHandler(cfg, pb))
