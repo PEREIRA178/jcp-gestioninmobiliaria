@@ -101,8 +101,11 @@ templ PropiedadesPage() {
 			</div>
 		</div>
 		<style>
-			.brand-hero{background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 100%);
-			  padding:clamp(28px,5vw,48px) 24px;color:white;position:relative;overflow:hidden}
+			.brand-hero{
+			  background:linear-gradient(135deg,rgba(15,23,42,.82) 0%,rgba(30,58,138,.74) 100%),
+			    url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+			  min-height:clamp(280px,38vw,480px);display:flex;align-items:center;
+			  padding:40px 24px;color:white;position:relative;overflow:hidden}
 			.brand-hero::before{content:'';position:absolute;inset:0;
 			  background:radial-gradient(ellipse at top right,rgba(59,130,246,.2),transparent 60%);pointer-events:none}
 			.brand-hero-inner{max-width:var(--max-w);margin:0 auto;position:relative;z-index:1;
@@ -168,7 +171,7 @@ templ PropiedadesPage() {
 			  background:var(--surface-bright);cursor:pointer;outline:none}
 			.listings-layout{display:flex;align-items:flex-start}
 			.listings-col{width:54%;min-width:0}
-			.listings-head{display:flex;justify-content:space-between;align-items:baseline;padding:20px 0 12px}
+			.listings-head{display:flex;justify-content:space-between;align-items:baseline;padding:20px 16px 12px}
 			.listings-heading{font-family:var(--font-display);font-size:22px}
 			.listings-count{font-size:13px;color:var(--outline)}
 			.map-panel{width:46%;border-left:1px solid var(--outline-var);position:sticky;top:calc(var(--nav-h) + 130px);height:calc(100vh - var(--nav-h) - 130px)}
@@ -214,7 +217,7 @@ templ PropiedadesPage() {
 			@media(max-width:900px){
 			  .listings-layout{flex-direction:column}
 			  .listings-col{width:100%}
-			  .map-panel{width:100%;border-left:none;border-top:1px solid var(--outline-var);height:260px;order:-1;position:relative;top:auto}
+			  .map-panel{width:100%;border-left:none;border-top:1px solid var(--outline-var);height:260px;position:relative;top:auto}
 			  .prop-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
 			}
 		</style>
