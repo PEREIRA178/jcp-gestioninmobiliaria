@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -2023,9 +2024,18 @@ func FunnelPage(cfg *config.Config) fiber.Handler {
 
 func FunnelStats(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		visitors, _ := pb.FindRecordsByFilter("visitor_logs", "", "", 10000, 0)
-		propiedades, _ := pb.FindRecordsByFilter("propiedades", "status='publicado'", "", 10000, 0)
-		whatsappLogs, _ := pb.FindRecordsByFilter("whatsapp_logs", "", "", 10000, 0)
+		visitors, err := pb.FindRecordsByFilter("visitor_logs", "", "", 10000, 0)
+		if err != nil {
+			log.Printf("⚠️  FunnelStats visitor_logs: %v", err)
+		}
+		propiedades, err := pb.FindRecordsByFilter("propiedades", "status='publicado'", "", 10000, 0)
+		if err != nil {
+			log.Printf("⚠️  FunnelStats propiedades: %v", err)
+		}
+		whatsappLogs, err := pb.FindRecordsByFilter("whatsapp_logs", "", "", 10000, 0)
+		if err != nil {
+			log.Printf("⚠️  FunnelStats whatsapp_logs: %v", err)
+		}
 
 		totalVisitantes := len(visitors)
 		totalConsultas := len(whatsappLogs)
@@ -2082,11 +2092,16 @@ func loadSettings() AppSettings {
 		return AppSettings{}
 	}
 	var s AppSettings
-	json.Unmarshal(data, &s)
+	if err := json.Unmarshal(data, &s); err != nil {
+		log.Printf("⚠️  loadSettings: corrupt JSON in %s: %v", settingsPath, err)
+	}
 	return s
 }
 
 func saveSettings(s AppSettings) error {
+	if err := os.MkdirAll(filepath.Dir(settingsPath), 0755); err != nil {
+		return err
+	}
 	data, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		return err
