@@ -1177,9 +1177,6 @@ func WhatsAppLogs(cfg *config.Config) fiber.Handler {
 func PropiedadesList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if c.Query("fragment") != "rows" {
-			if c.Get("HX-Request") != "true" {
-				return c.SendFile("./internal/templates/admin/pages/dashboard.html")
-			}
 			return c.SendFile("./internal/templates/admin/pages/propiedades.html")
 		}
 		records, err := pb.FindRecordsByFilter("propiedades", "id != ''", "-publicado_en", 200, 0)
