@@ -45,6 +45,7 @@ func RegisterAdmin(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBase
 	adm.Delete("/users/:id", middleware.RoleRequired("superadmin"), admin.UserDelete(cfg))
 
 	adm.Get("/whatsapp-logs", admin.WhatsAppLogs(cfg))
+	adm.Get("/visitors", admin.VisitorLogs(cfg, pb))
 
 	// Propiedades
 	adm.Get("/propiedades", admin.PropiedadesList(cfg, pb))

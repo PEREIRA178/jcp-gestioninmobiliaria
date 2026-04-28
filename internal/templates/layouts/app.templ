@@ -114,12 +114,50 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			.map-popup-price{font-size:17px;font-weight:700;color:#111827;margin-bottom:4px}
 			.map-popup-loc{font-size:12px;color:#64748B;display:flex;align-items:center;gap:3px}
 
+			/* Mobile top header */
+			.mobile-header{display:none;align-items:center;justify-content:space-between;
+			  height:56px;padding:0 16px;background:#fff;border-bottom:1px solid var(--outline);
+			  flex-shrink:0}
+			.mob-logo-link{display:flex;align-items:center;gap:8px;text-decoration:none}
+			.mob-logo-box{width:32px;height:32px;background:var(--blue);border-radius:8px;
+			  display:flex;align-items:center;justify-content:center;color:#fff}
+			.mob-logo-name{font-family:var(--font-display);font-size:16px;color:#0F172A;font-weight:600}
+			.mob-ham-btn{width:38px;height:38px;border-radius:9px;border:1px solid var(--outline);
+			  background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+			  color:#111827;transition:background .18s;font-family:inherit}
+			.mob-ham-btn:hover{background:#F8FAFC}
+			/* Drawer */
+			.mob-drawer{position:fixed;top:0;left:-100%;width:min(280px,85vw);height:100vh;
+			  background:#111827;z-index:300;transition:left .28s cubic-bezier(0.05,0.7,0.1,1);
+			  display:flex;flex-direction:column;overflow-y:auto}
+			.mob-drawer.open{left:0}
+			.mob-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:299;
+			  cursor:pointer;opacity:0;pointer-events:none;transition:opacity .28s}
+			.mob-drawer-backdrop.open{opacity:1;pointer-events:auto}
+			.mob-drawer-top{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.07);
+			  display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+			.mob-drawer-close{width:32px;height:32px;border-radius:8px;border:none;
+			  background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);cursor:pointer;
+			  display:flex;align-items:center;justify-content:center;transition:background .18s}
+			.mob-drawer-close:hover{background:rgba(255,255,255,.15)}
+			.mob-drawer-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:2px}
+			.mob-drawer-item{display:flex;align-items:center;gap:10px;padding:11px 12px;
+			  border-radius:10px;color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;
+			  font-weight:500;transition:all .18s;font-family:var(--font-body)}
+			.mob-drawer-item:hover{background:rgba(255,255,255,.08);color:#fff}
+			.mob-drawer-item.active{background:rgba(29,78,216,.3);color:#93C5FD}
+			.mob-drawer-divider{height:1px;background:rgba(255,255,255,.08);margin:8px 10px}
+			.mob-drawer-user{padding:14px 16px;border-top:1px solid rgba(255,255,255,.07);
+			  display:flex;align-items:center;gap:10px;flex-shrink:0}
+			.save-badge-pill{margin-left:auto;background:rgba(29,78,216,.35);color:#93C5FD;
+			  font-size:10px;font-weight:700;border-radius:9999px;padding:2px 7px;display:none}
 			@media(max-width:900px){
 			  .sb{display:none}
 			  .app-main{width:100%}
 			  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;
 			    background:#fff;border-top:1px solid #E2E8F0;z-index:200;align-items:stretch}
-			  .content-split,.detail-scroll{padding-bottom:60px}
+			  .content-split,.detail-scroll,.guard-scroll{padding-bottom:80px}
+			  .mobile-header{display:flex}
 			}
 		</style>
 	</head>
@@ -136,6 +174,11 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 				<a href="/propiedades" class="sb-item active">
 					<span class="ms">search</span>
 					Explorar
+				</a>
+				<a href="/guardadas" class="sb-item">
+					<span class="ms">favorite</span>
+					Guardadas
+					<span id="sb-saved-count" class="save-badge-pill"></span>
 				</a>
 				<div class="sb-label">Cuenta</div>
 				<a href="https://wa.me/56912345678" class="sb-item" target="_blank" rel="noopener">
@@ -155,6 +198,15 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			</div>
 		</aside>
 		<div class="app-main">
+			<header class="mobile-header" id="mobile-header">
+				<a href="/propiedades" class="mob-logo-link">
+					<div class="mob-logo-box"><span class="ms ms-fill" style="font-size:18px">home</span></div>
+					<span class="mob-logo-name">JCP Gestión</span>
+				</a>
+				<button class="mob-ham-btn" id="mob-ham-btn" aria-label="Abrir menú">
+					<span class="ms">menu</span>
+				</button>
+			</header>
 			{ children... }
 		</div>
 		<nav class="mobile-nav" id="mobile-nav">
@@ -174,6 +226,44 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			<a href="/auth/logout" style="display:flex;align-items:center;gap:8px;color:#EF4444;font-size:14px;font-weight:600;text-decoration:none">
 				<span class="ms ms-sm">logout</span> Cerrar sesión
 			</a>
+		</div>
+		<div class="mob-drawer-backdrop" id="mob-drawer-backdrop"></div>
+		<div class="mob-drawer" id="mob-drawer" role="dialog" aria-label="Menú principal">
+			<div class="mob-drawer-top">
+				<div style="display:flex;align-items:center;gap:10px">
+					<div class="sb-logo-box"><span class="ms ms-fill">home</span></div>
+					<div>
+						<div class="sb-logo-name">JCP Gestión</div>
+						<div class="sb-logo-sub">Inmobiliaria</div>
+					</div>
+				</div>
+				<button class="mob-drawer-close" id="mob-drawer-close" aria-label="Cerrar menú">
+					<span class="ms">close</span>
+				</button>
+			</div>
+			<nav class="mob-drawer-nav">
+				<a href="/propiedades" class="mob-drawer-item">
+					<span class="ms">search</span> Explorar
+				</a>
+				<a href="/guardadas" class="mob-drawer-item">
+					<span class="ms">favorite</span> Guardadas
+					<span id="md-saved-count" class="save-badge-pill"></span>
+				</a>
+				<a href="https://wa.me/56912345678" class="mob-drawer-item" target="_blank" rel="noopener">
+					<span class="ms">chat</span> Contactar a JCP
+				</a>
+				<div class="mob-drawer-divider"></div>
+				<a href="/auth/logout" class="mob-drawer-item" style="color:#FCA5A5">
+					<span class="ms">logout</span> Cerrar sesión
+				</a>
+			</nav>
+			<div class="mob-drawer-user">
+				<div class="sb-avatar">{ initials(user.Name) }</div>
+				<div class="sb-user-info">
+					<div class="sb-user-name">{ user.Name }</div>
+					<div class="sb-user-email">{ user.Email }</div>
+				</div>
+			</div>
 		</div>
 		<script>
 			(function(){
@@ -224,6 +314,41 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			    });
 			  };
 			  window.jcpInitSaved();
+			  // Mobile drawer
+			  (function(){
+			    var hamBtn=document.getElementById('mob-ham-btn');
+			    var drawer=document.getElementById('mob-drawer');
+			    var backdrop=document.getElementById('mob-drawer-backdrop');
+			    var closeBtn=document.getElementById('mob-drawer-close');
+			    function openDrawer(){
+			      if(!drawer)return;
+			      drawer.classList.add('open');
+			      backdrop.classList.add('open');
+			      document.body.style.overflow='hidden';
+			    }
+			    function closeDrawer(){
+			      if(!drawer)return;
+			      drawer.classList.remove('open');
+			      backdrop.classList.remove('open');
+			      document.body.style.overflow='';
+			    }
+			    if(hamBtn)hamBtn.addEventListener('click',openDrawer);
+			    if(backdrop)backdrop.addEventListener('click',closeDrawer);
+			    if(closeBtn)closeBtn.addEventListener('click',closeDrawer);
+			    var curPath=window.location.pathname;
+			    document.querySelectorAll('.mob-drawer-item[href]').forEach(function(item){
+			      var href=item.getAttribute('href');
+			      if(!href||!href.startsWith('/'))return;
+			      if(curPath===href||curPath.startsWith(href+'/'))item.classList.add('active');
+			    });
+			    var jcpSv=JSON.parse(localStorage.getItem('jcp_saved')||'[]');
+			    if(jcpSv.length>0){
+			      ['sb-saved-count','md-saved-count'].forEach(function(id){
+			        var el=document.getElementById(id);
+			        if(el){el.textContent=jcpSv.length;el.style.display='inline'}
+			      });
+			    }
+			  }());
 			}());
 		</script>
 	</body>

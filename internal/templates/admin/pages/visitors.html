@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Visitantes — JCP Admin</title>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+:root{
+  --md-primary:#3D3DEF;--md-on-primary:#fff;
+  --md-primary-container:#E0E0FF;--md-on-primary-container:#0000AC;
+  --md-primary-dark:#2828CC;
+  --md-surface-dim:#E8E8F5;--md-surface-bright:#FFFFFF;
+  --md-surface-container-low:#F7F7FF;--md-surface-container-high:#EBEBF5;
+  --md-on-surface:#1C1B1F;--md-on-surface-variant:#49454F;
+  --md-outline:#7C7B7F;--md-outline-variant:#CAC4D0;
+  --r-sm:12px;--r-md:16px;--r-lg:24px;--r-full:9999px;
+  --font-display:'DM Serif Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+  --sidebar-w:260px;--topbar-h:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);background:var(--md-surface-dim);color:var(--md-on-surface);display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);min-height:100vh;position:fixed;left:0;top:0;z-index:100;
+  background:var(--md-surface-bright);border-right:1px solid var(--md-outline-variant);
+  display:flex;flex-direction:column;padding:20px 12px}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px;
+  border-bottom:1px solid var(--md-outline-variant);margin-bottom:12px}
+.sb-icon{width:40px;height:40px;border-radius:10px;background:var(--md-primary);
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  font-family:var(--font-display);font-size:18px}
+.sb-name{font-family:var(--font-display);font-size:15px;color:var(--md-on-surface);line-height:1.1}
+.sb-sub{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--md-outline);font-weight:500}
+.sb-sec{margin-bottom:8px}
+.sb-sec-title{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--md-outline);padding:12px 12px 6px}
+.sb-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-sm);
+  font-size:13.5px;color:var(--md-on-surface-variant);text-decoration:none;transition:background 150ms}
+.sb-link:hover{background:var(--md-surface-container-high);color:var(--md-on-surface)}
+.sb-link.active{background:var(--md-primary-container);color:var(--md-on-primary-container);font-weight:500}
+.sb-link .material-symbols-outlined{font-size:20px}
+.sb-spacer{flex:1}
+.sb-user{padding:12px;border-top:1px solid var(--md-outline-variant);margin-top:8px;display:flex;align-items:center;gap:10px}
+.sb-avatar{width:36px;height:36px;border-radius:var(--r-full);background:var(--md-primary-container);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--md-on-primary-container)}
+.sb-uname{font-size:13px;font-weight:500;color:var(--md-on-surface)}
+.sb-urole{font-size:11px;color:var(--md-outline)}
+.main{margin-left:var(--sidebar-w);flex:1;min-height:100vh}
+.topbar{height:var(--topbar-h);background:rgba(250,250,255,.72);backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid rgba(61,61,239,.10);display:flex;align-items:center;
+  justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:50}
+.topbar-title{font-family:var(--font-display);font-size:20px}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r-full);
+  font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-body);
+  background:transparent;color:var(--md-on-surface-variant);border:1px solid var(--md-outline-variant);
+  transition:background 150ms;text-decoration:none}
+.tb-btn:hover{background:var(--md-surface-container-high)}
+.content{padding:32px}
+.card{background:var(--md-surface-bright);border-radius:var(--r-lg);
+  border:1px solid var(--md-outline-variant);overflow:hidden;margin-bottom:24px}
+.card-header{padding:20px 24px;border-bottom:1px solid var(--md-outline-variant);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.card-title{font-family:var(--font-display);font-size:18px}
+.card-sub{font-size:12px;color:var(--md-outline)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 24px;font-size:11px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--md-outline);background:var(--md-surface-container-low);
+  border-bottom:1px solid var(--md-outline-variant)}
+tr:last-child td{border:none}
+tr:hover td{background:var(--md-surface-container-low)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.content{padding:20px 16px}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-icon">JCP</div>
+    <div>
+      <div class="sb-name">JCP Gestión</div>
+      <div class="sb-sub">Inmobiliaria · Admin</div>
+    </div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-title">General</div>
+    <a href="/admin/dashboard" class="sb-link"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-title">Inmobiliaria</div>
+    <a href="/admin/propiedades" class="sb-link"><span class="material-symbols-outlined">home_work</span> Propiedades</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-title">CRM</div>
+    <a href="/admin/visitors" class="sb-link active"><span class="material-symbols-outlined">person_search</span> Visitantes Google</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-title">Sistema</div>
+    <a href="/admin/users" class="sb-link"><span class="material-symbols-outlined">group</span> Usuarios</a>
+  </div>
+  <div class="sb-spacer"></div>
+  <div class="sb-user">
+    <div class="sb-avatar">AD</div>
+    <div>
+      <div class="sb-uname">Administrador</div>
+      <div class="sb-urole">superadmin</div>
+    </div>
+  </div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <h1 class="topbar-title">Visitantes Google</h1>
+    <div style="display:flex;gap:12px">
+      <button class="tb-btn" id="refresh-btn">
+        <span class="material-symbols-outlined" style="font-size:16px">refresh</span> Actualizar
+      </button>
+      <a href="/" target="_blank" class="tb-btn">
+        <span class="material-symbols-outlined" style="font-size:16px">open_in_new</span> Ver web
+      </a>
+    </div>
+  </header>
+  <div class="content">
+    <p style="font-size:13px;color:var(--md-outline);margin-bottom:24px;max-width:640px">
+      Personas que iniciaron sesión con Google. Úsalos como leads para conversaciones de venta proactivas.
+    </p>
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title">Visitantes registrados</h2>
+          <p class="card-sub">Últimos 100 · ordenados por fecha de ingreso</p>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Visitante</th>
+              <th>Fecha</th>
+              <th>IP</th>
+              <th>Navegador</th>
+            </tr>
+          </thead>
+          <tbody id="visitors-tbody">
+            <tr>
+              <td colspan="4" style="text-align:center;padding:40px;color:var(--md-outline)">
+                <div style="width:24px;height:24px;border:2px solid var(--md-primary);
+                  border-top-color:transparent;border-radius:50%;
+                  animation:spin 1s linear infinite;margin:0 auto 8px"></div>
+                Cargando visitantes...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function loadVisitors(){
+  fetch('/admin/visitors?fragment=rows')
+    .then(function(r){return r.text();})
+    .then(function(html){
+      var tbody=document.getElementById('visitors-tbody');
+      if(!tbody)return;
+      var parser=new DOMParser();
+      var doc=parser.parseFromString('<table><tbody>'+html+'</tbody></table>','text/html');
+      var src=doc.querySelector('tbody');
+      tbody.textContent='';
+      if(src){Array.from(src.childNodes).forEach(function(n){tbody.appendChild(n.cloneNode(true));});}
+    })
+    .catch(function(){
+      var tbody=document.getElementById('visitors-tbody');
+      if(tbody)tbody.textContent='Error al cargar visitantes.';
+    });
+}
+loadVisitors();
+var btn=document.getElementById('refresh-btn');
+if(btn)btn.addEventListener('click',loadVisitors);
+</script>
+</body>
+</html>

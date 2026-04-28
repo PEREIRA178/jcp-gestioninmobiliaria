@@ -82,9 +82,32 @@ templ Base(title string, includeMaps bool) {
 			.footer-col a:hover{color:#fff}
 			.footer-bottom{max-width:var(--max-w);margin:40px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);
 			  display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.4);flex-wrap:wrap;gap:8px}
+			.nav-ham{display:none;width:38px;height:38px;border-radius:var(--r-sm);
+			  background:transparent;border:1px solid var(--outline-var);
+			  cursor:pointer;align-items:center;justify-content:center;
+			  color:var(--on-surface);transition:all .18s;flex-shrink:0}
+			.nav-ham:hover{background:var(--surface-container-low)}
+			.mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;z-index:199;
+			  background:rgba(250,250,249,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+			  border-bottom:1px solid var(--outline-var);
+			  padding:14px 20px 20px;flex-direction:column;gap:2px;
+			  box-shadow:0 8px 32px rgba(15,20,25,.10)}
+			.mobile-menu.open{display:flex;animation:slideDown .22s var(--ease-express)}
+			@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+			.mobile-menu a{font-size:15px;font-weight:500;color:var(--on-surface);
+			  text-decoration:none;padding:12px 16px;border-radius:var(--r-sm);
+			  transition:background .18s;display:flex;align-items:center;gap:10px}
+			.mobile-menu a:hover{background:var(--jcp-primary-50)}
+			.mob-menu-divider{height:1px;background:var(--outline-var);margin:6px 0}
+			.mob-menu-cta{background:var(--jcp-primary)!important;color:#fff!important;
+			  border-radius:var(--r-full)!important;font-weight:600!important;
+			  justify-content:center;margin-top:4px}
+			.mob-menu-cta:hover{background:var(--jcp-primary-dark)!important}
 			@media(max-width:768px){
 			  :root{--nav-h:58px}
 			  .nav-links{display:none}
+			  .nav-cta{display:none}
+			  .nav-ham{display:flex}
 			  .footer-grid{grid-template-columns:1fr}
 			}
 		</style>
@@ -107,8 +130,18 @@ templ Base(title string, includeMaps bool) {
 				<a href="/propiedades" class="nav-cta">
 					<span class="ms ms-sm">search</span> Ver propiedades
 				</a>
+				<button class="nav-ham" id="nav-ham" aria-label="Menú" aria-expanded="false">
+					<span class="ms">menu</span>
+				</button>
 			</div>
 		</nav>
+		<div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menú móvil">
+			<a href="/propiedades?operacion=VENTA"><span class="ms ms-sm">sell</span> Comprar</a>
+			<a href="/propiedades?operacion=ARRIENDO"><span class="ms ms-sm">key</span> Arrendar</a>
+			<a href="/propiedades"><span class="ms ms-sm">home_work</span> Todas las propiedades</a>
+			<div class="mob-menu-divider"></div>
+			<a href="/propiedades" class="mob-menu-cta"><span class="ms ms-sm">search</span> Ver propiedades</a>
+		</div>
 		{ children... }
 		<footer>
 			<div class="footer-grid">
@@ -144,6 +177,33 @@ templ Base(title string, includeMaps bool) {
 			window.addEventListener('scroll',function(){
 			  document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>10);
 			},{passive:true});
+			(function(){
+			  var ham=document.getElementById('nav-ham');
+			  var menu=document.getElementById('mobile-menu');
+			  if(!ham||!menu)return;
+			  function openMenu(){
+			    menu.classList.add('open');
+			    ham.setAttribute('aria-expanded','true');
+			    ham.querySelector('.ms').textContent='close';
+			  }
+			  function closeMenu(){
+			    menu.classList.remove('open');
+			    ham.setAttribute('aria-expanded','false');
+			    ham.querySelector('.ms').textContent='menu';
+			  }
+			  ham.addEventListener('click',function(e){
+			    e.stopPropagation();
+			    menu.classList.contains('open')?closeMenu():openMenu();
+			  });
+			  document.addEventListener('click',function(e){
+			    if(menu.classList.contains('open')&&!menu.contains(e.target)&&e.target!==ham){
+			      closeMenu();
+			    }
+			  });
+			  menu.querySelectorAll('a').forEach(function(a){
+			    a.addEventListener('click',function(){closeMenu()});
+			  });
+			}());
 		</script>
 	</body>
 	</html>
