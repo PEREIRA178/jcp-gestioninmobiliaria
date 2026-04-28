@@ -1,0 +1,81 @@
+package web
+
+import "jcp-gestioninmobiliaria/internal/templates/layouts"
+
+templ GuardasPage(userName string, userEmail string) {
+	@layouts.AppShell("Guardadas — JCP Gestión Inmobiliaria", false, layouts.AppUser{Name: userName, Email: userEmail}) {
+		<style>
+			.guard-scroll{flex:1;overflow-y:auto;padding:24px 20px}
+			.guard-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+			.guard-header h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:700}
+			.guard-sub{font-size:13px;color:#64748B;margin-top:2px}
+			.guard-empty{text-align:center;padding:64px 24px;display:none}
+			.guard-empty h3{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;margin-bottom:8px}
+			.guard-empty p{font-size:14px;color:#64748B;margin-bottom:24px}
+			.guard-empty-link{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;
+			  background:#1D4ED8;color:#fff;border-radius:9999px;text-decoration:none;font-weight:700;font-size:14px}
+			/* Prop card styles (duplicated here since fragment CSS lives in propiedades page) */
+			.prop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+			.prop-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #E2E8F0;
+			  cursor:pointer;transition:transform .25s,box-shadow .25s,border-color .2s;position:relative}
+			.prop-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(15,23,42,.1);border-color:#1D4ED8}
+			.prop-card-link{text-decoration:none;color:inherit;display:block}
+			.prop-media{aspect-ratio:4/3;overflow:hidden;background:#E2E8F0;position:relative}
+			.prop-media img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+			.prop-card:hover .prop-media img{transform:scale(1.04)}
+			.prop-img-placeholder{display:flex;align-items:center;justify-content:center;height:100%;color:#94A3B8;font-size:40px}
+			.prop-badges{position:absolute;top:10px;left:10px;display:flex;gap:5px}
+			.prop-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;backdrop-filter:blur(8px);display:inline-flex;align-items:center;gap:4px}
+			.prop-badge-venta{background:rgba(29,78,216,.9);color:#fff}
+			.prop-badge-arriendo{background:rgba(124,58,237,.9);color:#fff}
+			.prop-badge-featured{background:rgba(217,119,6,.92);color:#fff}
+			.prop-badge-deal{background:rgba(5,150,105,.92);color:#fff}
+			.prop-body{padding:12px 14px 14px}
+			.prop-price{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;color:#111827;line-height:1.1;margin-bottom:4px;font-weight:700}
+			.prop-feats{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 8px;color:#64748B;font-size:11.5px}
+			.prop-feat{display:inline-flex;align-items:center;gap:3px}
+			.prop-title{font-size:13px;font-weight:500;color:#111827;line-height:1.35;
+			  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:5px}
+			.prop-loc{font-size:11.5px;color:#64748B;display:flex;align-items:center;gap:3px}
+			.prop-loc .ms{color:#1D4ED8;font-size:13px}
+			.loading-state{text-align:center;padding:60px 0;color:#94A3B8;font-size:14px}
+			@media(max-width:600px){.prop-grid{grid-template-columns:1fr}}
+		</style>
+		<div class="guard-scroll">
+			<div class="guard-header">
+				<span class="ms ms-lg" style="color:#EF4444">favorite</span>
+				<div>
+					<h1>Guardadas</h1>
+					<p class="guard-sub">Tus propiedades favoritas en un solo lugar.</p>
+				</div>
+			</div>
+			<div class="guard-empty" id="guard-empty">
+				<span class="ms" style="font-size:48px;color:#E2E8F0;display:block;margin-bottom:16px">favorite</span>
+				<h3>No tenés guardadas</h3>
+				<p>Explorá el catálogo y tocá el corazón en las propiedades que te gusten.</p>
+				<a href="/propiedades" class="guard-empty-link">
+					<span class="ms ms-sm">search</span> Explorar propiedades
+				</a>
+			</div>
+			<div id="guard-results">
+				<div class="loading-state">Cargando...</div>
+			</div>
+		</div>
+		<script>
+			(function(){
+			  var saved=JSON.parse(localStorage.getItem('jcp_saved')||'[]');
+			  if(saved.length===0){
+			    document.getElementById('guard-results').style.display='none';
+			    document.getElementById('guard-empty').style.display='block';
+			    return;
+			  }
+			  htmx.ajax('GET','/fragments/guardadas?ids='+encodeURIComponent(saved.join(',')),{
+			    target:'#guard-results',swap:'innerHTML'
+			  });
+			  document.body.addEventListener('htmx:afterSwap',function(){
+			    if(window.jcpInitSaved)window.jcpInitSaved();
+			  });
+			}());
+		</script>
+	}
+}

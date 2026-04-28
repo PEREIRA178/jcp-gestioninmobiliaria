@@ -45,10 +45,42 @@ func renderTempl(c *fiber.Ctx, component interface{ Render(context.Context, io.W
 	return component.Render(c.Context(), c.Response().BodyWriter())
 }
 
-// LandingHandler renders the marketing landing page.
-func LandingHandler(cfg *config.Config) fiber.Handler {
+// LandingHandler renders the marketing landing page with 3 preview properties.
+func LandingHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return renderTempl(c, webtmpl.LandingPage())
+		recs, _ := pb.FindRecordsByFilter("propiedades", "status='publicado'", "-destacada,-publicado_en", 3, 0)
+		var previews []webtmpl.LandingPropPreview
+		for _, r := range recs {
+			slug := r.GetString("slug")
+			if slug == "" {
+				slug = r.Id
+			}
+			previews = append(previews, webtmpl.LandingPropPreview{
+				Slug:        slug,
+				Titulo:      r.GetString("titulo"),
+				CoverImage:  r.GetString("cover_image"),
+				Tipo:        r.GetString("tipo"),
+				Operacion:   r.GetString("operacion"),
+				Dormitorios: r.GetInt("dormitorios"),
+				SupUtil:     r.GetFloat("superficie_util"),
+				PrecioUF:    r.GetFloat("precio_uf"),
+				PrecioCLP:   r.GetFloat("precio_clp"),
+				Comuna:      r.GetString("comuna"),
+			})
+		}
+		return renderTempl(c, webtmpl.LandingPage(previews))
+	}
+}
+
+// GuardasHandler renders the saved properties page.
+func GuardasHandler(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		name, _ := c.Locals("visitor_name").(string)
+		email, _ := c.Locals("visitor_email").(string)
+		if name == "" {
+			name = "Visitante"
+		}
+		return renderTempl(c, webtmpl.GuardasPage(name, email))
 	}
 }
 
@@ -294,14 +326,20 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 			priceMain = formatCLPString(precioCLP)
 		}
 		priceSub := ""
+		ufVal := services.GetUF()
 		if precioUF > 0 && precioCLP > 0 {
 			priceSub = "≈ " + formatCLPString(precioCLP)
-		} else if precioUF > 0 {
-			// Calculate from live UF value
-			if ufVal := services.GetUF(); ufVal > 0 {
-				priceSub = "≈ " + formatCLPString(precioUF*ufVal) + " (UF hoy)"
+		} else if precioUF > 0 && ufVal > 0 {
+			priceSub = "≈ " + formatCLPString(precioUF*ufVal) + " (UF hoy)"
+		} else if precioCLP > 0 && ufVal > 0 {
+			eq := precioCLP / ufVal
+			if eq == float64(int64(eq)) {
+				priceSub = fmt.Sprintf("≈ UF %d (hoy)", int64(eq))
+			} else {
+				priceSub = fmt.Sprintf("≈ UF %.1f (hoy)", eq)
 			}
-		} else if operacion == "ARRIENDO" && precioCLP > 0 {
+		}
+		if priceSub == "" && operacion == "ARRIENDO" && precioCLP > 0 {
 			priceSub = "Mensual"
 		}
 

@@ -291,7 +291,7 @@ func PropCard(p PropItem, i int) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><button class=\"prop-fav\" type=\"button\" aria-label=\"Guardar propiedad\" onclick=\"event.preventDefault();event.stopPropagation();this.classList.toggle('is-active')\"><span class=\"ms ms-sm ms-outline\">favorite</span></button></div><div class=\"prop-body\"><div class=\"prop-price\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><button class=\"prop-fav\" type=\"button\" aria-label=\"Guardar propiedad\" onclick=\"event.preventDefault();event.stopPropagation();var c=this.closest('[data-slug]');if(c&&window.jcpToggleSave){var saved=jcpToggleSave(c.dataset.slug);this.classList.toggle('is-active',saved)}else{this.classList.toggle('is-active')}\"><span class=\"ms ms-sm ms-outline\">favorite</span></button></div><div class=\"prop-body\"><div class=\"prop-price\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -311,7 +311,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d dorm", p.Dormitorios))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 91, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 92, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -330,7 +330,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(banosLabel(p.Banos))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 94, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 95, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -349,7 +349,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%g m²", p.SupUtil))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 97, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 98, Col: 106}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -367,7 +367,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%g m²", p.SupTotal))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 99, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 100, Col: 107}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -386,7 +386,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", p.Estac))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 102, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 103, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
@@ -404,7 +404,7 @@ func PropCard(p PropItem, i int) templ.Component {
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(p.Titulo)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 105, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 106, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
@@ -418,7 +418,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var22 string
 			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(p.Comuna + " · " + p.Region)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 109, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 110, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 			if templ_7745c5c3_Err != nil {
@@ -428,7 +428,7 @@ func PropCard(p PropItem, i int) templ.Component {
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(p.Comuna)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 111, Col: 16}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/fragments/propcard.templ`, Line: 112, Col: 16}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {

@@ -8,9 +8,81 @@ package web
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "jcp-gestioninmobiliaria/internal/templates/layouts"
+import (
+	"fmt"
+	"jcp-gestioninmobiliaria/internal/templates/layouts"
+)
 
-func LandingPage() templ.Component {
+type LandingPropPreview struct {
+	Slug        string
+	Titulo      string
+	CoverImage  string
+	Tipo        string
+	Operacion   string
+	Dormitorios int
+	SupUtil     float64
+	PrecioUF    float64
+	PrecioCLP   float64
+	Comuna      string
+}
+
+func landingPriceLabel(p LandingPropPreview) string {
+	if p.PrecioUF > 0 {
+		if p.PrecioUF == float64(int64(p.PrecioUF)) {
+			return fmt.Sprintf("UF %d", int64(p.PrecioUF))
+		}
+		return fmt.Sprintf("UF %.1f", p.PrecioUF)
+	}
+	if p.PrecioCLP > 0 {
+		n := int64(p.PrecioCLP)
+		s := fmt.Sprintf("%d", n)
+		out := make([]byte, 0, len(s)+len(s)/3)
+		for i, c := range []byte(s) {
+			if i > 0 && (len(s)-i)%3 == 0 {
+				out = append(out, '.')
+			}
+			out = append(out, c)
+		}
+		return "$ " + string(out)
+	}
+	return "Consultar"
+}
+
+func landingOpLabel(p LandingPropPreview) string {
+	op := "En Venta"
+	if p.Operacion == "ARRIENDO" {
+		op = "En Arriendo"
+	}
+	if p.Tipo != "" {
+		return op + " · " + p.Tipo
+	}
+	return op
+}
+
+func landingMetaLabel(p LandingPropPreview) string {
+	parts := ""
+	if p.Dormitorios > 0 {
+		parts = fmt.Sprintf("%d dorm", p.Dormitorios)
+	}
+	if p.SupUtil > 0 {
+		s := fmt.Sprintf("%g m²", p.SupUtil)
+		if parts != "" {
+			parts += " · " + s
+		} else {
+			parts = s
+		}
+	}
+	if p.Comuna != "" {
+		if parts != "" {
+			parts += " · " + p.Comuna
+		} else {
+			parts = p.Comuna
+		}
+	}
+	return parts
+}
+
+func LandingPage(previews []LandingPropPreview) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,7 +115,120 @@ func LandingPage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.hero{min-height:100vh;position:relative;display:flex;flex-direction:column;justify-content:center;overflow:hidden}\n\t\t\t.hero-bg{position:absolute;inset:0;\n\t\t\t  background:linear-gradient(155deg,rgba(15,23,42,.88) 0%,rgba(30,58,138,.72) 55%,rgba(15,23,42,.60) 100%),\n\t\t\t    url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80') center/cover}\n\t\t\t.hero-content{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:120px 48px 200px}\n\t\t\t.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;\n\t\t\t  background:rgba(29,78,216,.22);border:1px solid rgba(96,165,250,.35);\n\t\t\t  color:#93C5FD;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;\n\t\t\t  border-radius:9999px;margin-bottom:28px}\n\t\t\t.hero-h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(44px,8vw,88px);\n\t\t\t  font-weight:400;color:#fff;line-height:1.05;margin-bottom:22px;max-width:680px}\n\t\t\t.hero-h1 em{font-style:italic;color:#60A5FA}\n\t\t\t.hero-sub{font-size:clamp(15px,1.8vw,18px);color:rgba(255,255,255,.68);max-width:440px;\n\t\t\t  line-height:1.75;margin-bottom:44px;font-weight:300}\n\t\t\t.hero-actions{display:flex;gap:14px;flex-wrap:wrap}\n\t\t\t.btn-hero{display:inline-flex;align-items:center;gap:9px;padding:16px 32px;\n\t\t\t  border-radius:9999px;font-size:15px;font-weight:700;font-family:inherit;\n\t\t\t  text-decoration:none;transition:all .25s}\n\t\t\t.btn-hero-p{background:#1D4ED8;color:#fff;box-shadow:0 8px 28px rgba(29,78,216,.4)}\n\t\t\t.btn-hero-p:hover{background:#1e40af;transform:translateY(-2px)}\n\t\t\t.btn-hero-s{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);\n\t\t\t  color:#fff;border:1.5px solid rgba(255,255,255,.22)}\n\t\t\t.btn-hero-s:hover{background:rgba(255,255,255,.18)}\n\t\t\t.stats-bar{position:absolute;bottom:0;left:0;right:0;z-index:1;\n\t\t\t  background:rgba(15,23,42,.78);backdrop-filter:blur(20px);\n\t\t\t  border-top:1px solid rgba(255,255,255,.07)}\n\t\t\t.stats-inner{max-width:1200px;margin:0 auto;padding:26px 48px;\n\t\t\t  display:flex;align-items:center;gap:40px}\n\t\t\t.stat-v{font-family:'DM Serif Display',serif;font-size:34px;color:#fff;line-height:1}\n\t\t\t.stat-l{font-size:11px;color:rgba(255,255,255,.45);margin-top:4px;letter-spacing:.04em}\n\t\t\t.stat-div{height:40px;width:1px;background:rgba(255,255,255,.1);flex-shrink:0}\n\t\t\t.how-section{padding:88px 48px;max-width:1200px;margin:0 auto}\n\t\t\t.how-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1D4ED8;margin-bottom:12px}\n\t\t\t.how-title{font-family:'DM Serif Display',serif;font-size:clamp(28px,4.5vw,48px);\n\t\t\t  line-height:1.12;margin-bottom:14px}\n\t\t\t.how-sub{font-size:15px;color:#64748B;max-width:440px;line-height:1.75;margin-bottom:56px}\n\t\t\t.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}\n\t\t\t.step{background:#fff;border-radius:20px;padding:34px 30px;border:1px solid #E2E8F0;\n\t\t\t  position:relative;overflow:hidden;transition:all .3s}\n\t\t\t.step:hover{transform:translateY(-4px);box-shadow:0 20px 56px rgba(15,23,42,.1);border-color:#1D4ED8}\n\t\t\t.step-num{font-family:'DM Serif Display',serif;font-size:80px;\n\t\t\t  color:rgba(29,78,216,.06);position:absolute;top:8px;right:14px;line-height:1}\n\t\t\t.step-icon{width:50px;height:50px;background:#EFF6FF;border-radius:14px;\n\t\t\t  display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:24px}\n\t\t\t.step h3{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px}\n\t\t\t.step p{font-size:14px;color:#64748B;line-height:1.65}\n\t\t\t.cta-wrap{padding:0 48px 88px;max-width:1200px;margin:0 auto}\n\t\t\t.cta-banner{background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 100%);\n\t\t\t  border-radius:28px;padding:64px;display:flex;align-items:center;\n\t\t\t  justify-content:space-between;gap:32px;position:relative;overflow:hidden}\n\t\t\t.cta-banner::before{content:'';position:absolute;width:500px;height:500px;\n\t\t\t  background:radial-gradient(circle,rgba(29,78,216,.25),transparent 65%);\n\t\t\t  top:-150px;right:-100px;border-radius:50%}\n\t\t\t.cta-banner-text{position:relative;z-index:1}\n\t\t\t.cta-banner-text h2{font-family:'DM Serif Display',serif;font-size:clamp(24px,3.5vw,40px);\n\t\t\t  color:#fff;margin-bottom:10px;line-height:1.15}\n\t\t\t.cta-banner-text p{color:rgba(255,255,255,.58);font-size:15px}\n\t\t\t@media(max-width:900px){\n\t\t\t  .hero-content{padding:100px 24px 180px}\n\t\t\t  .stats-inner{padding:20px 24px;gap:20px;overflow-x:auto}\n\t\t\t  .steps{grid-template-columns:1fr}\n\t\t\t  .how-section{padding:60px 24px}\n\t\t\t  .cta-wrap{padding:0 24px 60px}\n\t\t\t  .cta-banner{flex-direction:column;padding:40px 28px}\n\t\t\t}\n\t\t</style> <section class=\"hero\"><div class=\"hero-bg\"></div><div class=\"hero-content\"><div class=\"hero-eyebrow\"><span class=\"ms ms-sm\">location_on</span> Copiapó · Santiago · Todo Chile</div><h1 class=\"hero-h1\">Tu próxima<br><em>propiedad</em><br>está aquí.</h1><p class=\"hero-sub\">Accedé al catálogo completo de JCP. Iniciá sesión con Google y explorá propiedades en venta y arriendo.</p><div class=\"hero-actions\"><a href=\"/propiedades\" class=\"btn-hero btn-hero-p\"><span class=\"ms ms-sm\">search</span> Ver propiedades</a> <a href=\"https://wa.me/56912345678\" class=\"btn-hero btn-hero-s\" target=\"_blank\" rel=\"noopener\"><span class=\"ms ms-sm\">chat</span> WhatsApp</a></div></div><div class=\"stats-bar\"><div class=\"stats-inner\"><div><div class=\"stat-v\">48+</div><div class=\"stat-l\">Propiedades activas</div></div><div class=\"stat-div\"></div><div><div class=\"stat-v\">12</div><div class=\"stat-l\">Años de experiencia</div></div><div class=\"stat-div\"></div><div><div class=\"stat-v\">Venta</div><div class=\"stat-l\">y Arriendo</div></div><div class=\"stat-div\"></div><div><div class=\"stat-v\">100%</div><div class=\"stat-l\">Atención personalizada</div></div></div></div></section><div class=\"how-section\"><p class=\"how-eyebrow\">Cómo funciona</p><h2 class=\"how-title\">Encontrá tu propiedad<br>en 3 pasos simples</h2><p class=\"how-sub\">Sin burocracia. Solo iniciás sesión, explorás el mapa y nos contactás.</p><div class=\"steps\"><div class=\"step\"><span class=\"step-num\">1</span><div class=\"step-icon\">🔑</div><h3>Iniciá sesión con Google</h3><p>Un clic con tu cuenta de Gmail. Sin formularios ni contraseñas extra. Acceso inmediato a todo el catálogo.</p></div><div class=\"step\"><span class=\"step-num\">2</span><div class=\"step-icon\">🗺️</div><h3>Explorá en el mapa</h3><p>Filtrá por tipo, precio y operación. Cada propiedad tiene su pin en el mapa para que ubiques la zona fácilmente.</p></div><div class=\"step\"><span class=\"step-num\">3</span><div class=\"step-icon\">💬</div><h3>Contactanos directamente</h3><p>¿Encontraste algo que te gusta? Agendá una visita o escribinos por WhatsApp. Te asesoramos sin compromiso.</p></div></div></div><div class=\"cta-wrap\"><div class=\"cta-banner\"><div class=\"cta-banner-text\"><h2>¿Listo para encontrar<br>tu próxima propiedad?</h2><p>Iniciá sesión y accedé al catálogo completo de JCP.</p></div><a href=\"/propiedades\" class=\"btn-hero btn-hero-p\" style=\"position:relative;z-index:1;white-space:nowrap\">Explorar propiedades →</a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.hero{min-height:100vh;position:relative;display:flex;flex-direction:column;justify-content:center;overflow:hidden}\n\t\t\t.hero-bg{position:absolute;inset:0;\n\t\t\t  background:linear-gradient(155deg,rgba(15,23,42,.88) 0%,rgba(30,58,138,.72) 55%,rgba(15,23,42,.60) 100%),\n\t\t\t    url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80') center/cover}\n\t\t\t.hero-content{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:120px 48px 200px}\n\t\t\t.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;\n\t\t\t  background:rgba(29,78,216,.22);border:1px solid rgba(96,165,250,.35);\n\t\t\t  color:#93C5FD;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;\n\t\t\t  border-radius:9999px;margin-bottom:28px}\n\t\t\t.hero-h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(44px,8vw,88px);\n\t\t\t  font-weight:400;color:#fff;line-height:1.05;margin-bottom:22px;max-width:680px}\n\t\t\t.hero-h1 em{font-style:italic;color:#60A5FA}\n\t\t\t.hero-sub{font-size:clamp(15px,1.8vw,18px);color:rgba(255,255,255,.68);max-width:440px;\n\t\t\t  line-height:1.75;margin-bottom:44px;font-weight:300}\n\t\t\t.hero-actions{display:flex;gap:14px;flex-wrap:wrap}\n\t\t\t.btn-hero{display:inline-flex;align-items:center;gap:9px;padding:16px 32px;\n\t\t\t  border-radius:9999px;font-size:15px;font-weight:700;font-family:inherit;\n\t\t\t  text-decoration:none;transition:all .25s}\n\t\t\t.btn-hero-p{background:#1D4ED8;color:#fff;box-shadow:0 8px 28px rgba(29,78,216,.4)}\n\t\t\t.btn-hero-p:hover{background:#1e40af;transform:translateY(-2px)}\n\t\t\t.btn-hero-s{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);\n\t\t\t  color:#fff;border:1.5px solid rgba(255,255,255,.22)}\n\t\t\t.btn-hero-s:hover{background:rgba(255,255,255,.18)}\n\t\t\t.stats-bar{position:absolute;bottom:0;left:0;right:0;z-index:1;\n\t\t\t  background:rgba(15,23,42,.78);backdrop-filter:blur(20px);\n\t\t\t  border-top:1px solid rgba(255,255,255,.07)}\n\t\t\t.stats-inner{max-width:1200px;margin:0 auto;padding:26px 48px;\n\t\t\t  display:flex;align-items:center;gap:40px}\n\t\t\t.stat-v{font-family:'DM Serif Display',serif;font-size:34px;color:#fff;line-height:1}\n\t\t\t.stat-l{font-size:11px;color:rgba(255,255,255,.45);margin-top:4px;letter-spacing:.04em}\n\t\t\t.stat-div{height:40px;width:1px;background:rgba(255,255,255,.1);flex-shrink:0}\n\t\t\t.how-section{padding:88px 48px;max-width:1200px;margin:0 auto}\n\t\t\t.how-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1D4ED8;margin-bottom:12px}\n\t\t\t.how-title{font-family:'DM Serif Display',serif;font-size:clamp(28px,4.5vw,48px);\n\t\t\t  line-height:1.12;margin-bottom:14px}\n\t\t\t.how-sub{font-size:15px;color:#64748B;max-width:440px;line-height:1.75;margin-bottom:56px}\n\t\t\t.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}\n\t\t\t.step{background:#fff;border-radius:20px;padding:34px 30px;border:1px solid #E2E8F0;\n\t\t\t  position:relative;overflow:hidden;transition:all .3s}\n\t\t\t.step:hover{transform:translateY(-4px);box-shadow:0 20px 56px rgba(15,23,42,.1);border-color:#1D4ED8}\n\t\t\t.step-num{font-family:'DM Serif Display',serif;font-size:80px;\n\t\t\t  color:rgba(29,78,216,.06);position:absolute;top:8px;right:14px;line-height:1}\n\t\t\t.step-icon{width:50px;height:50px;background:#EFF6FF;border-radius:14px;\n\t\t\t  display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:24px}\n\t\t\t.step h3{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:10px}\n\t\t\t.step p{font-size:14px;color:#64748B;line-height:1.65}\n\t\t\t.cta-wrap{padding:0 48px 88px;max-width:1200px;margin:0 auto}\n\t\t\t.cta-banner{background:linear-gradient(135deg,#0F172A 0%,#1E3A8A 100%);\n\t\t\t  border-radius:28px;padding:64px;display:flex;align-items:center;\n\t\t\t  justify-content:space-between;gap:32px;position:relative;overflow:hidden}\n\t\t\t.cta-banner::before{content:'';position:absolute;width:500px;height:500px;\n\t\t\t  background:radial-gradient(circle,rgba(29,78,216,.25),transparent 65%);\n\t\t\t  top:-150px;right:-100px;border-radius:50%}\n\t\t\t.cta-banner-text{position:relative;z-index:1}\n\t\t\t.cta-banner-text h2{font-family:'DM Serif Display',serif;font-size:clamp(24px,3.5vw,40px);\n\t\t\t  color:#fff;margin-bottom:10px;line-height:1.15}\n\t\t\t.cta-banner-text p{color:rgba(255,255,255,.58);font-size:15px}\n\t\t\t.preview-section{padding:72px 48px;background:#F8FAFC;border-top:1px solid #E2E8F0}\n\t\t\t.preview-inner{max-width:1200px;margin:0 auto}\n\t\t\t.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px}\n\t\t\t.preview-card{background:#fff;border-radius:16px;overflow:hidden;\n\t\t\t  border:1px solid #E2E8F0;text-decoration:none;color:inherit;display:block;\n\t\t\t  transition:transform .25s,box-shadow .25s,border-color .2s;position:relative}\n\t\t\t.preview-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(15,23,42,.1);border-color:#1D4ED8}\n\t\t\t.preview-media{aspect-ratio:4/3;overflow:hidden;background:#DBEAFE;position:relative}\n\t\t\t.preview-media img{width:100%;height:100%;object-fit:cover;transition:transform .4s}\n\t\t\t.preview-card:hover .preview-media img{transform:scale(1.04)}\n\t\t\t.preview-placeholder{height:100%;display:flex;align-items:center;justify-content:center;\n\t\t\t  font-family:'DM Serif Display',Georgia,serif;font-size:48px;color:rgba(29,78,216,.1)}\n\t\t\t.preview-lock{position:absolute;inset:0;background:rgba(15,23,42,.45);\n\t\t\t  display:flex;align-items:center;justify-content:center;gap:8px;\n\t\t\t  color:#fff;font-size:13px;font-weight:600;opacity:0;transition:opacity .25s}\n\t\t\t.preview-card:hover .preview-lock{opacity:1}\n\t\t\t.preview-body{padding:14px 16px 16px}\n\t\t\t.preview-op{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;\n\t\t\t  color:#1D4ED8;margin-bottom:6px}\n\t\t\t.preview-price{font-family:'DM Serif Display',Georgia,serif;font-size:22px;color:#111827;\n\t\t\t  font-weight:400;margin-bottom:4px}\n\t\t\t.preview-meta{font-size:12px;color:#64748B}\n\t\t\t.preview-login-cta{margin-top:28px;text-align:center}\n\t\t\t@media(max-width:900px){\n\t\t\t  .hero-content{padding:100px 24px 180px}\n\t\t\t  .stats-inner{padding:20px 24px;gap:20px;overflow-x:auto}\n\t\t\t  .preview-section{padding:48px 24px}\n\t\t\t  .preview-grid{grid-template-columns:1fr 1fr}\n\t\t\t  .steps{grid-template-columns:1fr}\n\t\t\t  .how-section{padding:60px 24px}\n\t\t\t  .cta-wrap{padding:0 24px 60px}\n\t\t\t  .cta-banner{flex-direction:column;padding:40px 28px}\n\t\t\t}\n\t\t\t@media(max-width:600px){\n\t\t\t  .preview-grid{grid-template-columns:1fr}\n\t\t\t}\n\t\t</style> <section class=\"hero\"><div class=\"hero-bg\"></div><div class=\"hero-content\"><div class=\"hero-eyebrow\"><span class=\"ms ms-sm\">location_on</span> Copiapó · Santiago · Todo Chile</div><h1 class=\"hero-h1\">Tu próxima<br><em>propiedad</em><br>está aquí.</h1><p class=\"hero-sub\">Accedé al catálogo completo de JCP. Iniciá sesión con Google y explorá propiedades en venta y arriendo.</p><div class=\"hero-actions\"><a href=\"/propiedades\" class=\"btn-hero btn-hero-p\"><span class=\"ms ms-sm\">search</span> Ver propiedades</a> <a href=\"https://wa.me/56912345678\" class=\"btn-hero btn-hero-s\" target=\"_blank\" rel=\"noopener\"><span class=\"ms ms-sm\">chat</span> WhatsApp</a></div></div><div class=\"stats-bar\"><div class=\"stats-inner\"><div><div class=\"stat-v\">48+</div><div class=\"stat-l\">Propiedades activas</div></div><div class=\"stat-div\"></div><div><div class=\"stat-v\">12</div><div class=\"stat-l\">Años de experiencia</div></div><div class=\"stat-div\"></div><div><div class=\"stat-v\">Venta</div><div class=\"stat-l\">y Arriendo</div></div><div class=\"stat-div\"></div><div><div class=\"stat-v\">100%</div><div class=\"stat-l\">Atención personalizada</div></div></div></div></section>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if len(previews) > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"preview-section\"><div class=\"preview-inner\"><p class=\"how-eyebrow\">Propiedades destacadas</p><h2 class=\"how-title\">Descubrí lo que tenemos para vos</h2><p class=\"how-sub\">Iniciá sesión para ver el catálogo completo y contactar al corredor.</p><div class=\"preview-grid\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				for _, p := range previews {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<a href=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var3 templ.SafeURL
+					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL("/login?next=/propiedades/" + p.Slug))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/landing.templ`, Line: 214, Col: 68}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"preview-card\"><div class=\"preview-media\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					if p.CoverImage != "" {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<img src=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var4 string
+						templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.CoverImage)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/landing.templ`, Line: 217, Col: 33}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" alt=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var5 string
+						templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(p.Titulo)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/landing.templ`, Line: 217, Col: 50}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" loading=\"lazy\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					} else {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"preview-placeholder\">JCP</div>")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div class=\"preview-lock\"><span style=\"font-family:'Material Symbols Rounded';font-size:18px\">lock</span> Iniciá sesión para ver</div></div><div class=\"preview-body\"><div class=\"preview-op\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var6 string
+					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(landingOpLabel(p))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/landing.templ`, Line: 227, Col: 52}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div class=\"preview-price\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var7 string
+					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(landingPriceLabel(p))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/landing.templ`, Line: 228, Col: 58}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"preview-meta\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var8 string
+					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(landingMetaLabel(p))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/landing.templ`, Line: 229, Col: 56}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div></a>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"preview-login-cta\"><a href=\"/login\" class=\"btn-hero btn-hero-p\" style=\"display:inline-flex\"><span style=\"font-family:'Material Symbols Rounded';font-size:18px;display:inline-flex;align-items:center\">search</span> Ver todas las propiedades</a></div></div></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " <div class=\"how-section\"><p class=\"how-eyebrow\">Cómo funciona</p><h2 class=\"how-title\">Encontrá tu propiedad<br>en 3 pasos simples</h2><p class=\"how-sub\">Sin burocracia. Solo iniciás sesión, explorás el mapa y nos contactás.</p><div class=\"steps\"><div class=\"step\"><span class=\"step-num\">1</span><div class=\"step-icon\">🔑</div><h3>Iniciá sesión con Google</h3><p>Un clic con tu cuenta de Gmail. Sin formularios ni contraseñas extra. Acceso inmediato a todo el catálogo.</p></div><div class=\"step\"><span class=\"step-num\">2</span><div class=\"step-icon\">🗺️</div><h3>Explorá en el mapa</h3><p>Filtrá por tipo, precio y operación. Cada propiedad tiene su pin en el mapa para que ubiques la zona fácilmente.</p></div><div class=\"step\"><span class=\"step-num\">3</span><div class=\"step-icon\">💬</div><h3>Contactanos directamente</h3><p>¿Encontraste algo que te gusta? Agendá una visita o escribinos por WhatsApp. Te asesoramos sin compromiso.</p></div></div></div><div class=\"cta-wrap\"><div class=\"cta-banner\"><div class=\"cta-banner-text\"><h2>¿Listo para encontrar<br>tu próxima propiedad?</h2><p>Iniciá sesión y accedé al catálogo completo de JCP.</p></div><a href=\"/propiedades\" class=\"btn-hero btn-hero-p\" style=\"position:relative;z-index:1;white-space:nowrap\">Explorar propiedades →</a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

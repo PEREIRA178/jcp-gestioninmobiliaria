@@ -14,7 +14,7 @@ import (
 
 func RegisterPublic(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBase, hub *realtime.Hub) {
 	// Public marketing pages
-	app.Get("/", web.LandingHandler(cfg))
+	app.Get("/", web.LandingHandler(cfg, pb))
 	app.Get("/noticias.html", web.PageHandler(cfg, "noticias"))
 	app.Get("/noticias/:id", web.NoticiaHandler(cfg, pb))
 	app.Get("/rss.xml", web.RSSFeed(cfg))
@@ -35,6 +35,7 @@ func RegisterPublic(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBas
 	visitor := app.Group("", middleware.VisitorAuthRequired(cfg))
 	visitor.Get("/propiedades", web.PropiedadesHandler(cfg))
 	visitor.Get("/propiedades/:key", web.PropiedadHandler(cfg, pb))
+	visitor.Get("/guardadas", web.GuardasHandler(cfg))
 
 	// WebSocket
 	app.Use("/ws", func(c *fiber.Ctx) error {
