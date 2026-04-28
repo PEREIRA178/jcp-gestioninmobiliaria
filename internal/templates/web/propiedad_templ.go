@@ -67,7 +67,7 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.detail-scroll{flex:1;overflow-y:auto}\n\t\t\t.detail-wrap{max-width:1100px;margin:28px auto 96px;padding:0 24px}\n\t\t\t.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;\n\t\t\t  color:#64748B;text-decoration:none;margin-bottom:18px;\n\t\t\t  padding:7px 14px;border-radius:9999px;border:1px solid #E2E8F0;transition:all .2s}\n\t\t\t.detail-back:hover{color:#1D4ED8;border-color:#1D4ED8}\n\t\t\t.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;\n\t\t\t  gap:8px;border-radius:16px;overflow:hidden;aspect-ratio:16/9;margin-bottom:28px;\n\t\t\t  background:#F1F5F9}\n\t\t\t.g-main{grid-column:1;grid-row:1/span 2;background:#DBEAFE;\n\t\t\t  display:flex;align-items:center;justify-content:center;overflow:hidden}\n\t\t\t.g-main img,.g-cell img{width:100%;height:100%;object-fit:cover}\n\t\t\t.g-cell{background:#E2E8F0;overflow:hidden}\n\t\t\t.gallery-placeholder{font-family:'Cormorant Garamond',Georgia,serif;font-size:80px;color:rgba(29,78,216,.15)}\n\t\t\t.price-bar{background:#1E3A8A;color:white;padding:18px 24px;border-radius:14px;\n\t\t\t  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px}\n\t\t\t.price-main{font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.1;font-weight:700}\n\t\t\t.price-sub{font-size:13px;opacity:.72;margin-top:3px;display:flex;align-items:center;gap:6px}\n\t\t\t.pb-ctas{display:flex;gap:10px}\n\t\t\t.pb-btn{padding:10px 20px;border-radius:10px;border:none;font-size:13px;font-weight:700;\n\t\t\t  cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;text-decoration:none}\n\t\t\t.pb-wa{background:#25D366;color:white}\n\t\t\t.pb-tel{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.22)}\n\t\t\t.detail-grid{display:grid;grid-template-columns:1fr 360px;gap:40px}\n\t\t\t.detail-header h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(24px,4vw,36px);line-height:1.15;margin-bottom:8px;font-weight:700}\n\t\t\t.detail-loc{font-size:14px;color:#64748B;margin-bottom:12px;display:flex;align-items:center;gap:6px}\n\t\t\t.op-chips{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}\n\t\t\t.op-chip{font-size:12px;font-weight:600;padding:5px 14px;border-radius:9999px;letter-spacing:.02em}\n\t\t\t.op-venta{background:#DBEAFE;color:#1E3A8A}\n\t\t\t.op-arriendo{background:#EDE9FE;color:#5B21B6}\n\t\t\t.op-dest{background:#FEF3C7;color:#92400E}\n\t\t\t.op-deal{background:#D1FAE5;color:#065F46}\n\t\t\t.feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin:22px 0 26px}\n\t\t\t.feat-box{padding:16px;border:1px solid #E2E8F0;border-radius:12px;background:#fff;text-align:center}\n\t\t\t.feat-icon{color:#1D4ED8;margin-bottom:6px;display:flex;justify-content:center}\n\t\t\t.feat-val{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;color:#111827;font-weight:700}\n\t\t\t.feat-label{font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em}\n\t\t\t.section-block{margin-bottom:30px}\n\t\t\t.section-block h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:12px;\n\t\t\t  display:flex;align-items:center;gap:10px}\n\t\t\t.section-icon{width:30px;height:30px;background:#EFF6FF;border-radius:8px;\n\t\t\t  display:flex;align-items:center;justify-content:center;color:#1D4ED8;flex-shrink:0}\n\t\t\t.desc{font-size:15px;line-height:1.85;color:#4B5563}\n\t\t\t.prestaciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}\n\t\t\t.prest-pill{font-size:12.5px;padding:7px 14px;background:#EFF6FF;\n\t\t\t  border:1px solid #DBEAFE;border-radius:9999px;color:#1D4ED8;display:flex;align-items:center;gap:6px}\n\t\t\t.map-box{height:280px;border-radius:12px;overflow:hidden;\n\t\t\t  border:1px solid #E2E8F0;position:relative;margin-bottom:8px}\n\t\t\t.map-overlay-badge{position:absolute;bottom:10px;left:10px;z-index:500;\n\t\t\t  background:white;border-radius:8px;padding:7px 12px;\n\t\t\t  box-shadow:0 4px 12px rgba(0,0,0,.12);font-size:12px;font-weight:600;color:#111827;\n\t\t\t  border:1px solid #E2E8F0;display:flex;align-items:center;gap:5px}\n\t\t\t.map-hint{font-size:11px;color:#94A3B8;display:flex;align-items:center;gap:4px;margin-top:6px}\n\t\t\t.zone-pill{display:inline-flex;align-items:center;gap:5px;\n\t\t\t  background:#EFF6FF;color:#1D4ED8;\n\t\t\t  padding:5px 12px;border-radius:9999px;font-size:12px;font-weight:600;\n\t\t\t  border:1px solid #DBEAFE;margin:0 6px 8px 0}\n\t\t\t/* Contact sidebar */\n\t\t\t.contact-card{position:sticky;top:24px;background:#fff;\n\t\t\t  border:1px solid #E2E8F0;border-radius:16px;padding:24px;\n\t\t\t  box-shadow:0 4px 20px rgba(15,23,42,.07);height:fit-content}\n\t\t\t.price-detail-row{display:flex;justify-content:space-between;align-items:center;\n\t\t\t  padding:9px 0;border-bottom:1px solid #F1F5F9;font-size:14px}\n\t\t\t.price-detail-row:last-of-type{border:none}\n\t\t\t.pr-label{color:#64748B}\n\t\t\t.pr-val{font-weight:700;color:#111827}\n\t\t\t.pr-val.big{color:#1D4ED8;font-size:20px;font-family:'Cormorant Garamond',Georgia,serif}\n\t\t\t.sb-cta{display:flex;align-items:center;justify-content:center;gap:8px;\n\t\t\t  width:100%;padding:13px;border-radius:11px;border:none;font-size:14px;font-weight:700;\n\t\t\t  cursor:pointer;margin-bottom:10px;text-decoration:none;font-family:inherit}\n\t\t\t.sb-wa{background:#25D366;color:white}\n\t\t\t.sb-tel{background:#1D4ED8;color:white}\n\t\t\t.sb-form{background:#F8FAFC;color:#111827;border:1.5px solid #E2E8F0}\n\t\t\t.sidebar-map-box{height:180px;border-radius:10px;overflow:hidden;border:1px solid #E2E8F0}\n\t\t\t/* Schedule section */\n\t\t\t.schedule-section{background:#fff;border-radius:16px;border:1px solid #E2E8F0;padding:28px;margin-top:24px}\n\t\t\t.schedule-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:6px}\n\t\t\t.schedule-sub{font-size:13px;color:#64748B;margin-bottom:22px}\n\t\t\t.schedule-form{display:flex;flex-direction:column;gap:14px}\n\t\t\t.sched-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}\n\t\t\t.sched-field{display:flex;flex-direction:column;gap:5px}\n\t\t\t.sched-field label{font-size:12px;font-weight:600;color:#374151;letter-spacing:.02em}\n\t\t\t.sched-input{padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;\n\t\t\t  font-size:14px;font-family:inherit;outline:none;color:#111827;transition:border-color .2s}\n\t\t\t.sched-input:focus{border-color:#1D4ED8}\n\t\t\t.sched-btn{display:flex;align-items:center;justify-content:center;gap:8px;\n\t\t\t  padding:14px 24px;background:#25D366;color:#fff;border:none;\n\t\t\t  border-radius:9999px;font-size:14px;font-weight:700;cursor:pointer;\n\t\t\t  font-family:inherit;transition:all .22s;margin-top:4px}\n\t\t\t.sched-btn:hover{background:#1DAB54;transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,211,102,.35)}\n\t\t\t@media(max-width:900px){\n\t\t\t  .detail-grid{grid-template-columns:1fr}\n\t\t\t  .gallery{aspect-ratio:4/3;grid-template-columns:1fr 1fr;grid-template-rows:2fr 1fr}\n\t\t\t  .g-main{grid-column:1/span 2;grid-row:1}\n\t\t\t  .contact-card{position:static}\n\t\t\t}\n\t\t</style> <div class=\"detail-scroll\"><div class=\"detail-wrap\"><a href=\"/propiedades\" class=\"detail-back\"><span class=\"ms ms-sm\">arrow_back</span> Volver al listado</a><div class=\"gallery\"><div class=\"g-main\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.detail-scroll{flex:1;overflow-y:auto}\n\t\t\t.detail-wrap{max-width:1100px;margin:28px auto 96px;padding:0 24px}\n\t\t\t.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;\n\t\t\t  color:#64748B;text-decoration:none;margin-bottom:18px;\n\t\t\t  padding:7px 14px;border-radius:9999px;border:1px solid #E2E8F0;transition:all .2s}\n\t\t\t.detail-back:hover{color:#1D4ED8;border-color:#1D4ED8}\n\t\t\t.gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;\n\t\t\t  gap:8px;border-radius:16px;overflow:hidden;aspect-ratio:16/9;margin-bottom:28px;\n\t\t\t  background:#F1F5F9}\n\t\t\t.g-main{grid-column:1;grid-row:1/span 2;background:#DBEAFE;\n\t\t\t  display:flex;align-items:center;justify-content:center;overflow:hidden}\n\t\t\t.g-main img,.g-cell img{width:100%;height:100%;object-fit:cover}\n\t\t\t.g-cell{background:#E2E8F0;overflow:hidden}\n\t\t\t.gallery-placeholder{font-family:'Cormorant Garamond',Georgia,serif;font-size:80px;color:rgba(29,78,216,.15)}\n\t\t\t.price-bar{background:#1E3A8A;color:white;padding:18px 24px;border-radius:14px;\n\t\t\t  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:28px}\n\t\t\t.price-main{font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;line-height:1.1;font-weight:700}\n\t\t\t.price-sub{font-size:13px;opacity:.72;margin-top:3px;display:flex;align-items:center;gap:6px}\n\t\t\t.pb-ctas{display:flex;gap:10px}\n\t\t\t.pb-btn{padding:10px 20px;border-radius:10px;border:none;font-size:13px;font-weight:700;\n\t\t\t  cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;text-decoration:none}\n\t\t\t.pb-wa{background:#25D366;color:white}\n\t\t\t.pb-tel{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:white;border:1px solid rgba(255,255,255,.22)}\n\t\t\t.detail-grid{display:grid;grid-template-columns:1fr 360px;gap:40px}\n\t\t\t.detail-header h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(24px,4vw,36px);line-height:1.15;margin-bottom:8px;font-weight:700}\n\t\t\t.detail-loc{font-size:14px;color:#64748B;margin-bottom:12px;display:flex;align-items:center;gap:6px}\n\t\t\t.op-chips{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}\n\t\t\t.op-chip{font-size:12px;font-weight:600;padding:5px 14px;border-radius:9999px;letter-spacing:.02em}\n\t\t\t.op-venta{background:#DBEAFE;color:#1E3A8A}\n\t\t\t.op-arriendo{background:#EDE9FE;color:#5B21B6}\n\t\t\t.op-dest{background:#FEF3C7;color:#92400E}\n\t\t\t.op-deal{background:#D1FAE5;color:#065F46}\n\t\t\t.feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin:22px 0 26px}\n\t\t\t.feat-box{padding:16px;border:1px solid #E2E8F0;border-radius:12px;background:#fff;text-align:center}\n\t\t\t.feat-icon{color:#1D4ED8;margin-bottom:6px;display:flex;justify-content:center}\n\t\t\t.feat-val{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;color:#111827;font-weight:700}\n\t\t\t.feat-label{font-size:11px;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em}\n\t\t\t.section-block{margin-bottom:30px}\n\t\t\t.section-block h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:12px;\n\t\t\t  display:flex;align-items:center;gap:10px}\n\t\t\t.section-icon{width:30px;height:30px;background:#EFF6FF;border-radius:8px;\n\t\t\t  display:flex;align-items:center;justify-content:center;color:#1D4ED8;flex-shrink:0}\n\t\t\t.desc{font-size:15px;line-height:1.85;color:#4B5563}\n\t\t\t.prestaciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}\n\t\t\t.prest-pill{font-size:12.5px;padding:7px 14px;background:#EFF6FF;\n\t\t\t  border:1px solid #DBEAFE;border-radius:9999px;color:#1D4ED8;display:flex;align-items:center;gap:6px}\n\t\t\t.map-box{height:280px;border-radius:12px;overflow:hidden;\n\t\t\t  border:1px solid #E2E8F0;position:relative;margin-bottom:8px}\n\t\t\t.map-overlay-badge{position:absolute;bottom:10px;left:10px;z-index:500;\n\t\t\t  background:white;border-radius:8px;padding:7px 12px;\n\t\t\t  box-shadow:0 4px 12px rgba(0,0,0,.12);font-size:12px;font-weight:600;color:#111827;\n\t\t\t  border:1px solid #E2E8F0;display:flex;align-items:center;gap:5px}\n\t\t\t.map-hint{font-size:11px;color:#94A3B8;display:flex;align-items:center;gap:4px;margin-top:6px}\n\t\t\t.zone-pill{display:inline-flex;align-items:center;gap:5px;\n\t\t\t  background:#EFF6FF;color:#1D4ED8;\n\t\t\t  padding:5px 12px;border-radius:9999px;font-size:12px;font-weight:600;\n\t\t\t  border:1px solid #DBEAFE;margin:0 6px 8px 0}\n\t\t\t/* Contact sidebar */\n\t\t\t.contact-card{position:sticky;top:24px;background:#fff;\n\t\t\t  border:1px solid #E2E8F0;border-radius:16px;padding:24px;\n\t\t\t  box-shadow:0 4px 20px rgba(15,23,42,.07);height:fit-content}\n\t\t\t.price-detail-row{display:flex;justify-content:space-between;align-items:center;\n\t\t\t  padding:9px 0;border-bottom:1px solid #F1F5F9;font-size:14px}\n\t\t\t.price-detail-row:last-of-type{border:none}\n\t\t\t.pr-label{color:#64748B}\n\t\t\t.pr-val{font-weight:700;color:#111827}\n\t\t\t.pr-val.big{color:#1D4ED8;font-size:20px;font-family:'Cormorant Garamond',Georgia,serif}\n\t\t\t.sb-cta{display:flex;align-items:center;justify-content:center;gap:8px;\n\t\t\t  width:100%;padding:13px;border-radius:11px;border:none;font-size:14px;font-weight:700;\n\t\t\t  cursor:pointer;margin-bottom:10px;text-decoration:none;font-family:inherit}\n\t\t\t.sb-wa{background:#25D366;color:white}\n\t\t\t.sb-tel{background:#1D4ED8;color:white}\n\t\t\t.sb-form{background:#F8FAFC;color:#111827;border:1.5px solid #E2E8F0}\n\t\t\t.sidebar-map-box{height:180px;border-radius:10px;overflow:hidden;border:1px solid #E2E8F0}\n\t\t\t.pb-loc{font-size:13px;opacity:.65;display:flex;align-items:center;gap:6px}\n\t\t\t/* Schedule section */\n\t\t\t.schedule-section{padding-top:20px;margin-top:10px;border-top:1px solid #F1F5F9}\n\t\t\t.schedule-title{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;margin-bottom:4px}\n\t\t\t.schedule-sub{font-size:13px;color:#64748B;margin-bottom:22px}\n\t\t\t.sched-layout{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}\n\t\t\t.sched-cal-col{}\n\t\t\t.sched-right{display:flex;flex-direction:column;gap:14px}\n\t\t\t.sched-slots-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#64748B;margin-bottom:8px}\n\t\t\t.sched-slots{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}\n\t\t\t.sched-slot{padding:8px 16px;border:1.5px solid #E2E8F0;border-radius:9999px;\n\t\t\t  font-size:13px;font-weight:500;background:#fff;color:#374151;\n\t\t\t  cursor:pointer;transition:all .18s;font-family:inherit}\n\t\t\t.sched-slot:hover{border-color:#1D4ED8;color:#1D4ED8}\n\t\t\t.sched-slot.active{background:#1D4ED8;color:#fff;border-color:#1D4ED8}\n\t\t\t.sched-field{display:flex;flex-direction:column;gap:5px}\n\t\t\t.sched-field label{font-size:12px;font-weight:600;color:#374151;letter-spacing:.02em}\n\t\t\t.sched-input{padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:10px;\n\t\t\t  font-size:14px;font-family:inherit;outline:none;color:#111827;transition:border-color .2s}\n\t\t\t.sched-input:focus{border-color:#1D4ED8}\n\t\t\t.sched-btn{display:flex;align-items:center;justify-content:center;gap:8px;\n\t\t\t  padding:14px 24px;background:#25D366;color:#fff;border:none;\n\t\t\t  border-radius:9999px;font-size:14px;font-weight:700;cursor:pointer;\n\t\t\t  font-family:inherit;transition:all .22s;margin-top:4px}\n\t\t\t.sched-btn:hover{background:#1DAB54;transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,211,102,.35)}\n\t\t\t/* Flatpickr overrides */\n\t\t\t.flatpickr-calendar{box-shadow:none!important;border:1.5px solid #E2E8F0!important;border-radius:14px!important;font-family:'Outfit',sans-serif!important}\n\t\t\t.flatpickr-day.selected,.flatpickr-day.selected:hover{background:#1D4ED8!important;border-color:#1D4ED8!important}\n\t\t\t.flatpickr-day:hover{background:#EFF6FF!important}\n\t\t\t.flatpickr-months .flatpickr-month{background:#fff!important;color:#111827!important}\n\t\t\t.flatpickr-current-month .flatpickr-monthDropdown-months{color:#111827!important}\n\t\t\t.flatpickr-weekday{color:#94A3B8!important}\n\t\t\t@media(max-width:700px){.sched-layout{grid-template-columns:1fr}}\n\t\t\t@media(max-width:900px){\n\t\t\t  .detail-grid{grid-template-columns:1fr}\n\t\t\t  .gallery{aspect-ratio:4/3;grid-template-columns:1fr 1fr;grid-template-rows:2fr 1fr}\n\t\t\t  .g-main{grid-column:1/span 2;grid-row:1}\n\t\t\t  .contact-card{position:static}\n\t\t\t}\n\t\t</style> <div class=\"detail-scroll\"><div class=\"detail-wrap\"><a href=\"/propiedades\" class=\"detail-back\"><span class=\"ms ms-sm\">arrow_back</span> Volver al listado</a><div class=\"gallery\"><div class=\"g-main\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -96,14 +96,14 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			if d.PriceSub != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"price-sub\"><span class=\"ms ms-sm\" style=\"opacity:.7\">location_on</span> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"price-sub\"><span class=\"ms ms-sm\" style=\"opacity:.7\">info</span> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(d.PriceSub)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 144, Col: 20}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 161, Col: 20}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -114,22 +114,7 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><div class=\"pb-ctas\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			if d.WhatsappHTML != "" {
-				templ_7745c5c3_Err = templ.Raw(string(d.WhatsappHTML)).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<a href=\"https://wa.me/56912345678\" class=\"pb-btn pb-wa\" target=\"_blank\" rel=\"noopener\"><span class=\"ms ms-sm\">chat</span> WhatsApp</a> ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<button class=\"pb-btn pb-tel\"><span class=\"ms ms-sm\">phone</span> Llamar</button></div></div><div class=\"detail-grid\"><div><div class=\"detail-header\" style=\"margin-bottom:20px\"><div class=\"op-chips\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><div class=\"detail-grid\"><div><div class=\"detail-header\" style=\"margin-bottom:20px\"><div class=\"op-chips\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -137,33 +122,33 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(d.Titulo)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 163, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 170, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</h1><p class=\"detail-loc\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">location_on</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</h1><p class=\"detail-loc\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">location_on</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(d.Direccion)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 166, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 173, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</p></div><div class=\"feats-grid\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</p></div><div class=\"feats-grid\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -171,7 +156,7 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div class=\"section-block\"><h2><div class=\"section-icon\"><span class=\"ms ms-sm\">description</span></div>Descripción</h2><div class=\"desc\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"section-block\"><h2><div class=\"section-icon\"><span class=\"ms ms-sm\">description</span></div>Descripción</h2><div class=\"desc\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -179,129 +164,103 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div></div><div class=\"schedule-section\" data-prop-title=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(d.Titulo)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 177, Col: 62}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\"><h3 class=\"schedule-title\">Agendar una visita</h3><p class=\"schedule-sub\">Elegí fecha y horario y te confirmamos por WhatsApp.</p><form class=\"schedule-form\" id=\"schedule-form\" data-wa-phone=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(d.WhatsappPhone)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 180, Col: 85}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\"><div class=\"sched-row\"><div class=\"sched-field\"><label>Fecha</label> <input class=\"sched-input\" type=\"date\" name=\"fecha\" id=\"sched-date\" required></div><div class=\"sched-field\"><label>Hora</label> <select class=\"sched-input\" name=\"hora\" id=\"sched-time\"><option value=\"09:00\">09:00 AM</option> <option value=\"10:00\">10:00 AM</option> <option value=\"11:00\">11:00 AM</option> <option value=\"12:00\">12:00 PM</option> <option value=\"14:00\">02:00 PM</option> <option value=\"15:00\">03:00 PM</option> <option value=\"16:00\">04:00 PM</option> <option value=\"17:00\">05:00 PM</option></select></div></div><div class=\"sched-field\"><label>Tu nombre</label> <input class=\"sched-input\" type=\"text\" name=\"nombre\" placeholder=\"Juan Carlos\" required></div><div class=\"sched-field\"><label>Tu teléfono</label> <input class=\"sched-input\" type=\"tel\" name=\"telefono\" placeholder=\"+56 9 1234 5678\"></div><button type=\"submit\" class=\"sched-btn\"><span class=\"ms ms-sm ms-fill\">calendar_month</span> Confirmar visita por WhatsApp</button></form></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if d.Lat != 0 && d.Lng != 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<div class=\"section-block\" style=\"margin-top:24px\"><h2><div class=\"section-icon\"><span class=\"ms ms-sm\">map</span></div>Ubicación</h2>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"section-block\" style=\"margin-top:24px\"><h2><div class=\"section-icon\"><span class=\"ms ms-sm\">map</span></div>Ubicación</h2>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if d.Comuna != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<div style=\"margin-bottom:12px\"><span class=\"zone-pill\"><span class=\"ms ms-sm\">location_on</span> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div style=\"margin-bottom:12px\"><span class=\"zone-pill\"><span class=\"ms ms-sm\">location_on</span> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var8 string
-					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(d.Comuna)
+					var templ_7745c5c3_Var6 string
+					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(d.Comuna)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 221, Col: 86}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 192, Col: 86}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"map-box\" data-map=\"detail\" data-lat=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"map-box\" data-map=\"detail\" data-lat=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var7 string
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.6f", d.Lat))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 198, Col: 46}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" data-lng=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var8 string
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.6f", d.Lng))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 199, Col: 46}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" data-title=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
-				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.6f", d.Lat))
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(d.Titulo)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 227, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 200, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" data-lng=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var10 string
-				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.6f", d.Lng))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 228, Col: 46}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" data-title=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var11 string
-				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(d.Titulo)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 229, Col: 30}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				if d.Comuna != "" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"map-overlay-badge\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">location_on</span> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"map-overlay-badge\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">location_on</span> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var12 string
-					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(d.Comuna)
+					var templ_7745c5c3_Var10 string
+					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(d.Comuna)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 234, Col: 21}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 205, Col: 21}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div><p class=\"map-hint\"><span class=\"ms ms-sm\">lock</span> Dirección exacta disponible al contactar al corredor</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><p class=\"map-hint\"><span class=\"ms ms-sm\">lock</span> Dirección exacta disponible al contactar al corredor</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if d.AmenitiesHTML != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"section-block\"><h2><div class=\"section-icon\"><span class=\"ms ms-sm\">auto_awesome</span></div>Prestaciones</h2><div class=\"prestaciones\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"section-block\"><div style=\"font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin-bottom:10px\">Prestaciones</div><div class=\"prestaciones\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -309,12 +268,12 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div><aside class=\"contact-card\" id=\"contactar\"><div style=\"font-size:15px;font-weight:700;color:#111827;margin-bottom:14px\">Precio y condiciones</div><div class=\"price-detail-row\"><span class=\"pr-label\">Precio</span> <span class=\"pr-val big\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</div><aside class=\"contact-card\" id=\"contactar\"><div style=\"font-size:15px;font-weight:700;color:#111827;margin-bottom:14px\">Precio y condiciones</div><div class=\"price-detail-row\"><span class=\"pr-label\">Precio</span> <span class=\"pr-val big\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -322,30 +281,30 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if d.PriceSub != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<div class=\"price-detail-row\"><span class=\"pr-label\">Referencia</span> <span class=\"pr-val\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<div class=\"price-detail-row\"><span class=\"pr-label\">Referencia</span> <span class=\"pr-val\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(d.PriceSub)
+				var templ_7745c5c3_Var11 string
+				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(d.PriceSub)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 263, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 231, Col: 41}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</span></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</span></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div style=\"margin-top:16px\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div style=\"margin-top:16px\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -355,48 +314,38 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<a href=\"https://wa.me/56912345678\" class=\"sb-cta sb-wa\" target=\"_blank\" rel=\"noopener\"><span class=\"ms ms-sm\">chat</span> Consultar por WhatsApp</a> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<a href=\"https://wa.me/56912345678\" class=\"sb-cta sb-wa\" target=\"_blank\" rel=\"noopener\"><span class=\"ms ms-sm\">chat</span> Consultar por WhatsApp</a> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<button class=\"sb-cta sb-tel\"><span class=\"ms ms-sm\">phone</span> Llamar al corredor</button> <button class=\"sb-cta sb-form\"><span class=\"ms ms-sm\">mail</span> Enviar consulta</button></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<button class=\"sb-cta sb-tel\"><span class=\"ms ms-sm\">phone</span> Llamar al corredor</button> <button class=\"sb-cta sb-form\"><span class=\"ms ms-sm\">mail</span> Enviar consulta</button></div><div class=\"schedule-section\" data-prop-title=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if d.Lat != 0 && d.Lng != 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<div style=\"margin-top:20px;padding-top:20px;border-top:1px solid #F1F5F9\"><div style=\"font-size:13px;font-weight:700;color:#111827;margin-bottom:8px;display:flex;align-items:center;gap:5px\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">map</span> Zona de la propiedad</div><div class=\"sidebar-map-box\" data-map=\"detail-mini\" data-lat=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var14 string
-				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.6f", d.Lat))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 285, Col: 46}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" data-lng=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var15 string
-				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.6f", d.Lng))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 286, Col: 46}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\"></div><p class=\"map-hint\" style=\"justify-content:center;margin-top:6px\"><span class=\"ms ms-sm\">info</span> Ubicación aproximada</p></div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			var templ_7745c5c3_Var12 string
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(d.Titulo)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 245, Col: 62}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</aside></div></div></div><script>\n\t\t\t(function(){\n\t\t\t  var df=document.getElementById('sched-date');\n\t\t\t  if(df){df.min=new Date().toISOString().slice(0,10);}\n\t\t\t  var sf=document.getElementById('schedule-form');\n\t\t\t  if(sf){\n\t\t\t    sf.addEventListener('submit',function(e){\n\t\t\t      e.preventDefault();\n\t\t\t      var fecha=sf.fecha.value,hora=sf.hora.value;\n\t\t\t      var nombre=sf.nombre.value.trim(),tel=sf.telefono.value.trim();\n\t\t\t      var propTitle=sf.closest('[data-prop-title]')?sf.closest('[data-prop-title]').dataset.propTitle:document.title;\n\t\t\t      var waPhone=sf.dataset.waPhone||'56912345678';\n\t\t\t      var text='Hola! Quiero agendar una visita para: '+propTitle+'\\nFecha: '+fecha+'\\nHora: '+hora;\n\t\t\t      if(nombre)text+='\\nNombre: '+nombre;\n\t\t\t      if(tel)text+='\\nTeléfono: '+tel;\n\t\t\t      window.open('https://wa.me/'+waPhone+'?text='+encodeURIComponent(text),'_blank');\n\t\t\t    });\n\t\t\t  }\n\t\t\t}());\n\t\t</script>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\"><div style=\"font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;display:flex;align-items:center;gap:6px\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">calendar_month</span> Agendar visita</div><p class=\"schedule-sub\">Elegí fecha y horario, te confirmamos por WhatsApp.</p><form id=\"schedule-form\" data-wa-phone=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(d.WhatsappPhone)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/propiedad.templ`, Line: 250, Col: 63}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"><div class=\"sched-layout\"><div class=\"sched-cal-col\"><input id=\"sched-date-fp\" type=\"hidden\" name=\"fecha\"><div id=\"sched-cal\"></div></div><div class=\"sched-right\"><div><div class=\"sched-slots-label\">Horario</div><div class=\"sched-slots\"><button type=\"button\" class=\"sched-slot active\" data-time=\"09:00\">09:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"10:00\">10:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"11:00\">11:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"12:00\">12:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"14:00\">14:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"15:00\">15:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"16:00\">16:00</button> <button type=\"button\" class=\"sched-slot\" data-time=\"17:00\">17:00</button></div></div><div class=\"sched-field\"><label>Tu nombre</label> <input class=\"sched-input\" type=\"text\" name=\"nombre\" placeholder=\"Juan Carlos\" required></div><div class=\"sched-field\"><label>Tu teléfono</label> <input class=\"sched-input\" type=\"tel\" name=\"telefono\" placeholder=\"+56 9 1234 5678\"></div><button type=\"submit\" class=\"sched-btn\"><span class=\"ms ms-sm ms-fill\">calendar_month</span> Confirmar por WhatsApp</button></div></div></form></div></aside></div></div></div><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css\"><script src=\"https://cdn.jsdelivr.net/npm/flatpickr\" defer></script> <script src=\"https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js\" defer></script> <script>\n\t\t\t(function(){\n\t\t\t  function initSchedule(){\n\t\t\t    var cal=document.getElementById('sched-cal');\n\t\t\t    if(!cal||!window.flatpickr)return;\n\t\t\t    var fp=flatpickr(cal,{\n\t\t\t      inline:true,\n\t\t\t      minDate:'today',\n\t\t\t      locale:flatpickr.l10ns.es,\n\t\t\t      disableMobile:true,\n\t\t\t      onChange:function(dates,dateStr){\n\t\t\t        var inp=document.getElementById('sched-date-fp');\n\t\t\t        if(inp)inp.value=dateStr;\n\t\t\t      }\n\t\t\t    });\n\t\t\t    // default to today\n\t\t\t    fp.setDate(new Date());\n\n\t\t\t    // time slot buttons\n\t\t\t    var selectedTime='09:00';\n\t\t\t    document.querySelectorAll('.sched-slot').forEach(function(btn){\n\t\t\t      btn.addEventListener('click',function(){\n\t\t\t        document.querySelectorAll('.sched-slot').forEach(function(b){b.classList.remove('active')});\n\t\t\t        btn.classList.add('active');\n\t\t\t        selectedTime=btn.dataset.time;\n\t\t\t      });\n\t\t\t    });\n\n\t\t\t    // form submit\n\t\t\t    var sf=document.getElementById('schedule-form');\n\t\t\t    if(sf){\n\t\t\t      sf.addEventListener('submit',function(e){\n\t\t\t        e.preventDefault();\n\t\t\t        var fecha=document.getElementById('sched-date-fp').value||new Date().toISOString().slice(0,10);\n\t\t\t        var nombre=sf.nombre.value.trim(),tel=sf.telefono.value.trim();\n\t\t\t        var propTitle=sf.closest('[data-prop-title]')?sf.closest('[data-prop-title]').dataset.propTitle:document.title;\n\t\t\t        var waPhone=sf.dataset.waPhone||'56912345678';\n\t\t\t        var text='Hola! Quiero agendar una visita para: '+propTitle+'\\nFecha: '+fecha+'\\nHora: '+selectedTime;\n\t\t\t        if(nombre)text+='\\nNombre: '+nombre;\n\t\t\t        if(tel)text+='\\nTeléfono: '+tel;\n\t\t\t        window.open('https://wa.me/'+waPhone+'?text='+encodeURIComponent(text),'_blank');\n\t\t\t      });\n\t\t\t    }\n\t\t\t  }\n\t\t\t  if(document.readyState==='loading'){\n\t\t\t    document.addEventListener('DOMContentLoaded',initSchedule);\n\t\t\t  } else {\n\t\t\t    // flatpickr loads deferred — wait for it\n\t\t\t    var t=setInterval(function(){\n\t\t\t      if(window.flatpickr){clearInterval(t);initSchedule();}\n\t\t\t    },50);\n\t\t\t  }\n\t\t\t}());\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

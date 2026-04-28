@@ -80,7 +80,8 @@ templ PropCard(p PropItem, i int) {
 						<span class="prop-badge prop-badge-arriendo">En Arriendo</span>
 					}
 				</div>
-				<button class="prop-fav" type="button" aria-label="Guardar propiedad" onclick="event.preventDefault();event.stopPropagation();this.classList.toggle('is-active')">
+				<button class="prop-fav" type="button" aria-label="Guardar propiedad"
+					onclick="event.preventDefault();event.stopPropagation();var c=this.closest('[data-slug]');if(c&&window.jcpToggleSave){var saved=jcpToggleSave(c.dataset.slug);this.classList.toggle('is-active',saved)}else{this.classList.toggle('is-active')}">
 					<span class="ms ms-sm ms-outline">favorite</span>
 				</button>
 			</div>

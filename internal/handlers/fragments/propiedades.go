@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"jcp-gestioninmobiliaria/internal/config"
+	"jcp-gestioninmobiliaria/internal/services"
 	proptempl "jcp-gestioninmobiliaria/internal/templates/fragments"
 
 	"github.com/gofiber/fiber/v2"
@@ -77,13 +78,27 @@ func formatUF(v float64) string {
 func priceLabel(p propiedad) string {
 	uf := formatUF(p.PrecioUF)
 	clp := formatCLP(p.PrecioCLP)
+	ufVal := services.GetUF()
+	// UF→CLP: show peso equivalent when only UF price is set
+	if p.PrecioUF > 0 && p.PrecioCLP <= 0 && ufVal > 0 {
+		clp = "≈ " + formatCLP(p.PrecioUF*ufVal)
+	}
+	// CLP→UF: show UF equivalent when only CLP price is set
+	if p.PrecioCLP > 0 && p.PrecioUF <= 0 && ufVal > 0 {
+		eq := p.PrecioCLP / ufVal
+		if eq == float64(int64(eq)) {
+			uf = fmt.Sprintf("≈ UF %d", int64(eq))
+		} else {
+			uf = fmt.Sprintf("≈ UF %.1f", eq)
+		}
+	}
 	switch {
 	case uf != "" && clp != "":
-		return uf + `<span class="prop-price-clp"> · ` + clp + `</span>`
-	case uf != "":
-		return uf
-	default:
+		return clp + `<span class="prop-price-clp"> · ` + uf + `</span>`
+	case clp != "":
 		return clp
+	default:
+		return uf
 	}
 }
 
@@ -293,6 +308,21 @@ func PropiedadesPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
 
 		if page == 1 {
 			sb.WriteString(`</div>`)
+			// OOB count update
+			countShown := len(items)
+			var countLabel string
+			if len(items) == 0 {
+				countLabel = "Sin resultados"
+			} else if hasMore {
+				countLabel = fmt.Sprintf("%d+ propiedades", countShown)
+			} else {
+				if countShown == 1 {
+					countLabel = "1 propiedad"
+				} else {
+					countLabel = fmt.Sprintf("%d propiedades", countShown)
+				}
+			}
+			sb.WriteString(fmt.Sprintf(`<span id="tb-count" hx-swap-oob="true">%s</span>`, countLabel))
 			if hasMore {
 				sb.WriteString(fmt.Sprintf(`<div id="prop-load-more" style="text-align:center;padding:32px 0 8px">
   <button class="prop-chip" style="padding:12px 28px;font-size:13px"
@@ -356,4 +386,64 @@ func renderCard(p propiedad, i int) string {
 		return ""
 	}
 	return buf.String()
+}
+
+// GuardasFragment returns cards for the saved property IDs passed as ?ids=slug1,slug2
+func GuardasFragment(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		ids := strings.TrimSpace(c.Query("ids"))
+		if ids == "" {
+			c.Set("Content-Type", "text/html; charset=utf-8")
+			return c.SendString(`<div style="text-align:center;padding:48px;color:#94A3B8;font-size:14px">Sin propiedades guardadas.</div>`)
+		}
+		slugs := strings.Split(ids, ",")
+		var items []propiedad
+		for _, s := range slugs {
+			s = strings.TrimSpace(escapeFilter(s))
+			if s == "" {
+				continue
+			}
+			recs, err := pb.FindRecordsByFilter("propiedades",
+				fmt.Sprintf("(slug='%s'||id='%s')&&status='publicado'", s, s), "", 1, 0)
+			if err != nil || len(recs) == 0 {
+				continue
+			}
+			r := recs[0]
+			p := propiedad{
+				ID:          r.Id,
+				Titulo:      r.GetString("titulo"),
+				Slug:        r.GetString("slug"),
+				Operacion:   r.GetString("operacion"),
+				Tipo:        r.GetString("tipo"),
+				Comuna:      r.GetString("comuna"),
+				Region:      r.GetString("region"),
+				PrecioUF:    r.GetFloat("precio_uf"),
+				PrecioCLP:   r.GetFloat("precio_clp"),
+				Dormitorios: r.GetInt("dormitorios"),
+				Banos:       r.GetInt("banos"),
+				Estac:       r.GetInt("estacionamientos"),
+				SupUtil:     r.GetFloat("superficie_util"),
+				SupTotal:    r.GetFloat("superficie_total"),
+				Destacada:   r.GetBool("destacada"),
+				Oportunidad: r.GetBool("oportunidad"),
+				CoverImage:  r.GetString("cover_image"),
+				Lat:         r.GetFloat("lat"),
+				Lng:         r.GetFloat("lng"),
+			}
+			p.PriceLabel = priceLabel(p)
+			items = append(items, p)
+		}
+		if len(items) == 0 {
+			c.Set("Content-Type", "text/html; charset=utf-8")
+			return c.SendString(`<div style="text-align:center;padding:48px;color:#94A3B8;font-size:14px">No se encontraron las propiedades guardadas. Puede que ya no estén disponibles.</div>`)
+		}
+		var sb strings.Builder
+		sb.WriteString(`<div class="prop-grid">`)
+		for i, p := range items {
+			sb.WriteString(renderCard(p, i))
+		}
+		sb.WriteString(`</div>`)
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(sb.String())
+	}
 }

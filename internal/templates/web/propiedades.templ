@@ -39,7 +39,7 @@ templ PropiedadesPage(userName string, userEmail string) {
 			  margin-bottom:16px;padding:0 2px}
 			.listings-info h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:700}
 			.listings-info span{font-size:12px;color:#64748B}
-			.prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+			.prop-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 			.prop-card{background:#fff;border-radius:14px;overflow:hidden;
 			  border:1px solid #E2E8F0;cursor:pointer;
 			  transition:transform .25s,box-shadow .25s,border-color .2s;position:relative}
@@ -52,11 +52,11 @@ templ PropiedadesPage(userName string, userEmail string) {
 			.prop-img-placeholder{display:flex;align-items:center;justify-content:center;
 			  height:100%;color:#94A3B8;font-size:40px}
 			.prop-badges{position:absolute;top:10px;left:10px;display:flex;gap:5px}
-			.prop-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px}
-			.badge-v{background:rgba(29,78,216,.9);color:#fff}
-			.badge-a{background:rgba(124,58,237,.9);color:#fff}
-			.badge-dest{background:rgba(217,119,6,.9);color:#fff}
-			.badge-deal{background:rgba(5,150,105,.9);color:#fff}
+			.prop-badge{font-size:10px;font-weight:700;padding:4px 9px;border-radius:6px;backdrop-filter:blur(8px);display:inline-flex;align-items:center;gap:4px}
+			.prop-badge-venta{background:rgba(29,78,216,.9);color:#fff}
+			.prop-badge-arriendo{background:rgba(124,58,237,.9);color:#fff}
+			.prop-badge-featured{background:rgba(217,119,6,.92);color:#fff}
+			.prop-badge-deal{background:rgba(5,150,105,.92);color:#fff}
 			.prop-body{padding:12px 14px 14px}
 			.prop-price{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;
 			  color:#111827;line-height:1.1;margin-bottom:4px;font-weight:700}
@@ -74,9 +74,9 @@ templ PropiedadesPage(userName string, userEmail string) {
 			@media(max-width:900px){
 			  .topbar{padding:0 12px}
 			  .tb-chips{display:none}
-			  .content-split{flex-direction:column}
+			  .content-split{flex-direction:column;overflow-y:auto}
 			  .listings-panel{width:100%;overflow-y:visible}
-			  .map-panel{height:260px;border-left:none;border-top:1px solid #E2E8F0;flex:none}
+			  .map-panel{display:none}
 			}
 		</style>
 		<header class="topbar">
@@ -85,7 +85,7 @@ templ PropiedadesPage(userName string, userEmail string) {
 				<input class="tb-input" type="text" id="tb-q" placeholder="Comuna, dirección, barrio..."
 					hx-get="/fragments/propiedades-page" hx-target="#prop-results"
 					hx-trigger="input changed delay:400ms"
-					hx-include="[name='operacion'],[name='tipo'],[name='dormitorios'],[name='sort']"
+					hx-include="[name='operacion'],[name='tipo'],[name='dormitorios'],[name='sort'],[name='precio_max']"
 					name="q" autocomplete="off"/>
 			</div>
 			<div class="tb-chips">
@@ -102,7 +102,7 @@ templ PropiedadesPage(userName string, userEmail string) {
 			<span class="fl">Filtrar</span>
 			<select class="fsel" name="tipo"
 				hx-get="/fragments/propiedades-page" hx-target="#prop-results"
-				hx-trigger="change" hx-include="[name='operacion'],[name='q'],[name='dormitorios'],[name='sort']">
+				hx-trigger="change" hx-include="[name='operacion'],[name='q'],[name='dormitorios'],[name='sort'],[name='precio_max']">
 				<option value="">Todos los tipos</option>
 				<option value="CASA">Casa</option>
 				<option value="DEPARTAMENTO">Departamento</option>
@@ -114,12 +114,25 @@ templ PropiedadesPage(userName string, userEmail string) {
 			</select>
 			<select class="fsel" name="dormitorios" id="dorm-sel"
 				hx-get="/fragments/propiedades-page" hx-target="#prop-results"
-				hx-trigger="change" hx-include="[name='operacion'],[name='tipo'],[name='q'],[name='sort']">
+				hx-trigger="change" hx-include="[name='operacion'],[name='tipo'],[name='q'],[name='sort'],[name='precio_max']">
 				<option value="">Dormitorios</option>
 				<option value="1">1+</option>
 				<option value="2">2+</option>
 				<option value="3">3+</option>
 				<option value="4">4+</option>
+			</select>
+			<select class="fsel" name="precio_max" id="precio-max-sel"
+				hx-get="/fragments/propiedades-page" hx-target="#prop-results"
+				hx-trigger="change"
+				hx-include="[name='operacion'],[name='tipo'],[name='q'],[name='dormitorios'],[name='sort']">
+				<option value="">Precio máx</option>
+				<option value="1000">UF 1.000</option>
+				<option value="2000">UF 2.000</option>
+				<option value="3000">UF 3.000</option>
+				<option value="5000">UF 5.000</option>
+				<option value="8000">UF 8.000</option>
+				<option value="12000">UF 12.000</option>
+				<option value="20000">UF 20.000</option>
 			</select>
 			<div class="fdiv"></div>
 			<div class="sort-wrap">
@@ -127,7 +140,7 @@ templ PropiedadesPage(userName string, userEmail string) {
 				<select class="fsel" name="sort" id="sort-select"
 					hx-get="/fragments/propiedades-page" hx-target="#prop-results"
 					hx-trigger="change"
-					hx-include="[name='operacion'],[name='tipo'],[name='q'],[name='dormitorios']">
+					hx-include="[name='operacion'],[name='tipo'],[name='q'],[name='dormitorios'],[name='precio_max']">
 					<option value="recientes">Más recientes</option>
 					<option value="precio_asc">Precio ↑</option>
 					<option value="precio_desc">Precio ↓</option>
@@ -141,7 +154,7 @@ templ PropiedadesPage(userName string, userEmail string) {
 					<h2>Propiedades disponibles</h2>
 					<span id="prop-count-label">Actualizado en tiempo real</span>
 				</div>
-				<div id="prop-results" class="prop-grid"
+				<div id="prop-results"
 					hx-get="/fragments/propiedades-page"
 					hx-trigger="load"
 					hx-swap="innerHTML">
@@ -163,7 +176,8 @@ templ PropiedadesPage(userName string, userEmail string) {
 			        target:'#prop-results',swap:'innerHTML',
 			        values:{operacion:btn.dataset.op||'',tipo:document.querySelector('[name=tipo]').value,
 			          q:document.getElementById('tb-q').value,dormitorios:document.querySelector('[name=dormitorios]').value,
-			          sort:document.getElementById('sort-select').value}});
+			          sort:document.getElementById('sort-select').value,
+			          precio_max:document.getElementById('precio-max-sel').value}});
 			    });
 			  });
 			  var p=new URLSearchParams(location.search);
@@ -173,6 +187,10 @@ templ PropiedadesPage(userName string, userEmail string) {
 			  }
 			  if(p.get('tipo'))document.querySelector('[name=tipo]').value=p.get('tipo');
 			  if(p.get('q'))document.getElementById('tb-q').value=p.get('q');
+			  // Re-mark saved hearts after HTMX swaps
+			  document.body.addEventListener('htmx:afterSwap',function(){
+			    if(window.jcpInitSaved)window.jcpInitSaved();
+			  });
 			}());
 		</script>
 	}

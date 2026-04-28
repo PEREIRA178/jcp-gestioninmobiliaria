@@ -80,6 +80,32 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			/* ── MAIN ── */
 			.app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 
+			/* Heart/save button on prop cards */
+			.prop-fav{position:absolute;top:10px;right:10px;width:32px;height:32px;
+			  border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(8px);
+			  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+			  color:#64748B;transition:all .2s;flex-shrink:0}
+			.prop-fav:hover{background:#fff;color:#EF4444;transform:scale(1.1)}
+			.prop-fav.is-active{background:#FFF5F5;color:#EF4444}
+			.prop-fav.is-active .ms{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 20}
+			.prop-price-clp{font-size:13px;color:#94A3B8;font-weight:400}
+			/* Mobile bottom nav */
+			.mobile-nav{display:none}
+			.mn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+			  gap:3px;font-size:10px;font-weight:600;color:#64748B;text-decoration:none;
+			  background:none;border:none;cursor:pointer;font-family:inherit;
+			  padding:6px 0;transition:color .18s;position:relative}
+			.mn-item:hover,.mn-item.active{color:#1D4ED8}
+			.mn-item .ms{font-size:22px}
+			.mn-badge{position:absolute;top:5px;right:calc(50% - 18px);
+			  min-width:16px;height:16px;background:#EF4444;color:#fff;font-size:9px;font-weight:700;
+			  border-radius:9999px;padding:0 3px;border:2px solid #fff;
+			  display:none;align-items:center;justify-content:center}
+			.mn-badge.vis{display:flex}
+			.mn-overlay{display:none;position:fixed;bottom:60px;left:0;right:0;z-index:199;
+			  background:#fff;border-top:1px solid #E2E8F0;padding:20px 24px;
+			  box-shadow:0 -8px 32px rgba(15,23,42,.10)}
+			.mn-overlay.open{display:block}
 			/* Map popup */
 			.leaflet-popup-content-wrapper{border-radius:12px!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}
 			.leaflet-popup-content{margin:14px 16px!important}
@@ -91,6 +117,9 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			@media(max-width:900px){
 			  .sb{display:none}
 			  .app-main{width:100%}
+			  .mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;height:60px;
+			    background:#fff;border-top:1px solid #E2E8F0;z-index:200;align-items:stretch}
+			  .content-split,.detail-scroll{padding-bottom:60px}
 			}
 		</style>
 	</head>
@@ -108,19 +137,7 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 					<span class="ms">search</span>
 					Explorar
 				</a>
-				<a href="#" class="sb-item">
-					<span class="ms">favorite</span>
-					Guardadas
-				</a>
-				<a href="#" class="sb-item">
-					<span class="ms">notifications</span>
-					Alertas de precio
-				</a>
 				<div class="sb-label">Cuenta</div>
-				<a href="#" class="sb-item">
-					<span class="ms">person</span>
-					Mi perfil
-				</a>
 				<a href="https://wa.me/56912345678" class="sb-item" target="_blank" rel="noopener">
 					<span class="ms">chat</span>
 					Contactar a JCP
@@ -140,13 +157,74 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 		<div class="app-main">
 			{ children... }
 		</div>
+		<nav class="mobile-nav" id="mobile-nav">
+			<a href="/propiedades" class="mn-item"><span class="ms">search</span><span>Explorar</span></a>
+			<a href="/guardadas" class="mn-item"><span class="ms">favorite</span><span>Guardadas</span><span class="mn-badge" id="mn-saved-badge"></span></a>
+			<a href="https://wa.me/56912345678" class="mn-item" target="_blank" rel="noopener"><span class="ms">chat</span><span>Contacto</span></a>
+			<button class="mn-item" id="mn-profile-btn"><span class="ms">person</span><span>Perfil</span></button>
+		</nav>
+		<div class="mn-overlay" id="mn-overlay">
+			<div style="display:flex;align-items:center;gap:12px;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #F1F5F9">
+				<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:700;flex-shrink:0;text-transform:uppercase">{ initials(user.Name) }</div>
+				<div style="min-width:0">
+					<div style="font-size:14px;font-weight:600;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{ user.Name }</div>
+					<div style="font-size:12px;color:#64748B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{ user.Email }</div>
+				</div>
+			</div>
+			<a href="/auth/logout" style="display:flex;align-items:center;gap:8px;color:#EF4444;font-size:14px;font-weight:600;text-decoration:none">
+				<span class="ms ms-sm">logout</span> Cerrar sesión
+			</a>
+		</div>
 		<script>
-			document.querySelectorAll('.sb-item').forEach(function(item){
-			  if(item.href && item.href !== '#' && window.location.pathname.startsWith(new URL(item.href, location.origin).pathname)){
-			    document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
-			    item.classList.add('active');
+			(function(){
+			  var path=window.location.pathname;
+			  // Desktop sidebar active
+			  document.querySelectorAll('.sb-item').forEach(function(item){
+			    var href=item.getAttribute('href');
+			    if(!href||href==='#'||href.indexOf('wa.me')!==-1)return;
+			    if(path===href||path.startsWith(href+'/')){
+			      document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active')});
+			      item.classList.add('active');
+			    }
+			  });
+			  // Mobile nav active
+			  document.querySelectorAll('.mn-item[href]').forEach(function(item){
+			    var href=item.getAttribute('href');
+			    if(!href||!href.startsWith('/'))return;
+			    if(path===href||path.startsWith(href+'/'))item.classList.add('active');
+			  });
+			  // Profile overlay
+			  var mnBtn=document.getElementById('mn-profile-btn'),mnOv=document.getElementById('mn-overlay');
+			  if(mnBtn&&mnOv){
+			    mnBtn.addEventListener('click',function(e){e.stopPropagation();mnOv.classList.toggle('open')});
+			    document.addEventListener('click',function(e){if(!mnOv.contains(e.target)&&e.target!==mnBtn)mnOv.classList.remove('open')});
 			  }
-			});
+			  // Saved badge count
+			  var jcpS=JSON.parse(localStorage.getItem('jcp_saved')||'[]');
+			  var mnB=document.getElementById('mn-saved-badge');
+			  if(mnB&&jcpS.length>0){mnB.textContent=jcpS.length;mnB.classList.add('vis')}
+			  // Global save toggle utility
+			  window.jcpToggleSave=function(slug){
+			    var s=JSON.parse(localStorage.getItem('jcp_saved')||'[]');
+			    var idx=s.indexOf(slug);
+			    if(idx>=0){s.splice(idx,1)}else{s.push(slug)}
+			    localStorage.setItem('jcp_saved',JSON.stringify(s));
+			    var b=document.getElementById('mn-saved-badge');
+			    if(b){if(s.length>0){b.textContent=s.length;b.classList.add('vis')}else{b.classList.remove('vis')}}
+			    return idx<0;
+			  };
+			  // Mark already-saved hearts on page
+			  window.jcpInitSaved=function(){
+			    var s=JSON.parse(localStorage.getItem('jcp_saved')||'[]');
+			    document.querySelectorAll('.prop-fav').forEach(function(btn){
+			      var card=btn.closest('[data-slug]');
+			      if(!card)return;
+			      if(s.indexOf(card.dataset.slug)>=0)btn.classList.add('is-active');
+			      else btn.classList.remove('is-active');
+			    });
+			  };
+			  window.jcpInitSaved();
+			}());
 		</script>
 	</body>
 	</html>

@@ -17,4 +17,5 @@ func RegisterFragments(app *fiber.App, cfg *config.Config, pb *pocketbase.Pocket
 	frag.Get("/propiedades-page", fragments.PropiedadesPage(cfg, pb))
 	frag.Get("/noticias", fragments.Noticias(cfg, pb))
 	frag.Get("/noticias-page", fragments.NoticiasPage(cfg, pb))
+	frag.Get("/guardadas", fragments.GuardasFragment(cfg, pb))
 }
