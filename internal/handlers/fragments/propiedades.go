@@ -394,7 +394,7 @@ func GuardasFragment(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
 		ids := strings.TrimSpace(c.Query("ids"))
 		if ids == "" {
 			c.Set("Content-Type", "text/html; charset=utf-8")
-			return c.SendString(`<div style="text-align:center;padding:48px;color:#94A3B8;font-size:14px">Sin propiedades guardadas.</div>`)
+			return c.SendString(`<div id="guard-results"><div style="text-align:center;padding:48px;color:#94A3B8;font-size:14px">Sin propiedades guardadas.</div></div>`)
 		}
 		slugs := strings.Split(ids, ",")
 		var items []propiedad
@@ -435,14 +435,14 @@ func GuardasFragment(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
 		}
 		if len(items) == 0 {
 			c.Set("Content-Type", "text/html; charset=utf-8")
-			return c.SendString(`<div style="text-align:center;padding:48px;color:#94A3B8;font-size:14px">No se encontraron las propiedades guardadas. Puede que ya no estén disponibles.</div>`)
+			return c.SendString(`<div id="guard-results"><div style="text-align:center;padding:48px;color:#94A3B8;font-size:14px">No se encontraron las propiedades guardadas. Puede que ya no estén disponibles.</div></div>`)
 		}
 		var sb strings.Builder
-		sb.WriteString(`<div class="prop-grid">`)
+		sb.WriteString(`<div id="guard-results"><div class="prop-grid">`)
 		for i, p := range items {
 			sb.WriteString(renderCard(p, i))
 		}
-		sb.WriteString(`</div>`)
+		sb.WriteString(`</div></div>`)
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(sb.String())
 	}

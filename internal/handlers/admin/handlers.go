@@ -1937,3 +1937,65 @@ func playlistEditorHTML(id, name, existingItemsJSON string) string {
 </script>`,
 		formAction, template.HTMLEscapeString(name), deleteBtn, existingItemsJSON)
 }
+
+// VisitorLogs muestra el CRM de visitantes que ingresaron con Google OAuth.
+func VisitorLogs(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		if c.Query("fragment") != "rows" {
+			return c.SendFile("./internal/templates/admin/pages/visitors.html")
+		}
+		records, err := pb.FindRecordsByFilter("visitor_logs", "", "-created", 100, 0)
+		var sb strings.Builder
+		if err != nil || len(records) == 0 {
+			sb.WriteString(`<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--md-outline)">Sin visitantes registrados aún.</td></tr>`)
+		} else {
+			for _, r := range records {
+				created := "—"
+				if dt := r.GetDateTime("created"); !dt.IsZero() {
+					created = dt.Time().Format("02/01/2006 15:04")
+				}
+				picture := r.GetString("picture")
+				name := r.GetString("name")
+				initial := "?"
+				if runes := []rune(name); len(runes) > 0 {
+					initial = string(runes[:1])
+				}
+				var avatarTag string
+				if picture != "" {
+					avatarTag = fmt.Sprintf(
+						`<img src="%s" style="width:36px;height:36px;border-radius:50%%;object-fit:cover;flex-shrink:0" loading="lazy"/>`,
+						template.HTMLEscapeString(picture),
+					)
+				} else {
+					avatarTag = fmt.Sprintf(
+						`<div style="width:36px;height:36px;border-radius:50%%;background:linear-gradient(135deg,#3B82F6,#8B5CF6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0">%s</div>`,
+						template.HTMLEscapeString(initial),
+					)
+				}
+				sb.WriteString(fmt.Sprintf(`<tr>
+<td style="padding:14px 24px">
+  <div style="display:flex;align-items:center;gap:10px">
+    %s
+    <div>
+      <div style="font-weight:600;font-size:14px">%s</div>
+      <div style="font-size:12px;color:var(--md-outline)">%s</div>
+    </div>
+  </div>
+</td>
+<td style="padding:14px 24px;font-size:13px">%s</td>
+<td style="padding:14px 24px;font-size:13px;color:var(--md-on-surface-variant)">%s</td>
+<td style="padding:14px 24px;font-size:12px;color:var(--md-outline);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">%s</td>
+</tr>`,
+					avatarTag,
+					template.HTMLEscapeString(name),
+					template.HTMLEscapeString(r.GetString("email")),
+					template.HTMLEscapeString(created),
+					template.HTMLEscapeString(r.GetString("ip")),
+					template.HTMLEscapeString(r.GetString("user_agent")),
+				))
+			}
+		}
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(sb.String())
+	}
+}

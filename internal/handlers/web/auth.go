@@ -12,6 +12,8 @@ import (
 	"jcp-gestioninmobiliaria/internal/config"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -56,7 +58,7 @@ func GoogleLogin(cfg *config.Config) fiber.Handler {
 }
 
 // GoogleCallback handles the OAuth2 callback from Google.
-func GoogleCallback(cfg *config.Config) fiber.Handler {
+func GoogleCallback(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if c.Query("state") != c.Cookies("oauth_state") {
 			return c.Redirect("/login?error=state")
@@ -101,9 +103,28 @@ func GoogleCallback(cfg *config.Config) fiber.Handler {
 			Secure:   cfg.IsProd(),
 		})
 
+		// Log visitor asynchronously — never blocks the auth flow
+		go logVisitor(pb, gu, c.IP(), c.Get("User-Agent"))
+
 		next := c.Query("next", "/propiedades")
 		return c.Redirect(next)
 	}
+}
+
+// logVisitor saves visitor login data to visitor_logs collection.
+// Silently swallows errors so auth is never affected.
+func logVisitor(pb *pocketbase.PocketBase, u googleUserInfo, ip, ua string) {
+	collection, err := pb.FindCollectionByNameOrId("visitor_logs")
+	if err != nil {
+		return // collection not created yet — no-op
+	}
+	record := core.NewRecord(collection)
+	record.Set("email", u.Email)
+	record.Set("name", u.Name)
+	record.Set("picture", u.Picture)
+	record.Set("ip", ip)
+	record.Set("user_agent", ua)
+	_ = pb.Save(record)
 }
 
 // VisitorLogout clears the visitor session and redirects to the landing page.

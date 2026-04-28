@@ -64,17 +64,29 @@ templ GuardasPage(userName string, userEmail string) {
 		<script>
 			(function(){
 			  var saved=JSON.parse(localStorage.getItem('jcp_saved')||'[]');
+			  var results=document.getElementById('guard-results');
+			  var empty=document.getElementById('guard-empty');
 			  if(saved.length===0){
-			    document.getElementById('guard-results').style.display='none';
-			    document.getElementById('guard-empty').style.display='block';
+			    if(results)results.style.display='none';
+			    if(empty)empty.style.display='block';
 			    return;
 			  }
-			  htmx.ajax('GET','/fragments/guardadas?ids='+encodeURIComponent(saved.join(',')),{
-			    target:'#guard-results',swap:'innerHTML'
-			  });
-			  document.body.addEventListener('htmx:afterSwap',function(){
-			    if(window.jcpInitSaved)window.jcpInitSaved();
-			  });
+			  function doLoad(){
+			    if(!window.htmx){setTimeout(doLoad,50);return;}
+			    if(!results)return;
+			    var url='/fragments/guardadas?ids='+encodeURIComponent(saved.join(','));
+			    results.setAttribute('hx-get',url);
+			    results.setAttribute('hx-trigger','guardadas-load');
+			    results.setAttribute('hx-swap','outerHTML');
+			    htmx.process(results);
+			    htmx.trigger(results,'guardadas-load');
+			    document.body.addEventListener('htmx:afterSwap',function(e){
+			      if(e.detail&&e.detail.target&&e.detail.target.id==='guard-results'){
+			        if(window.jcpInitSaved)window.jcpInitSaved();
+			      }
+			    },{once:true});
+			  }
+			  doLoad();
 			}());
 		</script>
 	}
