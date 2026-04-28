@@ -430,7 +430,7 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			    var selected=null;
 			    var waPhone='56912345678';
 			    function openModal(){if(modal){modal.classList.add('open');document.body.style.overflow='hidden';}}
-			    function closeModal(){if(modal){modal.classList.remove('open');document.body.style.overflow='';}}
+			    function closeModal(){if(modal){modal.classList.remove('open');document.body.style.overflow='';document.querySelectorAll('.app-lc-svc').forEach(function(b){b.classList.remove('selected');});selected=null;if(submit)submit.disabled=true;}}
 			    ['sb-contact-btn','mn-contact-btn','md-contact-btn'].forEach(function(id){
 			      var btn=document.getElementById(id);
 			      if(btn)btn.addEventListener('click',function(){
