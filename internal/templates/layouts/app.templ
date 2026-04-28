@@ -159,6 +159,40 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			  .content-split,.detail-scroll,.guard-scroll{padding-bottom:80px}
 			  .mobile-header{display:flex}
 			}
+			/* ── CONTACT MODAL ── */
+			.app-lc-modal{display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center}
+			.app-lc-modal.open{display:flex}
+			.app-lc-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)}
+			.app-lc-box{position:relative;background:#fff;border-radius:20px;padding:28px;
+			  width:calc(100% - 40px);max-width:420px;z-index:1;
+			  box-shadow:0 24px 80px rgba(0,0,0,.25)}
+			.app-lc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+			.app-lc-title{font-size:17px;font-weight:700;color:#111827}
+			.app-lc-close{width:32px;height:32px;border:none;background:#F1F5F9;border-radius:8px;
+			  cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748B;transition:background .18s}
+			.app-lc-close:hover{background:#E2E8F0}
+			.app-lc-sub{font-size:13px;color:#64748B;margin-bottom:18px;line-height:1.5}
+			.app-lc-services{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+			.app-lc-svc{display:flex;flex-direction:column;align-items:center;justify-content:center;
+			  gap:6px;padding:14px 10px;border:1.5px solid #E2E8F0;border-radius:12px;
+			  font-size:12px;font-weight:600;color:#374151;background:#F8FAFC;
+			  cursor:pointer;text-align:center;transition:all .18s;line-height:1.35;font-family:inherit}
+			.app-lc-svc .ms{font-size:22px;color:#1D4ED8}
+			.app-lc-svc:hover{border-color:#1D4ED8;background:#EFF6FF}
+			.app-lc-svc.selected{border-color:#1D4ED8;background:#EFF6FF;color:#1D4ED8}
+			.app-lc-divider{height:1px;background:#E2E8F0;margin-bottom:14px}
+			.app-lc-field{margin-bottom:14px}
+			.app-lc-label{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;
+			  text-transform:uppercase;color:#64748B;margin-bottom:5px}
+			.app-lc-input{width:100%;padding:10px 13px;border:1.5px solid #E2E8F0;border-radius:10px;
+			  font-family:inherit;font-size:14px;color:#111827;outline:none;transition:border-color .2s}
+			.app-lc-input:focus{border-color:#1D4ED8}
+			.app-lc-submit{display:flex;align-items:center;justify-content:center;gap:8px;
+			  width:100%;padding:13px;border:none;border-radius:12px;background:#1D4ED8;
+			  color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;
+			  transition:background .18s}
+			.app-lc-submit:hover:not(:disabled){background:#1E3A8A}
+			.app-lc-submit:disabled{opacity:.45;cursor:not-allowed}
 		</style>
 	</head>
 	<body>
@@ -181,10 +215,10 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 					<span id="sb-saved-count" class="save-badge-pill"></span>
 				</a>
 				<div class="sb-label">Cuenta</div>
-				<a href="https://wa.me/56912345678" class="sb-item" target="_blank" rel="noopener">
+				<button class="sb-item" id="sb-contact-btn" style="border:none;background:none;cursor:pointer;width:100%;text-align:left">
 					<span class="ms">chat</span>
-					Contactar a JCP
-				</a>
+					Contacto
+				</button>
 			</nav>
 			<div class="sb-user">
 				<div class="sb-avatar">{ initials(user.Name) }</div>
@@ -212,7 +246,7 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 		<nav class="mobile-nav" id="mobile-nav">
 			<a href="/propiedades" class="mn-item"><span class="ms">search</span><span>Explorar</span></a>
 			<a href="/guardadas" class="mn-item"><span class="ms">favorite</span><span>Guardadas</span><span class="mn-badge" id="mn-saved-badge"></span></a>
-			<a href="https://wa.me/56912345678" class="mn-item" target="_blank" rel="noopener"><span class="ms">chat</span><span>Contacto</span></a>
+			<button class="mn-item" id="mn-contact-btn"><span class="ms">chat</span><span>Contacto</span></button>
 			<button class="mn-item" id="mn-profile-btn"><span class="ms">person</span><span>Perfil</span></button>
 		</nav>
 		<div class="mn-overlay" id="mn-overlay">
@@ -249,9 +283,9 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 					<span class="ms">favorite</span> Guardadas
 					<span id="md-saved-count" class="save-badge-pill"></span>
 				</a>
-				<a href="https://wa.me/56912345678" class="mob-drawer-item" target="_blank" rel="noopener">
-					<span class="ms">chat</span> Contactar a JCP
-				</a>
+				<button class="mob-drawer-item" id="md-contact-btn" style="border:none;background:none;cursor:pointer;width:100%;text-align:left">
+					<span class="ms">chat</span> Contacto
+				</button>
 				<div class="mob-drawer-divider"></div>
 				<a href="/auth/logout" class="mob-drawer-item" style="color:#FCA5A5">
 					<span class="ms">logout</span> Cerrar sesión
@@ -263,6 +297,43 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 					<div class="sb-user-name">{ user.Name }</div>
 					<div class="sb-user-email">{ user.Email }</div>
 				</div>
+			</div>
+		</div>
+		<!-- ── CONTACT MODAL ── -->
+		<div class="app-lc-modal" id="app-lc-modal">
+			<div class="app-lc-backdrop" id="app-lc-backdrop"></div>
+			<div class="app-lc-box">
+				<div class="app-lc-header">
+					<span class="app-lc-title">&#xBF;C&#xF3;mo podemos ayudarte?</span>
+					<button class="app-lc-close" id="app-lc-close"><span class="ms">close</span></button>
+				</div>
+				<p class="app-lc-sub">Elige el servicio que te interesa y te contactamos por WhatsApp.</p>
+				<div class="app-lc-services">
+					<button class="app-lc-svc" data-service="Publicar una propiedad (Venta y Arriendo)">
+						<span class="ms">sell</span>Publicar una propiedad
+					</button>
+					<button class="app-lc-svc" data-service="Comprar una propiedad">
+						<span class="ms">search</span>Comprar una propiedad
+					</button>
+					<button class="app-lc-svc" data-service="Arrendar una propiedad">
+						<span class="ms">key</span>Arrendar una propiedad
+					</button>
+					<button class="app-lc-svc" data-service="Administraci&#xF3;n de propiedades">
+						<span class="ms">manage_accounts</span>Administraci&#xF3;n de propiedades
+					</button>
+					<button class="app-lc-svc" style="grid-column:1/-1" data-service="Asesor&#xED;a Inmobiliaria">
+						<span class="ms">handshake</span>Asesor&#xED;a Inmobiliaria
+					</button>
+				</div>
+				<div class="app-lc-divider"></div>
+				<div class="app-lc-field">
+					<label class="app-lc-label" for="app-lc-nombre">Tu nombre (opcional)</label>
+					<input class="app-lc-input" type="text" id="app-lc-nombre" placeholder="Ej: Mar&#xED;a Gonz&#xE1;lez" autocomplete="name"/>
+				</div>
+				<button class="app-lc-submit" id="app-lc-submit" disabled>
+					<span class="ms" style="font-size:18px">chat</span>
+					Consultar por WhatsApp
+				</button>
 			</div>
 		</div>
 		<script>
@@ -350,6 +421,47 @@ templ AppShell(title string, includeMaps bool, user AppUser) {
 			    }
 			  }());
 			}());
+			  // Contact modal
+			  (function(){
+			    var modal=document.getElementById('app-lc-modal');
+			    var backdrop=document.getElementById('app-lc-backdrop');
+			    var closeBtn=document.getElementById('app-lc-close');
+			    var submit=document.getElementById('app-lc-submit');
+			    var selected=null;
+			    var waPhone='56912345678';
+			    function openModal(){if(modal){modal.classList.add('open');document.body.style.overflow='hidden';}}
+			    function closeModal(){if(modal){modal.classList.remove('open');document.body.style.overflow='';}}
+			    ['sb-contact-btn','mn-contact-btn','md-contact-btn'].forEach(function(id){
+			      var btn=document.getElementById(id);
+			      if(btn)btn.addEventListener('click',function(){
+			        var drawer=document.getElementById('mob-drawer');
+			        var bd=document.getElementById('mob-drawer-backdrop');
+			        if(drawer)drawer.classList.remove('open');
+			        if(bd){bd.classList.remove('open');}
+			        document.body.style.overflow='';
+			        openModal();
+			      });
+			    });
+			    if(closeBtn)closeBtn.addEventListener('click',closeModal);
+			    if(backdrop)backdrop.addEventListener('click',closeModal);
+			    document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+			    document.querySelectorAll('.app-lc-svc').forEach(function(btn){
+			      btn.addEventListener('click',function(){
+			        document.querySelectorAll('.app-lc-svc').forEach(function(b){b.classList.remove('selected');});
+			        btn.classList.add('selected');
+			        selected=btn.dataset.service;
+			        if(submit)submit.disabled=false;
+			      });
+			    });
+			    if(submit)submit.addEventListener('click',function(){
+			      if(!selected)return;
+			      var nombre=(document.getElementById('app-lc-nombre')||{}).value||'';
+			      var parts=['Hola! Me interesa el servicio: '+selected];
+			      if(nombre.trim())parts.push('Nombre: '+nombre.trim());
+			      window.open('https://wa.me/'+waPhone+'?text='+encodeURIComponent(parts.join('\n')),'_blank');
+			      closeModal();
+			    });
+			  }());
 		</script>
 	</body>
 	</html>
