@@ -68,7 +68,7 @@ func LandingHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 				Comuna:      r.GetString("comuna"),
 			})
 		}
-		return renderTempl(c, webtmpl.LandingPage(previews))
+		return renderTempl(c, webtmpl.LandingPage(previews, cfg.ContactPhone))
 	}
 }
 

@@ -52,8 +52,9 @@ type Config struct {
 	OllamaModel string
 
 	// Web
-	BaseURL  string
-	SiteName string
+	BaseURL      string
+	SiteName     string
+	ContactPhone string
 }
 
 func Load() *Config {
@@ -100,8 +101,9 @@ func Load() *Config {
 		OllamaModel: getEnv("OLLAMA_MODEL", "llama3"),
 
 		// Web
-		BaseURL:  getEnv("BASE_URL", "http://localhost:3000"),
-		SiteName: "JCP Gestión Inmobiliaria",
+		BaseURL:      getEnv("BASE_URL", "http://localhost:3000"),
+		SiteName:     "JCP Gestión Inmobiliaria",
+		ContactPhone: getEnv("CONTACT_PHONE", "56912345678"),
 	}
 
 	// In development only, provide safe placeholder defaults so the app
