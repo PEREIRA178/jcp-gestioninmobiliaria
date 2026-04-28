@@ -6,10 +6,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io"
+	"strings"
 	"time"
 
 	"jcp-gestioninmobiliaria/internal/auth"
 	"jcp-gestioninmobiliaria/internal/config"
+	webtmpl "jcp-gestioninmobiliaria/internal/templates/web"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pocketbase/pocketbase"
@@ -137,5 +139,67 @@ func VisitorLogout(cfg *config.Config) fiber.Handler {
 			Expires: time.Unix(0, 0),
 		})
 		return c.Redirect("/")
+	}
+}
+
+// RegisterPageHandler serves the email registration page.
+func RegisterPageHandler(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		errMsg := c.Query("error")
+		switch errMsg {
+		case "exists":
+			errMsg = "Ya existe una cuenta con ese correo. Intenta iniciar sesión."
+		case "short":
+			errMsg = "La contraseña debe tener al menos 8 caracteres."
+		case "save":
+			errMsg = "Error al crear la cuenta. Intenta de nuevo."
+		default:
+			errMsg = ""
+		}
+		return renderTempl(c, webtmpl.RegisterPage(errMsg))
+	}
+}
+
+// RegisterSubmit handles email+password registration creating a visitor JWT session.
+func RegisterSubmit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		name := strings.TrimSpace(c.FormValue("name"))
+		email := strings.TrimSpace(c.FormValue("email"))
+		password := c.FormValue("password")
+
+		if len(password) < 8 {
+			return c.Redirect("/register?error=short")
+		}
+		if email == "" || name == "" {
+			return c.Redirect("/register?error=save")
+		}
+
+		// Log the new email-registered visitor
+		collection, err := pb.FindCollectionByNameOrId("visitor_logs")
+		if err == nil {
+			record := core.NewRecord(collection)
+			record.Set("email", email)
+			record.Set("name", name)
+			record.Set("picture", "")
+			record.Set("ip", c.IP())
+			record.Set("user_agent", c.Get("User-Agent"))
+			_ = pb.Save(record)
+		}
+
+		jwtToken, err := auth.GenerateToken(cfg, "", email, "visitor", name)
+		if err != nil {
+			return c.Redirect("/register?error=save")
+		}
+
+		c.Cookie(&fiber.Cookie{
+			Name:     "jcp_visitor",
+			Value:    jwtToken,
+			MaxAge:   int(cfg.JWTExpiration / time.Second),
+			HTTPOnly: true,
+			SameSite: "Lax",
+			Secure:   cfg.IsProd(),
+		})
+
+		return c.Redirect("/propiedades")
 	}
 }

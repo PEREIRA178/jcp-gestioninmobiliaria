@@ -27,6 +27,8 @@ func RegisterPublic(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBas
 
 	// Auth routes
 	app.Get("/login", web.LoginPageHandler(cfg))
+	app.Get("/register", web.RegisterPageHandler(cfg))
+	app.Post("/register", web.RegisterSubmit(cfg, pb))
 	app.Get("/auth/google", web.GoogleLogin(cfg))
 	app.Get("/auth/google/callback", web.GoogleCallback(cfg, pb))
 	app.Get("/auth/logout", web.VisitorLogout(cfg))
