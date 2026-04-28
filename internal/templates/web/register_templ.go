@@ -8,7 +8,7 @@ package web
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func RegisterPage(errorMsg string) templ.Component {
+func RegisterPage(errorMsg string, csrfToken string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -52,7 +52,20 @@ func RegisterPage(errorMsg string) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form method=\"POST\" action=\"/register\" style=\"width:100%\"><div class=\"field\"><label>Nombre completo</label> <input type=\"text\" name=\"name\" placeholder=\"Ej: María González\" required autocomplete=\"name\"></div><div class=\"field\"><label>Correo electrónico</label> <input type=\"email\" name=\"email\" placeholder=\"tucorreo@ejemplo.com\" required autocomplete=\"email\"></div><div class=\"field\"><label>Contraseña</label> <input type=\"password\" name=\"password\" placeholder=\"Mínimo 8 caracteres\" required minlength=\"8\" autocomplete=\"new-password\"></div><button type=\"submit\" class=\"btn-submit\"><span class=\"ms\" style=\"font-size:18px\">person_add</span> Crear cuenta</button></form><div class=\"login-link\">¿Ya tienes cuenta? <a href=\"/login\">Inicia sesión</a></div><p class=\"note\">Al registrarte aceptas que JCP Gestión Inmobiliaria almacene tu correo para personalizar tu experiencia.</p></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<form method=\"POST\" action=\"/register\" style=\"width:100%\"><input type=\"hidden\" name=\"_csrf\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(csrfToken)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/web/register.templ`, Line: 76, Col: 55}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div class=\"field\"><label>Nombre completo</label> <input type=\"text\" name=\"name\" placeholder=\"Ej: María González\" required autocomplete=\"name\"></div><div class=\"field\"><label>Correo electrónico</label> <input type=\"email\" name=\"email\" placeholder=\"tucorreo@ejemplo.com\" required autocomplete=\"email\"></div><div class=\"field\"><label>Contraseña</label> <input type=\"password\" name=\"password\" placeholder=\"Mínimo 8 caracteres\" required minlength=\"8\" autocomplete=\"new-password\"></div><button type=\"submit\" class=\"btn-submit\"><span class=\"ms\" style=\"font-size:18px\">person_add</span> Crear cuenta</button></form><div class=\"login-link\">¿Ya tienes cuenta? <a href=\"/login\">Inicia sesión</a></div><p class=\"note\">Al registrarte aceptas que JCP Gestión Inmobiliaria almacene tu correo para personalizar tu experiencia.</p></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

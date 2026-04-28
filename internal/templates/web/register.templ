@@ -1,6 +1,6 @@
 package web
 
-templ RegisterPage(errorMsg string) {
+templ RegisterPage(errorMsg string, csrfToken string) {
 	<!DOCTYPE html>
 	<html lang="es">
 	<head>
@@ -73,6 +73,7 @@ templ RegisterPage(errorMsg string) {
 				<div class="error-msg">{ errorMsg }</div>
 			}
 			<form method="POST" action="/register" style="width:100%">
+				<input type="hidden" name="_csrf" value={ csrfToken }/>
 				<div class="field">
 					<label>Nombre completo</label>
 					<input type="text" name="name" placeholder="Ej: María González" required autocomplete="name"/>
