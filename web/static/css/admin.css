@@ -1,0 +1,36 @@
+/* JCP Admin — Neutral Theme */
+:root{
+  --md-primary:#1D4ED8;
+  --md-on-primary:#ffffff;
+  --md-primary-container:#EFF6FF;
+  --md-on-primary-container:#1E3A8A;
+  --md-primary-dark:#1E3A8A;
+  --md-primary-mid:#3B82F6;
+  --md-primary-faint:#EFF6FF;
+  --md-secondary:#64748B;
+  --md-secondary-container:#F1F5F9;
+  --md-on-secondary-container:#111827;
+  --md-tertiary:#0EA5E9;
+  --md-tertiary-container:#E0F2FE;
+  --md-on-tertiary-container:#075985;
+  --md-surface:#F8FAFC;
+  --md-surface-variant:#F1F5F9;
+  --md-surface-dim:#F1F5F9;
+  --md-surface-container-low:#F8FAFC;
+  --md-surface-container:#F1F5F9;
+  --md-surface-container-high:#E2E8F0;
+  --md-surface-bright:#ffffff;
+  --md-on-surface:#111827;
+  --md-on-surface-variant:#4B5563;
+  --md-outline:#9CA3AF;
+  --md-outline-variant:#E5E7EB;
+  --md-inverse-surface:#1E293B;
+  --md-inverse-on-surface:#F8FAFC;
+  --glass-bg:rgba(255,255,255,0.92);
+  --glass-blur:blur(16px);
+  --glass-border:rgba(0,0,0,0.07);
+  --glass-shadow:0 4px 24px rgba(0,0,0,0.08);
+  --elev-1:0 1px 3px rgba(0,0,0,0.06);
+  --elev-2:0 4px 12px rgba(0,0,0,0.08);
+  --elev-3:0 8px 24px rgba(0,0,0,0.10);
+}
