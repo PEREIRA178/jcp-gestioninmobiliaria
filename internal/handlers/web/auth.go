@@ -6,10 +6,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io"
+	"log"
+	"strings"
 	"time"
 
 	"jcp-gestioninmobiliaria/internal/auth"
 	"jcp-gestioninmobiliaria/internal/config"
+	webtmpl "jcp-gestioninmobiliaria/internal/templates/web"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pocketbase/pocketbase"
@@ -137,5 +140,86 @@ func VisitorLogout(cfg *config.Config) fiber.Handler {
 			Expires: time.Unix(0, 0),
 		})
 		return c.Redirect("/")
+	}
+}
+
+// RegisterPageHandler serves the email registration page.
+func RegisterPageHandler(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		errMsg := c.Query("error")
+		switch errMsg {
+		case "short":
+			errMsg = "La contraseña debe tener al menos 8 caracteres."
+		case "save":
+			errMsg = "Error al crear la cuenta. Intenta de nuevo."
+		case "csrf":
+			errMsg = "Sesión inválida. Recarga la página e intenta de nuevo."
+		default:
+			errMsg = ""
+		}
+		csrf := randomState()
+		c.Cookie(&fiber.Cookie{
+			Name:     "reg_csrf",
+			Value:    csrf,
+			MaxAge:   600,
+			HTTPOnly: true,
+			SameSite: "Lax",
+			Secure:   cfg.IsProd(),
+		})
+		return renderTempl(c, webtmpl.RegisterPage(errMsg, csrf))
+	}
+}
+
+// RegisterSubmit handles email+password registration creating a visitor JWT session.
+func RegisterSubmit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		if c.FormValue("_csrf") != c.Cookies("reg_csrf") || c.Cookies("reg_csrf") == "" {
+			return c.Redirect("/register?error=csrf")
+		}
+		c.ClearCookie("reg_csrf")
+
+		name := strings.TrimSpace(c.FormValue("name"))
+		email := strings.TrimSpace(c.FormValue("email"))
+		password := c.FormValue("password")
+
+		// Primero validar campos requeridos
+		if email == "" || name == "" {
+			return c.Redirect("/register?error=save")
+		}
+		// Luego validar restricciones
+		if len(password) < 8 {
+			return c.Redirect("/register?error=short")
+		}
+		// password validated for length only; not stored — this is a one-shot visitor session
+
+		// Log the new email-registered visitor
+		collection, err := pb.FindCollectionByNameOrId("visitor_logs")
+		if err == nil {
+			record := core.NewRecord(collection)
+			record.Set("email", email)
+			record.Set("name", name)
+			record.Set("picture", "")
+			record.Set("ip", c.IP())
+			record.Set("user_agent", c.Get("User-Agent"))
+			if saveErr := pb.Save(record); saveErr != nil {
+				log.Printf("register: visitor_logs save failed for %s: %v", email, saveErr)
+			}
+		}
+
+		jwtToken, err := auth.GenerateToken(cfg, "", email, "visitor", name)
+		if err != nil {
+			return c.Redirect("/register?error=save")
+		}
+
+		c.Cookie(&fiber.Cookie{
+			Name:     "jcp_visitor",
+			Value:    jwtToken,
+			MaxAge:   int(cfg.JWTExpiration / time.Second),
+			HTTPOnly: true,
+			SameSite: "Lax",
+			Secure:   cfg.IsProd(),
+		})
+
+		return c.Redirect("/propiedades")
 	}
 }

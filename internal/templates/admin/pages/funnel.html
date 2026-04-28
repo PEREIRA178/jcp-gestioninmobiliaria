@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Usuarios — JCP Admin</title>
+<title>Funnel de Ventas — JCP Admin</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -166,10 +166,10 @@ textarea.form-input{resize:vertical;min-height:80px}
 
   <div class="sidebar-section">
     <div class="sidebar-section-title">Sistema</div>
-    <a href="/admin/users" class="sidebar-link active">
+    <a href="/admin/users" class="sidebar-link">
       <span class="material-symbols-outlined">group</span> Usuarios
     </a>
-    <a href="/admin/funnel" class="sidebar-link">
+    <a href="/admin/funnel" class="sidebar-link active">
       <span class="material-symbols-outlined">funnel</span> Funnel de ventas
     </a>
     <a href="/admin/settings" class="sidebar-link">
@@ -193,45 +193,15 @@ textarea.form-input{resize:vertical;min-height:80px}
 <!-- ══════ MAIN ══════ -->
 <div class="main">
   <header class="topbar">
-    <h1 class="topbar-title">Usuarios</h1>
-    <div class="topbar-actions">
-      <button class="topbar-btn topbar-btn-primary"
-              hx-post="/admin/users"
-              hx-target="#modal-container"
-              hx-swap="innerHTML">
-        <span class="material-symbols-outlined" style="font-size:16px">person_add</span> Crear usuario
-      </button>
-    </div>
+    <h1 class="topbar-title">Funnel de Ventas</h1>
   </header>
 
   <div class="content">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="card-title">Gestión de Usuarios</h2>
-      </div>
-      <div id="users-table-wrap"
-           hx-get="/admin/users?fragment=table"
-           hx-trigger="load, userCreated from:body, userUpdated from:body, userDeleted from:body"
-           hx-swap="innerHTML">
-        <table>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Teléfono</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--md-outline)">
-              <div style="width:24px;height:24px;border:2px solid var(--md-primary);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 8px"></div>
-              Cargando usuarios...
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="stats-row"
+         hx-get="/admin/funnel/stats"
+         hx-trigger="load"
+         hx-swap="innerHTML">
+      <div class="stat-card"><div class="stat-card-label">Cargando...</div><div class="stat-card-value">—</div></div>
     </div>
   </div>
 </div>
@@ -258,9 +228,8 @@ document.querySelectorAll('.sidebar-link').forEach(link => {
     ws.onmessage = function(e) {
       try {
         const msg = JSON.parse(e.data);
-        if (msg.type === 'refresh_all' || msg.type === 'userUpdated') {
-          const wrap = document.getElementById('users-table-wrap');
-          if (wrap) htmx.ajax('GET', '/admin/users?fragment=table', {target:'#users-table-wrap', swap:'innerHTML'});
+        if (msg.type === 'refresh_all') {
+          htmx.ajax('GET', '/admin/funnel/stats', {target:'.stats-row', swap:'innerHTML'});
         }
       } catch(_) {}
     };

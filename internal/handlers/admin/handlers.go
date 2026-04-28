@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -1145,7 +1147,22 @@ func DeviceAssignPlaylist(cfg *config.Config, pb *pocketbase.PocketBase) fiber.H
 
 func UserList(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return c.SendFile("./internal/templates/admin/pages/users.html")
+		if c.Query("fragment") != "table" {
+			return c.SendFile("./internal/templates/admin/pages/users.html")
+		}
+		row := fmt.Sprintf(`<tr>
+          <td>%s</td>
+          <td>%s</td>
+          <td><span class="badge badge-info">superadmin</span></td>
+          <td>—</td>
+          <td><span class="badge badge-success">Activo</span></td>
+          <td><span style="font-size:12px;color:var(--md-outline)">Config del sistema</span></td>
+        </tr>`,
+			template.HTMLEscapeString("Administrador"),
+			template.HTMLEscapeString(cfg.AdminEmail),
+		)
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(row)
 	}
 }
 func UserCreate(cfg *config.Config) fiber.Handler {
@@ -1177,9 +1194,6 @@ func WhatsAppLogs(cfg *config.Config) fiber.Handler {
 func PropiedadesList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if c.Query("fragment") != "rows" {
-			if c.Get("HX-Request") != "true" {
-				return c.SendFile("./internal/templates/admin/pages/dashboard.html")
-			}
 			return c.SendFile("./internal/templates/admin/pages/propiedades.html")
 		}
 		records, err := pb.FindRecordsByFilter("propiedades", "id != ''", "-publicado_en", 200, 0)
@@ -1997,5 +2011,130 @@ func VisitorLogs(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 		}
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(sb.String())
+	}
+}
+
+// ── FUNNEL ──
+
+func FunnelPage(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.SendFile("./internal/templates/admin/pages/funnel.html")
+	}
+}
+
+func FunnelStats(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		visitors, err := pb.FindRecordsByFilter("visitor_logs", "", "", 10000, 0)
+		if err != nil {
+			log.Printf("⚠️  FunnelStats visitor_logs: %v", err)
+		}
+		propiedades, err := pb.FindRecordsByFilter("propiedades", "status='publicado'", "", 10000, 0)
+		if err != nil {
+			log.Printf("⚠️  FunnelStats propiedades: %v", err)
+		}
+		whatsappLogs, err := pb.FindRecordsByFilter("whatsapp_logs", "", "", 10000, 0)
+		if err != nil {
+			log.Printf("⚠️  FunnelStats whatsapp_logs: %v", err)
+		}
+
+		totalVisitantes := len(visitors)
+		totalConsultas := len(whatsappLogs)
+		totalPublicadas := len(propiedades)
+
+		html := fmt.Sprintf(`
+<div class="stat-card accent">
+  <div class="stat-card-label">Visitantes registrados</div>
+  <div class="stat-card-value">%d</div>
+  <div class="stat-card-delta">Total acumulado</div>
+</div>
+<div class="stat-card">
+  <div class="stat-card-label">Consultas WhatsApp</div>
+  <div class="stat-card-value">%d</div>
+  <div class="stat-card-delta">mensajes recibidos</div>
+</div>
+<div class="stat-card">
+  <div class="stat-card-label">Propiedades publicadas</div>
+  <div class="stat-card-value">%d</div>
+  <div class="stat-card-delta">actualmente activas</div>
+</div>
+<div class="stat-card">
+  <div class="stat-card-label">Tasa de conversión</div>
+  <div class="stat-card-value">%s%%</div>
+  <div class="stat-card-delta">consultas / visitantes</div>
+</div>`,
+			totalVisitantes, totalConsultas, totalPublicadas,
+			funnelRate(totalConsultas, totalVisitantes),
+		)
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(html)
+	}
+}
+
+func funnelRate(num, denom int) string {
+	if denom == 0 {
+		return "0"
+	}
+	rate := float64(num) / float64(denom) * 100
+	return fmt.Sprintf("%.1f", rate)
+}
+
+// ── SETTINGS ──
+
+const settingsPath = "./pb_data/app_settings.json"
+
+type AppSettings struct {
+	LogoURL string `json:"logo_url"`
+}
+
+func loadSettings() AppSettings {
+	data, err := os.ReadFile(settingsPath)
+	if err != nil {
+		return AppSettings{}
+	}
+	var s AppSettings
+	if err := json.Unmarshal(data, &s); err != nil {
+		log.Printf("⚠️  loadSettings: corrupt JSON in %s: %v", settingsPath, err)
+	}
+	return s
+}
+
+func saveSettings(s AppSettings) error {
+	if err := os.MkdirAll(filepath.Dir(settingsPath), 0755); err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(settingsPath, data, 0644)
+}
+
+func SettingsPage(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		return c.SendFile("./internal/templates/admin/pages/settings.html")
+	}
+}
+
+func SettingsCurrent(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		s := loadSettings()
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(fmt.Sprintf(
+			`<input type="url" name="logo_url" class="form-input" id="settings-logo-url" placeholder="https://ejemplo.com/logo.png" value="%s"/>`,
+			template.HTMLEscapeString(s.LogoURL),
+		))
+	}
+}
+
+func SettingsUpdate(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		s := AppSettings{
+			LogoURL: strings.TrimSpace(c.FormValue("logo_url")),
+		}
+		if err := saveSettings(s); err != nil {
+			return c.Status(500).SendString(`<div class="toast toast-error">Error guardando configuración</div>`)
+		}
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(`<div class="toast toast-success">Configuración guardada correctamente</div>`)
 	}
 }

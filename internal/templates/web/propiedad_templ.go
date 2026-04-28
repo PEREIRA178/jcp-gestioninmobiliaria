@@ -332,7 +332,7 @@ func PropiedadDetail(d PropiedadData) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\"><div style=\"font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;display:flex;align-items:center;gap:6px\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">calendar_month</span> Agendar visita</div><p class=\"schedule-sub\">Elegí fecha y horario, te confirmamos por WhatsApp.</p><form id=\"schedule-form\" data-wa-phone=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\"><div style=\"font-size:15px;font-weight:700;color:#111827;margin-bottom:4px;display:flex;align-items:center;gap:6px\"><span class=\"ms ms-sm\" style=\"color:#1D4ED8\">calendar_month</span> Agendar visita</div><p class=\"schedule-sub\">Elige fecha y horario, te confirmamos por WhatsApp.</p><form id=\"schedule-form\" data-wa-phone=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

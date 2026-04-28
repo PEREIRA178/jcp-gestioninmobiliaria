@@ -47,6 +47,13 @@ func RegisterAdmin(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBase
 	adm.Get("/whatsapp-logs", admin.WhatsAppLogs(cfg))
 	adm.Get("/visitors", admin.VisitorLogs(cfg, pb))
 
+	adm.Get("/funnel", admin.FunnelPage(cfg))
+	adm.Get("/funnel/stats", admin.FunnelStats(cfg, pb))
+
+	adm.Get("/settings", admin.SettingsPage(cfg))
+	adm.Get("/settings/current", admin.SettingsCurrent(cfg))
+	adm.Post("/settings", admin.SettingsUpdate(cfg))
+
 	// Propiedades
 	adm.Get("/propiedades", admin.PropiedadesList(cfg, pb))
 	adm.Get("/propiedades/new", admin.PropiedadForm(cfg))
