@@ -157,6 +157,37 @@ func ensureCollections(app core.App, cfg *config.Config) error {
 		log.Println("  ✅ Collection 'propiedades' created")
 	}
 
+	// ── 7. VISITOR_LOGS ──
+	if _, err := app.FindCollectionByNameOrId("visitor_logs"); err != nil {
+		col := core.NewBaseCollection("visitor_logs")
+		col.Fields.Add(
+			&core.EmailField{Name: "email"},
+			&core.TextField{Name: "name"},
+			&core.URLField{Name: "picture"},
+			&core.TextField{Name: "ip"},
+			&core.TextField{Name: "user_agent"},
+			&core.TextField{Name: "login_type"}, // "google" | "email"
+		)
+		if err := app.Save(col); err != nil {
+			return err
+		}
+		log.Println("  ✅ Collection 'visitor_logs' created")
+	}
+
+	// ── 8. VISITOR_ACCOUNTS (email+password auth) ──
+	if _, err := app.FindCollectionByNameOrId("visitor_accounts"); err != nil {
+		col := core.NewBaseCollection("visitor_accounts")
+		col.Fields.Add(
+			&core.EmailField{Name: "email", Required: true},
+			&core.TextField{Name: "name"},
+			&core.TextField{Name: "password_hash"},
+		)
+		if err := app.Save(col); err != nil {
+			return err
+		}
+		log.Println("  ✅ Collection 'visitor_accounts' created")
+	}
+
 	// ── Superadmin por defecto ──
 	users, _ := app.FindCollectionByNameOrId("users")
 	if users != nil {
