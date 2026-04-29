@@ -269,13 +269,13 @@ func PropCard(p PropItem, i int) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if p.Destacada {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"prop-badge prop-badge-featured\"><span class=\"ms ms-sm\">star</span> Destacada</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "<span class=\"prop-badge prop-badge-featured\"><span class=\"ms ms-sm\">star</span><span class=\"badge-text\">Destacada</span></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if p.Oportunidad {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"prop-badge prop-badge-deal\">Oportunidad</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<span class=\"prop-badge prop-badge-deal\"><span class=\"ms ms-sm\">sell</span><span class=\"badge-text\">Oportunidad</span></span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

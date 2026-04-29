@@ -17,6 +17,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -107,7 +108,7 @@ func GoogleCallback(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 		})
 
 		// Log visitor asynchronously — never blocks the auth flow
-		go logVisitor(pb, gu, c.IP(), c.Get("User-Agent"))
+		go logVisitor(pb, gu, c.IP(), c.Get("User-Agent"), "google")
 
 		next := c.Query("next", "/propiedades")
 		return c.Redirect(next)
@@ -115,11 +116,11 @@ func GoogleCallback(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 }
 
 // logVisitor saves visitor login data to visitor_logs collection.
-// Silently swallows errors so auth is never affected.
-func logVisitor(pb *pocketbase.PocketBase, u googleUserInfo, ip, ua string) {
+func logVisitor(pb *pocketbase.PocketBase, u googleUserInfo, ip, ua, loginType string) {
 	collection, err := pb.FindCollectionByNameOrId("visitor_logs")
 	if err != nil {
-		return // collection not created yet — no-op
+		log.Printf("⚠️  logVisitor: visitor_logs collection not found: %v", err)
+		return
 	}
 	record := core.NewRecord(collection)
 	record.Set("email", u.Email)
@@ -127,7 +128,10 @@ func logVisitor(pb *pocketbase.PocketBase, u googleUserInfo, ip, ua string) {
 	record.Set("picture", u.Picture)
 	record.Set("ip", ip)
 	record.Set("user_agent", ua)
-	_ = pb.Save(record)
+	record.Set("login_type", loginType)
+	if err := pb.Save(record); err != nil {
+		log.Printf("⚠️  logVisitor: save failed for %s: %v", u.Email, err)
+	}
 }
 
 // VisitorLogout clears the visitor session and redirects to the landing page.
@@ -182,29 +186,36 @@ func RegisterSubmit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 		email := strings.TrimSpace(c.FormValue("email"))
 		password := c.FormValue("password")
 
-		// Primero validar campos requeridos
 		if email == "" || name == "" {
 			return c.Redirect("/register?error=save")
 		}
-		// Luego validar restricciones
 		if len(password) < 8 {
 			return c.Redirect("/register?error=short")
 		}
-		// password validated for length only; not stored — this is a one-shot visitor session
 
-		// Log the new email-registered visitor
-		collection, err := pb.FindCollectionByNameOrId("visitor_logs")
-		if err == nil {
-			record := core.NewRecord(collection)
-			record.Set("email", email)
-			record.Set("name", name)
-			record.Set("picture", "")
-			record.Set("ip", c.IP())
-			record.Set("user_agent", c.Get("User-Agent"))
-			if saveErr := pb.Save(record); saveErr != nil {
-				log.Printf("register: visitor_logs save failed for %s: %v", email, saveErr)
+		// Check if email is already registered
+		existing, _ := pb.FindRecordsByFilter("visitor_accounts", "email = '"+email+"'", "", 1, 0)
+		if len(existing) > 0 {
+			return c.Redirect("/login?error=exists")
+		}
+
+		// Hash password and save credentials
+		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return c.Redirect("/register?error=save")
+		}
+		if col, err := pb.FindCollectionByNameOrId("visitor_accounts"); err == nil {
+			r := core.NewRecord(col)
+			r.Set("email", email)
+			r.Set("name", name)
+			r.Set("password_hash", string(hash))
+			if saveErr := pb.Save(r); saveErr != nil {
+				log.Printf("register: visitor_accounts save failed for %s: %v", email, saveErr)
 			}
 		}
+
+		// Log to visitor_logs
+		go logVisitor(pb, googleUserInfo{Email: email, Name: name}, c.IP(), c.Get("User-Agent"), "email")
 
 		jwtToken, err := auth.GenerateToken(cfg, "", email, "visitor", name)
 		if err != nil {
@@ -221,5 +232,45 @@ func RegisterSubmit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 		})
 
 		return c.Redirect("/propiedades")
+	}
+}
+
+// VisitorLoginSubmit handles email+password login for previously registered visitors.
+func VisitorLoginSubmit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		email := strings.TrimSpace(c.FormValue("email"))
+		password := c.FormValue("password")
+
+		if email == "" || password == "" {
+			return c.Redirect("/login?error=invalid")
+		}
+
+		records, err := pb.FindRecordsByFilter("visitor_accounts", "email = '"+email+"'", "", 1, 0)
+		if err != nil || len(records) == 0 {
+			return c.Redirect("/login?error=invalid")
+		}
+		r := records[0]
+
+		if err := bcrypt.CompareHashAndPassword([]byte(r.GetString("password_hash")), []byte(password)); err != nil {
+			return c.Redirect("/login?error=invalid")
+		}
+
+		name := r.GetString("name")
+		jwtToken, err := auth.GenerateToken(cfg, "", email, "visitor", name)
+		if err != nil {
+			return c.Redirect("/login?error=invalid")
+		}
+
+		c.Cookie(&fiber.Cookie{
+			Name:     "jcp_visitor",
+			Value:    jwtToken,
+			MaxAge:   int(cfg.JWTExpiration / time.Second),
+			HTTPOnly: true,
+			SameSite: "Lax",
+			Secure:   cfg.IsProd(),
+		})
+
+		next := c.Query("next", "/propiedades")
+		return c.Redirect(next)
 	}
 }
