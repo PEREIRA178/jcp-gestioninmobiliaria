@@ -69,10 +69,10 @@ templ PropCard(p PropItem, i int) {
 				}
 				<div class="prop-badges">
 					if p.Destacada {
-						<span class="prop-badge prop-badge-featured"><span class="ms ms-sm">star</span> Destacada</span>
+						<span class="prop-badge prop-badge-featured"><span class="ms ms-sm">star</span><span class="badge-text"> Destacada</span></span>
 					}
 					if p.Oportunidad {
-						<span class="prop-badge prop-badge-deal">Oportunidad</span>
+						<span class="prop-badge prop-badge-deal"><span class="ms ms-sm">sell</span><span class="badge-text"> Oportunidad</span></span>
 					}
 					if p.Operacion == "VENTA" {
 						<span class="prop-badge prop-badge-venta">En Venta</span>

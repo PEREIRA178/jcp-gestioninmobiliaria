@@ -1270,7 +1270,7 @@ func PropiedadesList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handle
 
 func PropiedadForm(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		html := propiedadFormHTML("", "", "", "VENTA", "CASA", "", "", "", "", "", 0, 0, 0, 0, 0, 0, "usada", "publicado", false, false, "", "", "", 0, 0)
+		html := propiedadFormHTML("", "", "", "VENTA", "CASA", "", "", "", "", "", 0, 0, 0, 0, 0, 0, 0, "usada", "publicado", false, false, "", "", "", 0, 0)
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(html)
 	}
@@ -1329,6 +1329,7 @@ func PropiedadEdit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler 
 			float64(r.GetInt("banos")),
 			float64(r.GetInt("estacionamientos")),
 			r.GetFloat("superficie_util"),
+			r.GetFloat("superficie_total"),
 			r.GetString("estado_propiedad"),
 			r.GetString("status"),
 			r.GetBool("destacada"),
@@ -1476,7 +1477,7 @@ func fmtFloatOrEmpty(f float64) string {
 }
 
 func propiedadFormHTML(id, titulo, slug, operacion, tipo, descripcion, direccion, comuna, region, coverImage string,
-	precioUF, precioCLP, dormitorios, banos, estacionamientos, superficieUtil float64,
+	precioUF, precioCLP, dormitorios, banos, estacionamientos, superficieUtil, superficieTotal float64,
 	estadoPropiedad, status string, destacada, oportunidad bool, amenidades, whatsapp, gallery string,
 	lat, lng float64,
 ) string {
@@ -1570,7 +1571,11 @@ func propiedadFormHTML(id, titulo, slug, operacion, tipo, descripcion, direccion
       </div>
       <div class="form-row">
         <div class="form-field"><label>Superficie útil (m²)</label><input type="number" name="superficie_util" value="%s" class="form-input" placeholder="0" step="0.01" min="0"/></div>
+        <div class="form-field"><label>Superficie total (m²)</label><input type="number" name="superficie_total" value="%s" class="form-input" placeholder="0" step="0.01" min="0"/></div>
+      </div>
+      <div class="form-row">
         <div class="form-field"><label>Estacionamientos</label><input type="number" name="estacionamientos" value="%s" class="form-input" placeholder="0" min="0"/></div>
+        <div class="form-field"></div>
       </div>
       <div class="form-row">
         <div class="form-field"><label>Dirección</label><input type="text" name="direccion" value="%s" class="form-input" placeholder="Av. Principal 123"/></div>
@@ -1612,7 +1617,7 @@ func propiedadFormHTML(id, titulo, slug, operacion, tipo, descripcion, direccion
 		opOpts.String(), tipoOpts.String(),
 		fmtNum(precioUF), fmtNum(precioCLP),
 		fmtNum(dormitorios), fmtNum(banos),
-		fmtNum(superficieUtil), fmtNum(estacionamientos),
+		fmtNum(superficieUtil), fmtNum(superficieTotal), fmtNum(estacionamientos),
 		template.HTMLEscapeString(direccion),
 		template.HTMLEscapeString(comuna),
 		template.HTMLEscapeString(region),
@@ -2067,6 +2072,15 @@ func FunnelStats(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 		)
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(html)
+	}
+}
+
+func SettingsLogoURL(cfg *config.Config) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		s := loadSettings()
+		c.Set("Content-Type", "text/plain; charset=utf-8")
+		c.Set("Cache-Control", "no-store")
+		return c.SendString(s.LogoURL)
 	}
 }
 

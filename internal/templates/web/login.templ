@@ -52,6 +52,13 @@ templ LoginPage(errorMsg string) {
 			  font-size:14px;font-weight:600;color:#1D4ED8;
 			  cursor:pointer;transition:all .22s;font-family:inherit;text-decoration:none}
 			.btn-register:hover{background:#DBEAFE;border-color:#1D4ED8}
+			.login-form{width:100%;text-align:left;margin-top:4px}
+			.login-field{margin-bottom:12px}
+			.login-field label{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#64748B;margin-bottom:5px}
+			.login-field input{width:100%;padding:11px 14px;border:1.5px solid #E2E8F0;border-radius:12px;font-family:inherit;font-size:14px;color:#0F172A;outline:none;background:#fff;transition:border-color .2s}
+			.login-field input:focus{border-color:#1D4ED8;box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+			.btn-login{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 24px;border-radius:14px;background:#1D4ED8;border:none;font-size:14px;font-weight:600;color:#fff;cursor:pointer;transition:all .22s;font-family:inherit;margin-top:4px;box-shadow:0 2px 8px rgba(29,78,216,.28)}
+			.btn-login:hover{background:#1E3A8A;transform:translateY(-1px)}
 			.note{margin-top:24px;font-size:12px;color:#94A3B8;line-height:1.65;max-width:300px}
 		</style>
 	</head>
@@ -66,7 +73,7 @@ templ LoginPage(errorMsg string) {
 				<span class="logo-name">JCP Gestión</span>
 			</div>
 			<h1>Accede al catálogo completo</h1>
-			<p>Inicia sesión con tu cuenta de Google para ver todas las propiedades disponibles.</p>
+			<p>Inicia sesión con Google o con tu correo electrónico.</p>
 			<div class="divider"></div>
 			if errorMsg != "" {
 				<div class="error-msg">{ errorMsg }</div>
@@ -80,10 +87,25 @@ templ LoginPage(errorMsg string) {
 				</svg>
 				Continuar con Google
 			</a>
-			<div class="or">o también</div>
+			<div class="or">o con correo</div>
+			<form method="POST" action="/login" class="login-form">
+				<div class="login-field">
+					<label>Correo electrónico</label>
+					<input type="email" name="email" placeholder="tucorreo@ejemplo.com" required autocomplete="email"/>
+				</div>
+				<div class="login-field">
+					<label>Contraseña</label>
+					<input type="password" name="password" placeholder="Tu contraseña" required autocomplete="current-password"/>
+				</div>
+				<button type="submit" class="btn-login">
+					<span class="ms" style="font-size:18px">login</span>
+					Iniciar sesión
+				</button>
+			</form>
+			<div class="or" style="margin-top:18px">¿no tienes cuenta?</div>
 			<a href="/register" class="btn-register">
-				<span class="ms" style="font-size:18px">mail</span>
-				Registrarse con correo electrónico
+				<span class="ms" style="font-size:18px">person_add</span>
+				Registrarse con correo
 			</a>
 			<p class="note">Al iniciar sesión aceptas que JCP Gestión Inmobiliaria almacene tu correo para personalizar tu experiencia.</p>
 		</div>

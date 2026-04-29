@@ -52,6 +52,7 @@ func RegisterAdmin(app *fiber.App, cfg *config.Config, pb *pocketbase.PocketBase
 
 	adm.Get("/settings", admin.SettingsPage(cfg))
 	adm.Get("/settings/current", admin.SettingsCurrent(cfg))
+	adm.Get("/settings/logo-url", admin.SettingsLogoURL(cfg))
 	adm.Post("/settings", admin.SettingsUpdate(cfg))
 
 	// Propiedades

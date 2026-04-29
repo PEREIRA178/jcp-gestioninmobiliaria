@@ -93,6 +93,10 @@ func LoginPageHandler(cfg *config.Config) fiber.Handler {
 			errMsg = "Error de seguridad. Intentá de nuevo."
 		case "exchange":
 			errMsg = "No se pudo completar el inicio de sesión. Intentá de nuevo."
+		case "invalid":
+			errMsg = "Correo o contraseña incorrectos."
+		case "exists":
+			errMsg = "Ya tienes una cuenta registrada. Ingresa con tu correo y contraseña."
 		}
 		return renderTempl(c, webtmpl.LoginPage(errMsg))
 	}

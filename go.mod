@@ -11,6 +11,7 @@ require (
 	github.com/gofiber/websocket/v2 v2.2.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/pocketbase/pocketbase v0.25.0
+	golang.org/x/crypto v0.40.0
 	golang.org/x/oauth2 v0.25.0
 )
 
@@ -65,7 +66,6 @@ require (
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	gocloud.dev v0.40.0 // indirect
-	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/image v0.23.0 // indirect
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
