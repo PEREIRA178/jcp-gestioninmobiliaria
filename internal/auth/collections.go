@@ -279,7 +279,7 @@ func seedPropiedades(app core.App) error {
 	if err != nil {
 		return err
 	}
-	existing, _ := app.FindRecordsByFilter(col, "status = 'publicado'", "", 1, 0)
+	existing, _ := app.FindRecordsByFilter(col, "id != ''", "", 1, 0)
 	if len(existing) > 0 {
 		return nil
 	}
